@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import BrokerPicker from '../components/BrokerPicker';
+import PhoneOffer from '../components/PhoneOffer';
+---
+<Base title="Potvrďte e-mail | Indexák" description="Potvrďte e-mail a návod vám pošleme." noindex>
+  <header class="masthead"><a href="/" class="masthead__brand thanks__home">Indexák</a></header>
+  <main class="thanks">
+    <h1>Ještě jeden klik: potvrďte e-mail</h1>
+    <p>Poslali jsme vám e-mail s předmětem „Potvrďte a návod je váš“. Po kliknutí na tlačítko v něm vám návod pošleme.</p>
+    <p class="thanks__muted">Nevidíte ho? Podívejte se i do složek Promoakce, Hromadné nebo Spam.</p>
+    <div class="thanks__mail">
+      <a href="https://mail.google.com/" target="_blank" rel="noopener">Otevřít Gmail</a>
+      <a href="https://email.seznam.cz/" target="_blank" rel="noopener">Otevřít Seznam Email</a>
+    </div>
+    <hr class="thanks__rule" />
+    <BrokerPicker client:load />
+    <hr class="thanks__rule" />
+    <PhoneOffer client:visible page="dekujeme" />
+  </main>
+</Base>
+
+<script>
+  import { track } from '../lib/track';
+  track('thankyou_viewed');
+</script>

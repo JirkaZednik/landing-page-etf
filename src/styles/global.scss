@@ -624,3 +624,232 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
 
   .lead-form { max-width: none; }
 }
+
+// Děkovací stránky (/dekujeme, /potvrzeno): jeden sloupec, nahoře jediná akce.
+.thanks {
+  max-width: 34rem;
+  padding: $s3 $s3 $s6;
+
+  > h1 {
+    margin: 0 0 $s3;
+    font-size: 1.625rem;
+    line-height: 1.12;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  > p { margin: 0 0 $s2; text-wrap: pretty; }
+
+  &__home { color: var(--ink); text-decoration: none; }
+
+  &__muted { color: var(--muted); font-size: 0.9375rem; }
+
+  // Dvě stejně výrazná textová tlačítka, bez log.
+  &__mail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $s2;
+    margin-top: $s3;
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 $s2;
+      border: 1px solid var(--ink);
+      border-radius: 2px;
+      color: var(--ink);
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+      line-height: 1.2;
+    }
+  }
+
+  &__pdf {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    margin: 0 0 $s2;
+    padding: 0 $s3;
+    border-radius: 2px;
+    background: var(--signal);
+    color: var(--paper);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  &__rule {
+    margin: $s5 0;
+    border: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  h2 {
+    margin: 0 0 $s3;
+    font-size: 1.375rem;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+}
+
+// BrokerPicker: čipy jako FundPicker, odpověď ve stylu karty fondu.
+.chip__name { font-size: 0.9375rem; }
+
+// Neviditelné radio přes celý čip: ťuknutí i klik míří přímo na <input>.
+.broker-picker .chip input {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.broker-answer {
+  border-top: 2px solid var(--ink);
+  padding: $s2 0 0;
+
+  &__h {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  &__rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li + li { border-top: 1px solid var(--rule); }
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    column-gap: $s2;
+    padding: $s2 0;
+  }
+
+  &__tk {
+    font-family: $font-mono;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.01em;
+  }
+
+  &__ter {
+    font-family: $font-mono;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.9375rem;
+    text-align: right;
+  }
+
+  &__isin {
+    grid-column: 1 / -1;
+    color: var(--muted);
+    font-size: 0.875rem;
+
+    span {
+      color: var(--ink);
+      font-family: $font-mono;
+      font-variant-numeric: tabular-nums;
+      user-select: all;
+    }
+  }
+
+  &__src {
+    margin: 0;
+    padding: $s2 0 $s1;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  &__text {
+    margin: 0;
+    padding: $s2 0;
+    border-top: 2px solid var(--ink);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+}
+
+// Nepovinný telefon: vizuálně tišší (rámeček --rule), tlačítko bez signální výplně.
+.phone-offer {
+  padding: $s3;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+
+  h2 { font-size: 1.1875rem; margin-bottom: $s2; }
+
+  > p { margin: 0 0 $s2; font-size: 0.9375rem; line-height: 1.45; }
+
+  &__who, &__note { color: var(--muted); }
+
+  &__form {
+    display: grid;
+    gap: $s2;
+    margin-top: $s3;
+
+    > label { font-size: 0.9375rem; }
+
+    input[type='tel'] {
+      min-height: 48px;
+      padding: 0 $s2;
+      border: 1px solid var(--ink);
+      border-radius: 2px;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: $font-mono;
+      font-size: 1rem;
+      font-variant-numeric: tabular-nums;
+
+      &::placeholder { color: var(--muted); }
+      &[aria-invalid='true'] { border-width: 2px; }
+    }
+
+    button[type='submit'] {
+      min-height: 48px;
+      margin-top: $s1;
+      padding: 0 $s3;
+      border: 1px solid var(--ink);
+      border-radius: 2px;
+      background: var(--paper);
+      color: var(--ink);
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+
+      &:disabled { opacity: 0.6; cursor: progress; }
+    }
+  }
+
+  &__opt {
+    display: flex;
+    align-items: flex-start;
+    gap: $s2;
+    padding: $s1 0;
+    font-size: 0.875rem;
+    line-height: 1.4;
+
+    input {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin: 0.0625rem 0 0;
+      flex: none;
+      accent-color: var(--ink);
+    }
+  }
+
+  &__error { margin: 0; font-size: 0.9375rem; font-weight: 600; }
+
+  &__done { margin: $s3 0 0; font-weight: 600; }
+}
