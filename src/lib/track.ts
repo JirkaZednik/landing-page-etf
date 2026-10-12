@@ -61,7 +61,14 @@ function scrub(v: unknown): unknown {
   if (Array.isArray(v)) return v.map(scrub);
   if (v && typeof v === 'object') {
     const out: Record<string, unknown> = {};
-    for (const [k, x] of Object.entries(v)) out[k] = scrub(x);
+    // keys too: posthog-js keys `$heatmap_data` by location.href, which carries ?aid=
+    for (const [k, x] of Object.entries(v)) {
+      const key = stripAid(k);
+      const val = scrub(x);
+      const prev = out[key];
+      // keys that collide after stripping: arrays are merged, anything else keeps the last value
+      out[key] = Array.isArray(prev) && Array.isArray(val) ? [...prev, ...val] : val;
+    }
     return out;
   }
   return v;
@@ -235,6 +242,7 @@ export function initAnalytics(): void {
       capture_pageview: false,
       autocapture: false,
       disable_session_recording: true,
+      capture_heatmaps: false, // $$heatmap events are keyed by location.href (aid); not in the measurement plan
       before_send: scrubAid,
     };
     // read consent now: it may have been granted while posthog-js was loading

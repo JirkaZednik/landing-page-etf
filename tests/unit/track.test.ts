@@ -46,6 +46,8 @@ describe('track without consent', () => {
       api_host: 'https://eu.i.posthog.com', cookieless_mode: 'always', person_profiles: 'identified_only',
     }));
     expect((posthog.init.mock.calls[0][1] as Record<string, unknown>).before_send).toBe(t.scrubAid);
+    // heatmaps ($$heatmap events keyed by location.href) are not in the measurement plan
+    expect(posthog.init.mock.calls[0][1]).toMatchObject({ capture_heatmaps: false });
     t.track('form_viewed', { placement: 'hero' });
     await vi.waitFor(() => expect(posthog.capture).toHaveBeenCalledWith('form_viewed', { placement: 'hero' }, undefined));
     expect(posthog.identify).not.toHaveBeenCalled();
@@ -260,6 +262,29 @@ describe('helpers', () => {
     expect(t.scrubAid({ properties: {}, $set_once: { $initial_current_url: `/?aid=${AID}` } })!.$set_once)
       .toEqual({ $initial_current_url: '/' });
     expect(t.scrubAid(null)).toBeNull();
+  });
+  it('scrubAid strips aid from object KEYS too ($heatmap_data is keyed by location.href), values intact', async () => {
+    const t = await load();
+    const rows = [{ x: 1, y: 2, target_fixed: false, type: 'click' }];
+    const ev = t.scrubAid({ properties: {
+      $heatmap_data: { [`https://x.cz/dekujeme?aid=${AID}&utm_source=meta`]: rows, 'https://x.cz/': [{ x: 3 }] },
+      nested: { deep: { [`https://x.cz/potvrzeno?aid=${AID}`]: ['v'] } },
+    } })!.properties;
+    expect(ev).toEqual({
+      $heatmap_data: { 'https://x.cz/dekujeme?utm_source=meta': rows, 'https://x.cz/': [{ x: 3 }] },
+      nested: { deep: { 'https://x.cz/potvrzeno': ['v'] } },
+    });
+    expect(JSON.stringify(ev)).not.toContain(AID);
+  });
+  it('scrubAid: keys that collide after stripping have their arrays merged, otherwise the last wins', async () => {
+    const t = await load();
+    const ev = t.scrubAid({ properties: { h: {
+      'https://x.cz/dekujeme': [{ n: 1 }],
+      [`https://x.cz/dekujeme?aid=${AID}`]: [{ n: 2 }],
+      'https://x.cz/a': 'first',
+      [`https://x.cz/a?aid=${AID}`]: 'last',
+    } } })!.properties;
+    expect(ev).toEqual({ h: { 'https://x.cz/dekujeme': [{ n: 1 }, { n: 2 }], 'https://x.cz/a': 'last' } });
   });
   it('getUtm returns only utm_* params present in the URL', async () => {
     history.replaceState({}, '', '/?utm_source=meta&utm_campaign=launch&utm_content=b&foo=1');
