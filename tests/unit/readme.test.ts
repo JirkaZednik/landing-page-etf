@@ -65,4 +65,45 @@ describe('README', () => {
   it('does not mention funds that are not in the data', () => {
     for (const t of ['FWRA', 'ZPR3', 'CRSP US Total Market Index']) expect(md).not.toContain(t);
   });
+
+  it('describes Trading 212 and Fio as not yet verified (broker table, prose and checklist)', () => {
+    expect(md).toMatch(/^\| Trading 212 \| \*\*žádné zatím neověřené\*\*/m);
+    expect(md).toMatch(/^\| Fio banka \| \*\*žádné zatím neověřené\*\*/m);
+    expect(md).toContain('U tohoto brokera jsme dostupnost zatím neověřili.');
+    expect(md).toMatch(/^- \[ \] .*\*\*Trading 212 a Fio zatím nemají žádný ověřený fond\*\*/m);
+    expect(md).toMatch(/blokuje:.*ověření (dat )?brokerů Trading 212 a Fio/);
+    // never claimed as verified
+    expect(md).not.toMatch(/Trading 212 (a Fio )?(jsou|je) ověřen/);
+  });
+
+  it('does not overclaim: nothing has been measured in production yet', () => {
+    const answer = md.split('\n').find((l) => l.startsWith('**Mohli bychom zítra spustit reklamu?**'))!;
+    expect(answer).not.toMatch(/měření a testy jsou hotové/);
+    expect(answer).toMatch(/na produkci .*zatím nic neměřilo/);
+  });
+
+  it('measurement section matches the code: aid never in PostHog URLs, consent switches in place', () => {
+    const sec = md.slice(md.indexOf('### Měření bez souhlasu a se souhlasem'), md.indexOf('## Reklamy A/B'));
+    expect(sec).toContain('`$current_url`');
+    expect(sec).toContain('`$referrer`');
+    expect(sec).toContain('`before_send`');
+    expect(sec).toMatch(/bez znovunačtení stránky/);
+    expect(sec).toContain('`identify(aid)`');
+  });
+
+  it('paid tiers are only Vercel and Brevo; PostHog, Meta and Upstash are accounts to set up', () => {
+    const status = md.split('\n').find((l) => l.startsWith('**Stav: připraveno, blokuje:**'))!;
+    const paid = status.match(/placené tarify \(([^)]*)\)/)![1];
+    expect(paid).toMatch(/Vercel/);
+    expect(paid).toMatch(/Brevo/);
+    for (const t of ['PostHog', 'Meta', 'Upstash']) expect(paid).not.toContain(t);
+    expect(status).toMatch(/účty .*\(PostHog, Meta, Upstash\)/);
+  });
+
+  it('rounds the minimum detectable effect and words the H3 row precisely', () => {
+    expect(md).not.toContain('6,85 %');
+    expect(md).toContain('4 → ≈ 6,8 %');
+    expect(md).toMatch(/^\| 3 \|.*\| z 60 % na 66 % odeslání \|/m);
+  });
 });
+

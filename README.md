@@ -8,7 +8,7 @@ Stránka běží pod fiktivní spotřebitelskou značkou Indexák; provozovatele
 
 Výstupy: landing page (Astro 5 + React ostrůvky, TypeScript, SCSS), PDF návod jako lead magnet, 2 verze reklamy ve formátech 4:5 a 9:16, měření celé cesty a tento README.
 
-**Mohli bychom zítra spustit reklamu?** Technicky ano: stránka, formuláře, PDF, kreativy, měření a testy jsou hotové. Ostrý provoz ale blokují kroky mimo kód – souhlas Clientela jako provozovatele, schválení právníkem, produkční účty a placené tarify, ověření brokerů Trading 212 a Fio a měření na produkci. Přesný stav je v [checklistu před spuštěním reklamy](#checklist-před-spuštěním-reklamy).
+**Mohli bychom zítra spustit reklamu?** Po stránce kódu ano: stránka, formuláře, PDF, kreativy, měřicí kód a testy jsou hotové a lokálně otestované. Web ale zatím nikde neběží, takže se na produkci zatím nic neměřilo – Pixel, CAPI, PostHog ani double opt-in nejsou ověřené v ostrém provozu. Ostrý provoz blokují kroky mimo kód – souhlas Clientela jako provozovatele, schválení právníkem, produkční účty a placené tarify, ověření dat brokerů Trading 212 a Fio a ověření měření na produkci. Přesný stav je v [checklistu před spuštěním reklamy](#checklist-před-spuštěním-reklamy).
 
 ## Cílová skupina
 
@@ -114,7 +114,7 @@ E-mail je jediné pole formuláře (nejnižší tření). Nepovinný telefon nab
 
 ### Měření bez souhlasu a se souhlasem
 
-Bez souhlasu běží jen PostHog v `cookieless_mode` (anonymní agregované události bez trvalého ID, žádné `aid`); Meta Pixel, CAPI a GA4 nikdy. Se souhlasem s analytikou se připojí `aid` a propojí celou cestu včetně `/dekujeme` a `/potvrzeno`. Zdrojem pravdy pro počet kontaktů a potvrzení je Brevo.
+Bez souhlasu běží jen PostHog v `cookieless_mode` (anonymní agregované události bez trvalého ID); Meta Pixel, CAPI a GA4 nikdy. `aid` se bez souhlasu do PostHogu neposílá ani v adresách: `before_send` ho odstraní z `$current_url`, `$referrer` a všech ostatních vlastností události (ověřeno testem s reálnou knihovnou posthog-js na `/dekujeme?aid=…`). Když návštěvník souhlas s analytikou udělí, PostHog se přepne na trvalé úložiště bez znovunačtení stránky (žádný druhý `page_view` ani Meta `PageView`, rozepsaný e-mail zůstane) a `identify(aid)` propojí celou cestu včetně `/dekujeme` a `/potvrzeno`; z adres se `aid` odstraňuje i se souhlasem. Stránka se znovu načte jen při odvolání souhlasu. Zdrojem pravdy pro počet kontaktů a potvrzení je Brevo.
 
 ## Reklamy A/B
 
@@ -169,20 +169,20 @@ n na variantu = ( z₁₋α/₂ · √(2·p̄·(1−p̄)) + z₁₋β · √(p�
 Baseline p₁ = 4 % (střed odhadu), relativní zlepšení 20 % → p₂ = 4,8 %, p̄ = 4,4 %:
 (1,960 · √(2 · 0,044 · 0,956) + 0,842 · √(0,04 · 0,96 + 0,048 · 0,952))² / 0,008² = (0,5685 + 0,2442)² / 0,000064 ≈ **10 319 návštěvníků na variantu** (≈ 20 638 celkem).
 
-Při ~1 000 návštěvách na variantu je nejmenší spolehlivě zjistitelný efekt ≈ +71 % relativně (4 → 6,85 %). Proto první vyhodnocení po 1 000 návštěvách slouží ke kontrole trychtýře, ne k vyhlášení vítěze.
+Při ~1 000 návštěvách na variantu je nejmenší spolehlivě zjistitelný efekt ≈ +71 % relativně (4 → ≈ 6,8 %). Proto první vyhodnocení po 1 000 návštěvách slouží ke kontrole trychtýře, ne k vyhlášení vítěze.
 
 | # | Hypotéza | Varianty | Hlavní metrika | Očekávaný efekt | Vzorek na variantu |
 |---|---|---|---|---|---|
 | 1 | Nabídka je největší páka konverze | „Návod ke koupi u vašeho brokera" vs. „Tahák všech dvojčat" | konverze; sekundárně míra telefonů | +50 % relativně (4 → 6 %) | ≈ 1 863 návštěv |
 | 2 | Formulář na první obrazovce zvyšuje konverzi bez ztráty kvality | formulář pod odpovědí v hero vs. až pod kalkulačkou | konverze; hlídací metrika míra potvrzení DOI | +30 % relativně (4 → 5,2 %) | ≈ 4 784 návštěv |
-| 3 | Okamžité PDF zvýší telefony, ale může snížit potvrzení | PDF hned na `/dekujeme` vs. až po potvrzení | podíl použitelných kontaktů (potvrzené nebo s telefonem) z odeslaných | 60 → 66 % odeslání | ≈ 1 016 odeslání ≈ 25 400 návštěv (při konverzi 4 %) |
+| 3 | Okamžité PDF zvýší telefony, ale může snížit potvrzení | PDF hned na `/dekujeme` vs. až po potvrzení | podíl použitelných kontaktů (potvrzené nebo s telefonem) z odeslaných | z 60 % na 66 % odeslání | ≈ 1 016 odeslání ≈ 25 400 návštěv (při konverzi 4 %) |
 
 H3 vyžaduje souhlas právníka s jiným nastavením souhlasů. Test reklam A vs. B běží paralelně na úrovni kreativ v Meta (metrika: konverze podle `hero_variant` / `utm_content`). Efekty jsou předpoklady pro plánování vzorku, ne slib.
 
 ## Měření
 
 **Nástroje:**
-- **PostHog EU cloud** (`eu.i.posthog.com`, `person_profiles: 'identified_only'`) – bez souhlasu `cookieless_mode`, se souhlasem s `aid`.
+- **PostHog EU cloud** (`eu.i.posthog.com`, `person_profiles: 'identified_only'`) – bez souhlasu `cookieless_mode`, se souhlasem `identify(aid)`; `aid` z adres v událostech vždy odstraňuje `before_send`.
 - **Meta Pixel + Conversions API** – jen se souhlasem; `Lead` se sdíleným `event_id` pro deduplikaci, e-mail hashovaný SHA-256.
 - **GA4 (Consent Mode v2)** – jen se souhlasem.
 - **Brevo** – zdroj pravdy pro počet kontaktů a potvrzení double opt-in.
@@ -271,7 +271,7 @@ U Trading 212 a Fio stránka i PDF poctivě píší „U tohoto brokera jsme dos
 
 ## Checklist před spuštěním reklamy
 
-**Stav: připraveno, blokuje:** souhlas Clientela jako provozovatele, schválení právníkem, seznam partnerů, skript telefonátu, produkční účty a placené tarify (Vercel Pro/Enterprise, Brevo s ověřenou doménou a vyšším limitem, PostHog, Meta, Upstash), data brokerů Trading 212 a Fio, Lighthouse a E2E na produkci.
+**Stav: připraveno, blokuje:** souhlas Clientela jako provozovatele, schválení právníkem, seznam partnerů, skript telefonátu, placené tarify (Vercel Pro/Enterprise, Brevo s vyšším denním limitem a ověřenou doménou), produkční účty k založení (PostHog, Meta, Upstash), ověření dat brokerů Trading 212 a Fio, Lighthouse a E2E na produkci.
 
 Kód, testy, data fondů, PDF a kreativy jsou hotové. Žádný z bodů níže zatím splněný není:
 
