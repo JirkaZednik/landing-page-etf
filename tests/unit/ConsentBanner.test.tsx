@@ -21,7 +21,7 @@ describe('ConsentBanner', () => {
     expect(getConsent()).toMatchObject({ analytics: false, meta: false, ga4: false });
     expect(screen.queryByRole('region', { name: 'Souhlas s cookies' })).toBeNull();
   });
-  it('Přijmout vše stores all purposes true', () => {
+  it('Přijmout stores all purposes true', () => {
     render(<ConsentBanner />);
     fireEvent.click(screen.getByRole('button', { name: 'Přijmout' }));
     expect(getConsent()).toMatchObject({ analytics: true, meta: true, ga4: true });
@@ -34,6 +34,16 @@ describe('ConsentBanner', () => {
     fireEvent.click(boxes[1]);
     fireEvent.click(screen.getByRole('button', { name: 'Uložit volbu' }));
     expect(getConsent()).toMatchObject({ analytics: false, meta: true, ga4: false });
+  });
+  it('reopened via [data-consent-open]: focus moves to the region, and returns to the opener on close', () => {
+    setConsent({ analytics: false, meta: false, ga4: false });
+    render(<><ConsentBanner /><button type="button" data-consent-open>Nastavení cookies</button></>);
+    const opener = screen.getByRole('button', { name: 'Nastavení cookies' });
+    opener.focus();
+    fireEvent.click(opener);
+    expect(document.activeElement).toBe(screen.getByRole('region', { name: 'Souhlas s cookies' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Uložit volbu' }));
+    expect(document.activeElement).toBe(opener);
   });
   it('hidden when decided; reopens with saved state via openConsentSettings and [data-consent-open]', () => {
     setConsent({ analytics: true, meta: false, ga4: false });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getConsent, openConsentSettings, setConsent } from '../lib/consent';
 
 type Draft = { analytics: boolean; meta: boolean; ga4: boolean };
@@ -14,9 +14,15 @@ export default function ConsentBanner() {
   const [open, setOpen] = useState(() => getConsent() === null);
   const [settings, setSettings] = useState(false);
   const [draft, setDraft] = useState<Draft>(fromSaved);
+  const region = useRef<HTMLElement>(null);
+  const returnTo = useRef<HTMLElement | null>(null);
+  const [focusRegion, setFocusRegion] = useState(false);
 
   useEffect(() => {
     const onOpen = () => {
+      const a = document.activeElement;
+      returnTo.current = a instanceof HTMLElement && a !== document.body ? a : null;
+      setFocusRegion(true);
       setDraft(fromSaved());
       setSettings(true);
       setOpen(true);
@@ -40,17 +46,28 @@ export default function ConsentBanner() {
     return () => { delete root.dataset.consentBanner; };
   }, [open]);
 
+  // Reopened by the visitor (footer link, /cookies): move focus into the region.
+  useEffect(() => {
+    if (open && focusRegion) {
+      region.current?.focus();
+      setFocusRegion(false);
+    }
+  }, [open, focusRegion]);
+
   if (!open) return null;
 
   const decide = (c: Draft) => {
     setConsent(c);
     setSettings(false);
     setOpen(false);
+    const back = returnTo.current;
+    returnTo.current = null;
+    if (back?.isConnected) back.focus();
   };
   const toggle = (k: keyof Draft) => setDraft((d) => ({ ...d, [k]: !d[k] }));
 
   return (
-    <section role="region" aria-label="Souhlas s cookies" className="consent">
+    <section ref={region} tabIndex={-1} role="region" aria-label="Souhlas s cookies" className="consent">
       {!settings ? (
         <>
           <p className="consent__text">

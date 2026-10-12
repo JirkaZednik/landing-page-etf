@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // vi.hoisted: the same mock object survives vi.resetModules() in load()
 const posthog = vi.hoisted(() => ({ init: vi.fn(), capture: vi.fn(), identify: vi.fn(), reset: vi.fn() }));
@@ -10,7 +10,19 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{1
 const consent = (c: { analytics: boolean; meta: boolean; ga4: boolean }) =>
   localStorage.setItem('ix_consent', JSON.stringify({ ...c, version: '2026-10-11', decidedAt: '2026-10-11T10:00:00.000Z' }));
 const load = async () => { vi.resetModules(); return import('../../src/lib/track'); };
+// jsdom cannot reload: location.reload() surfaces as a "not implemented: navigation" console error
+const reloaded = (err: { mock: { calls: unknown[][] } }) =>
+  err.mock.calls.some((c) => String(c[0]).includes('navigation'));
 const ready = () => vi.waitFor(() => expect(posthog.init).toHaveBeenCalled());
+
+// each load() adds a window listener; drop them so earlier module instances don't react to later tests
+const listeners: EventListener[] = [];
+const realAdd = window.addEventListener.bind(window);
+window.addEventListener = ((type: string, fn: EventListener, o?: unknown) => {
+  if (type === 'ix:consent-change') listeners.push(fn);
+  realAdd(type, fn, o as AddEventListenerOptions);
+}) as typeof window.addEventListener;
+afterEach(() => { for (const fn of listeners.splice(0)) window.removeEventListener('ix:consent-change', fn); });
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -64,16 +76,34 @@ describe('track with consent', () => {
     expect(cfg.persistence).toBe('localStorage+cookie');
     expect(posthog.identify).toHaveBeenCalledWith(AID);
   });
-  it('consent granted mid-session → identify, Pixel and GA4 load, consent update', async () => {
+  it('Meta and GA4 granted mid-session → scripts load, consent update, no reload', async () => {
     const t = await load();
     const { setConsent } = await import('../../src/lib/consent');
     t.initAnalytics(); await ready();
-    setConsent({ analytics: true, meta: true, ga4: true });
-    await vi.waitFor(() => expect(posthog.identify).toHaveBeenCalledWith(t.getAid()));
+    const err = vi.spyOn(console, 'error').mockImplementation(() => {});
+    setConsent({ analytics: false, meta: true, ga4: true });
     expect(document.querySelector('script[src="https://connect.facebook.net/en_US/fbevents.js"]')).not.toBeNull();
     expect(document.querySelector('script[src="https://www.googletagmanager.com/gtag/js?id=G-TEST123"]')).not.toBeNull();
     expect((window as any).dataLayer.map((a: IArguments) => Array.from(a)))
       .toContainEqual(['consent', 'update', { analytics_storage: 'granted' }]);
+    expect(reloaded(err)).toBe(false);
+  });
+  it('analytics granted after a cookieless init → page reloads (re-init in persistent mode), no identify on the cookieless instance', async () => {
+    const t = await load();
+    const { setConsent } = await import('../../src/lib/consent');
+    t.initAnalytics(); await ready();
+    expect(posthog.init.mock.calls[0][1]).toMatchObject({ cookieless_mode: 'always' });
+    const err = vi.spyOn(console, 'error').mockImplementation(() => {});
+    setConsent({ analytics: true, meta: false, ga4: false });
+    expect(reloaded(err)).toBe(true);
+    expect(posthog.identify).not.toHaveBeenCalled();
+  });
+  it('after that reload (consent stored) PostHog starts persistent and identifies', async () => {
+    consent({ analytics: true, meta: false, ga4: false });
+    const t = await load();
+    t.initAnalytics(); await ready();
+    expect(posthog.init.mock.calls[0][1]).toMatchObject({ persistence: 'localStorage+cookie' });
+    expect(posthog.identify).toHaveBeenCalledWith(t.getAid());
   });
   it('firePixelLead sends Lead with eventID for dedup', async () => {
     consent({ analytics: false, meta: true, ga4: false });
@@ -101,6 +131,46 @@ describe('page_view hero_variant', () => {
     const t = await load();
     t.initAnalytics(); await ready();
     expect(document.querySelector('script[src*="connect.facebook.net"]')).toBeNull();
+  });
+});
+
+describe('revoking consent', () => {
+  const seed = () => {
+    localStorage.setItem('ph_phc_test_posthog', '{}');
+    localStorage.setItem('keep_me', '1');
+    document.cookie = 'ph_phc_test_posthog=1; path=/';
+    document.cookie = '_fbp=fb.1; path=/';
+    document.cookie = '_ga=GA1; path=/';
+    document.cookie = '_ga_TEST123=GS1; path=/';
+    document.cookie = 'other=1; path=/';
+  };
+  const names = () => document.cookie.split(';').map((c) => c.split('=')[0].trim()).filter(Boolean);
+  const run = async (from: { analytics: boolean; meta: boolean; ga4: boolean }, to: typeof from) => {
+    consent(from);
+    seed();
+    const t = await load();
+    const { setConsent } = await import('../../src/lib/consent');
+    t.initAnalytics(); await ready();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    setConsent(to);
+  };
+  it('analytics revoked → ph_* storage and cookies removed, others kept', async () => {
+    await run({ analytics: true, meta: true, ga4: true }, { analytics: false, meta: true, ga4: true });
+    expect(localStorage.getItem('ph_phc_test_posthog')).toBeNull();
+    expect(localStorage.getItem('keep_me')).toBe('1');
+    expect(names()).not.toContain('ph_phc_test_posthog');
+    expect(names()).toEqual(expect.arrayContaining(['_fbp', '_ga', '_ga_TEST123', 'other']));
+  });
+  it('Meta revoked → _fbp removed only', async () => {
+    await run({ analytics: true, meta: true, ga4: true }, { analytics: true, meta: false, ga4: true });
+    expect(names()).not.toContain('_fbp');
+    expect(names()).toEqual(expect.arrayContaining(['ph_phc_test_posthog', '_ga', '_ga_TEST123']));
+  });
+  it('GA4 revoked → _ga and _ga_* removed only', async () => {
+    await run({ analytics: true, meta: true, ga4: true }, { analytics: true, meta: true, ga4: false });
+    expect(names()).not.toContain('_ga');
+    expect(names()).not.toContain('_ga_TEST123');
+    expect(names()).toEqual(expect.arrayContaining(['ph_phc_test_posthog', '_fbp', 'other']));
   });
 });
 

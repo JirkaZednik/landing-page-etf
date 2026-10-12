@@ -23,6 +23,39 @@ let started = false;
 let disabled = false; // no PostHog key: track() only emits the DOM event
 const loaded = { meta: false, ga4: false };
 let lastConsent: ConsentState | null = null;
+let phCookieless = false; // mode the live PostHog instance was initialised in
+
+function expire(name: string): void {
+  const base = `${encodeURIComponent(name)}=; Max-Age=0; path=/`;
+  document.cookie = base;
+  const parts = location.hostname.split('.');
+  for (let i = 0; i <= parts.length - 2; i++) {
+    const domain = parts.slice(i).join('.');
+    document.cookie = `${base}; domain=${domain}`;
+    document.cookie = `${base}; domain=.${domain}`;
+  }
+}
+
+function cookieNames(): string[] {
+  return document.cookie.split(';').map((c) => decodeURIComponent(c.split('=')[0].trim())).filter(Boolean);
+}
+
+// Removes what a revoked purpose left in the browser (storage keys and cookies on host and parent domains).
+function purge(purpose: 'analytics' | 'meta' | 'ga4'): void {
+  const match =
+    purpose === 'analytics' ? (n: string) => n.startsWith('ph_')
+    : purpose === 'meta' ? (n: string) => n === '_fbp'
+    : (n: string) => n === '_ga' || n.startsWith('_ga_');
+  for (const n of cookieNames()) if (match(n)) expire(n);
+  if (purpose !== 'analytics') return;
+  for (const store of [localStorage, sessionStorage]) {
+    try {
+      for (const k of Object.keys(store)) if (k.startsWith('ph_')) store.removeItem(k);
+    } catch {
+      // blocked storage
+    }
+  }
+}
 
 export function getAid(): string {
   if (aid) return aid;
@@ -79,15 +112,23 @@ function apply(c: ConsentState | null): void {
     window.gtag?.('config', ga4Id);
   }
 
-  if (c?.analytics && !lastConsent?.analytics) ph?.identify(getAid());
+  if (c?.analytics && !lastConsent?.analytics && ph && !phCookieless) ph.identify(getAid());
 
   // Loaded third-party scripts cannot be switched off reliably: reload without them.
   const revoked =
     (lastConsent?.analytics && !c?.analytics) ||
     (lastConsent?.meta && !c?.meta) ||
     (lastConsent?.ga4 && !c?.ga4);
+  // An instance started cookieless cannot switch to persistent storage at runtime
+  // (posthog-js set_config does not rebuild cookieless state): reload, which re-inits with consent.
+  const analyticsGranted = !!c?.analytics && !lastConsent?.analytics && ph !== null && phCookieless;
+  if (revoked) {
+    if (lastConsent?.analytics && !c?.analytics) purge('analytics');
+    if (lastConsent?.meta && !c?.meta) purge('meta');
+    if (lastConsent?.ga4 && !c?.ga4) purge('ga4');
+  }
   lastConsent = c;
-  if (revoked) location.reload();
+  if (revoked || analyticsGranted) location.reload();
 }
 
 function send(e: EventName, props: Props): void {
@@ -152,7 +193,9 @@ export function initAnalytics(): void {
       autocapture: false,
       disable_session_recording: true,
     };
-    if (consent?.analytics) cfg.persistence = 'localStorage+cookie';
+    // read consent now: it may have been granted while posthog-js was loading
+    phCookieless = !getConsent()?.analytics;
+    if (!phCookieless) cfg.persistence = 'localStorage+cookie';
     else cfg.cookieless_mode = 'always';
     posthog.init(key, cfg);
     ph = posthog;
