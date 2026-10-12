@@ -72,6 +72,15 @@ test.describe('homepage', () => {
     await expect.poll(() => events(page, 'faq_opened')).toEqual([{ question: 5 }]);
   });
 
+  test('faq: tax answer cites § 4 of zákon č. 586/1992 Sb. without an unverified letter', async ({ page }) => {
+    await page.goto('/');
+    const q = page.locator('[data-section="faq"] details').filter({ hasText: 'Není evropské dvojče daňově horší?' });
+    const link = q.locator('.faq__src a');
+    await expect(link).toHaveText('Zákon o daních z příjmů (č. 586/1992 Sb.), § 4');
+    await expect(link).toHaveAttribute('href', 'https://www.zakonyprolidi.cz/cs/1992-586');
+    await expect(page.locator('[data-section="faq"]')).not.toContainText('písm.');
+  });
+
   test('footer: operator, disclaimers, sources, cookie settings', async ({ page }) => {
     await page.goto('/');
     const f = page.locator('[data-section="paticka"]');
