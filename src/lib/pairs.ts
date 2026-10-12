@@ -1,7 +1,9 @@
 import raw from '../data/etf-pairs.json';
-import type { EtfData, Fund, Group, GroupId } from './types';
+import brokersRaw from '../data/brokers.json';
+import type { Broker, BrokerId, EtfData, Fund, Group, GroupId } from './types';
 
 const DATA = raw as unknown as EtfData;
+const BROKERS = brokersRaw as unknown as Broker[];
 
 const GROUP_IDS: GroupId[] = ['sp500', 'world', 'us-total', 'us-dividend'];
 const SOURCED_FIELDS = ['name', 'isin', 'ter', 'exchange', 'domicile', 'distribution', 'replication', 'index'] as const;
@@ -128,6 +130,71 @@ export function validateData(d: EtfData): string[] {
     if (g.originals.length < 1) errors.push(`groups.${g.id}.originals: empty`);
     if ((g.exactTwin || g.calcEnabled) && g.twins.length < 2)
       errors.push(`groups.${g.id}.twins: at least 2 required`);
+  }
+  return errors;
+}
+
+// Broker facts must be sourced from the brokers' own sites (degiro.cz, degiro.com, ...).
+const BROKER_HOSTS = ['xtb.com', 'trading212.com', 'fio.cz', 'degiro.cz', 'degiro.com'];
+const BROKER_IDS: BrokerId[] = ['xtb', 'trading212', 'fio', 'degiro'];
+
+function isBrokerHost(host: string): boolean {
+  return BROKER_HOSTS.some((h) => host === h || host.endsWith('.' + h));
+}
+
+export function getBrokers(): Broker[] {
+  return BROKERS;
+}
+
+export function getBroker(id: BrokerId): Broker {
+  const b = BROKERS.find((x) => x.id === id);
+  if (!b) throw new Error('Unknown broker: ' + id);
+  return b;
+}
+
+export function twinsAtBroker(b: BrokerId, g: GroupId): { fund: Fund; ticker: string }[] {
+  const listings = getBroker(b).listings;
+  const out: { fund: Fund; ticker: string }[] = [];
+  for (const fund of twinsSortedByTer(g)) {
+    const l = listings.find((x) => x.fundId === fund.id);
+    if (l && l.available.value === true) out.push({ fund, ticker: l.ticker.value });
+  }
+  return out;
+}
+
+export function validateBrokers(b: Broker[], d: EtfData): string[] {
+  const errors: string[] = [];
+  if (b.map((x) => x.id).join(',') !== BROKER_IDS.join(','))
+    errors.push('brokers: expected ' + BROKER_IDS.join(','));
+
+  const twinIds = new Set(d.groups.flatMap((g) => g.twins));
+  const checkSource = (path: string, s: { sourceUrl: string; asOf: string }) => {
+    if (typeof s.sourceUrl !== 'string' || !s.sourceUrl.startsWith('https://'))
+      errors.push(`${path}.sourceUrl: must be https`);
+    else if (!isBrokerHost(hostOf(s.sourceUrl)))
+      errors.push(`${path}: sourceUrl host not allowed: ${hostOf(s.sourceUrl)}`);
+    if (!isIsoDate(s.asOf)) errors.push(`${path}.asOf: must be YYYY-MM-DD`);
+  };
+
+  for (const br of b) {
+    const p = `brokers.${br.id}`;
+    if (!isIsoDate(br.asOf)) errors.push(`${p}.asOf: must be YYYY-MM-DD`);
+    checkSource(`${p}.buyFee`, br.buyFee);
+    checkSource(`${p}.steps`, br.steps);
+    if (typeof br.buyFee.value !== 'string' || br.buyFee.value.trim() === '') errors.push(`${p}.buyFee: empty`);
+    if (!Array.isArray(br.steps.value) || br.steps.value.length < 1) errors.push(`${p}.steps: empty`);
+
+    const seen = new Set<string>();
+    for (const l of br.listings) {
+      const lp = `${p}.listings.${l.fundId}`;
+      if (!Object.hasOwn(d.funds, l.fundId)) errors.push(`${lp}: unknown fund`);
+      else if (!twinIds.has(l.fundId)) errors.push(`${lp}: not a UCITS twin`);
+      if (seen.has(l.fundId)) errors.push(`${lp}: duplicate`);
+      seen.add(l.fundId);
+      checkSource(`${lp}.ticker`, l.ticker);
+      checkSource(`${lp}.available`, l.available);
+      if (!/^[A-Z0-9.]{2,12}$/.test(l.ticker.value)) errors.push(`${lp}.ticker: invalid`);
+    }
   }
   return errors;
 }
