@@ -9,3 +9,4 @@ test-results/
 playwright-report/
 .superpowers/
 public/navod-etf.pdf
+ads/templates/_*.filled.html

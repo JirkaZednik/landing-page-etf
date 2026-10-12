@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="cs"><head><meta charset="utf-8">
+{{tokens}}
+<link rel="stylesheet" href="ads.css">
+<script>document.documentElement.className = 'ad-b size-' + (new URLSearchParams(location.search).get('size') || '4x5');</script>
+</head><body><main class="frame">
+  <p class="brand">Indexák</p>
+  <p class="claim">Přesný ISIN a&nbsp;postup pro vašeho brokera.</p>
+  <div class="find">
+    <p class="search-label">Hledat</p>
+    <div class="search" role="img" aria-label="Vyhledávání v aplikaci brokera">
+      <span class="isin">{{SPYL.isin}}</span><span class="caret"></span>
+    </div>
+    <p class="hit"><span class="ticker">SPYL</span><span class="index">S&amp;P 500</span><span class="ter">TER {{SPYL.ter}}</span></p>
+  </div>
+  <div class="foot">
+    <p class="brokers">{{brokers}}</p>
+    <p class="source">Zdroj: {{SPYL.source}}, k&nbsp;{{asOf}}. Nejde o&nbsp;investiční doporučení.</p>
+  </div>
+</main></body></html>
