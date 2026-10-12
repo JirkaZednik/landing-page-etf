@@ -89,7 +89,16 @@ export default function LeadForm({ placement, pair, calc, id }: Props) {
       }, { threshold: 0.5 });
       io.observe(formRef.current);
     }
-    return () => { off(); io?.disconnect(); };
+    // Back from /dekujeme restores this page from bfcache with the post-success state
+    // (button disabled "until navigation"): re-enable it so a corrected e-mail can be sent.
+    const onPageShow = (ev: PageTransitionEvent) => {
+      if (!ev.persisted) return;
+      sendingRef.current = false;
+      setSending(false);
+    };
+    window.addEventListener('pageshow', onPageShow);
+
+    return () => { off(); io?.disconnect(); window.removeEventListener('pageshow', onPageShow); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -129,7 +138,7 @@ export default function LeadForm({ placement, pair, calc, id }: Props) {
         track('form_submitted', { placement: where });
         firePixelLead(eventId);
         location.assign(json.redirect);
-        return; // button stays disabled until navigation
+        return; // button stays disabled until navigation (re-enabled on a bfcache restore)
       }
       fail(json?.error ?? 'server', where);
     } catch {

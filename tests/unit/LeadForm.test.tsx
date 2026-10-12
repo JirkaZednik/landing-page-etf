@@ -19,6 +19,20 @@ import LeadForm from '../../src/components/LeadForm';
 
 let io: { cb: IntersectionObserverCallback } | null;
 let fetchMock: ReturnType<typeof vi.fn>;
+let assign: ReturnType<typeof vi.fn>;
+// jsdom cannot navigate (and Location.assign is unforgeable): swap the global location for a
+// delegating stand-in whose assign() is a spy.
+const realLocation = window.location;
+const stubLocation = () => {
+  assign = vi.fn();
+  vi.stubGlobal('location', new Proxy({}, {
+    get: (_t, k) => {
+      if (k === 'assign') return assign;
+      const v = Reflect.get(realLocation, k, realLocation);
+      return typeof v === 'function' ? v.bind(realLocation) : v;
+    },
+  }));
+};
 const email = () => screen.getByLabelText('Váš e-mail') as HTMLInputElement;
 const button = () => screen.getByRole('button', { name: 'Pošlete mi návod' }) as HTMLButtonElement;
 const form = () => email().closest('form')!;
@@ -33,8 +47,9 @@ beforeEach(() => {
     observe() {} disconnect() {} unobserve() {} takeRecords() { return []; }
   });
   fetchMock = vi.fn(); vi.stubGlobal('fetch', fetchMock);
+  stubLocation();
 });
-afterEach(cleanup);
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe('LeadForm SSR (works without JS)', () => {
   it('renders a native POST form with hidden fields and a visually hidden honeypot', () => {
@@ -100,6 +115,35 @@ describe('LeadForm with JS', () => {
     expect(body.event_id).toMatch(UUID);
     expect(firePixelLead).toHaveBeenCalledWith(body.event_id);
     expect(track).toHaveBeenCalledWith('form_submitted', { placement: 'calc' });
+    expect(assign).toHaveBeenCalledWith(`/dekujeme?aid=${AID}`);
+    expect(assign).toHaveBeenCalledTimes(1);
+    expect(button().disabled).toBe(true); // stays disabled until the navigation happens
+  });
+
+  it('restored from bfcache after a successful submit (pageshow persisted) → button enabled, can resubmit', async () => {
+    fetchMock.mockImplementation(async () => Response.json({ ok: true, redirect: `/dekujeme?aid=${AID}` }));
+    render(<LeadForm placement="hero" id="form" />);
+    submitWith('jan.novak@seznam.cz');
+    await vi.waitFor(() => expect(assign).toHaveBeenCalledTimes(1));
+    expect(button().disabled).toBe(true);
+    // a non-persisted pageshow (normal load) changes nothing
+    act(() => { window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: false })); });
+    expect(button().disabled).toBe(true);
+    act(() => { window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })); });
+    expect(button().disabled).toBe(false);
+    expect(button().getAttribute('aria-busy')).toBe('false');
+    expect(email().value).toBe('jan.novak@seznam.cz');
+    fireEvent.submit(form());
+    await vi.waitFor(() => expect(assign).toHaveBeenCalledTimes(2));
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('removes its pageshow listener on unmount', () => {
+    const remove = vi.spyOn(window, 'removeEventListener');
+    const { unmount } = render(<LeadForm placement="hero" />);
+    unmount();
+    expect(remove.mock.calls.some(([type]) => type === 'pageshow')).toBe(true);
+    remove.mockRestore();
   });
 
   it('server error → message, e-mail kept, button enabled again, form_error tracked', async () => {
@@ -165,6 +209,7 @@ describe('LeadForm uncontrolled hidden fields (FundCard overrides)', () => {
     const body = JSON.parse(fetchMock.mock.calls[0][1].body);
     expect(body).toMatchObject({ pair: 'world', placement: 'card' });
     expect(track).toHaveBeenCalledWith('form_submitted', { placement: 'card' });
+    expect(assign).toHaveBeenCalledWith(`/dekujeme?aid=${AID}`);
   });
 
   it('form_error is tracked with the placement from the DOM', () => {
