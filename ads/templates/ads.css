@@ -1,0 +1,73 @@
+/* Sdílený vizuální jazyk s webem: papír, inkoust, jediná zelená; tickery a čísla v mono s tabular-nums.
+   Žádné přechody, stíny, ikony ani loga. */
+@font-face { font-family: IxText; src: url('../../public/fonts/pdf/text-regular.ttf'); font-weight: 400; }
+@font-face { font-family: IxText; src: url('../../public/fonts/pdf/text-bold.ttf'); font-weight: 700; }
+@font-face { font-family: IxMono; src: url('../../public/fonts/pdf/mono-regular.ttf'); }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; overflow: hidden; background: var(--paper); color: var(--ink); font-family: IxText, serif; }
+html.size-4x5, html.size-4x5 body { height: 1350px; }
+html.size-9x16, html.size-9x16 body { height: 1920px; }
+html.size-og, html.size-og body { width: 1200px; height: 630px; }
+
+.ticker, .isin, .ter { font-family: IxMono, monospace; font-variant-numeric: tabular-nums; }
+
+.frame { height: 100%; padding: 88px; display: flex; flex-direction: column; }
+/* 9:16 – horní a dolní pás bez textu kvůli UI Stories/Reels (ověř náhledem v Ads Manageru). */
+html.size-9x16 .frame { padding-top: 280px; padding-bottom: 420px; }
+
+.brand { font-weight: 700; font-size: 44px; line-height: 1; }
+.claim { font-weight: 700; line-height: 1.08; letter-spacing: -0.01em; }
+.source { color: var(--muted); font-size: 26px; line-height: 1.35; max-width: 34em; }
+.foot { margin-top: auto; }
+.foot .source { margin-top: 28px; }
+
+/* ---------- Verze A: VOO nedostupné ⇄ evropská dvojčata ---------- */
+.ad-a .swap { margin-top: auto; }
+.ad-a .voo { font-size: 300px; line-height: 0.9; letter-spacing: -0.04em; margin-left: -14px; }
+.ad-a .voo s { text-decoration: none; position: relative; }
+.ad-a .voo s::after { content: ''; position: absolute; left: -2%; right: -2%; top: 52%; border-top: 14px solid var(--ink); }
+.ad-a .note { font-size: 46px; color: var(--muted); margin-top: 18px; }
+
+.ad-a .swap-mark { display: flex; align-items: center; gap: 28px; color: var(--signal); font-size: 64px; line-height: 1; margin: 64px 0 8px; }
+.ad-a .swap-mark::before, .ad-a .swap-mark::after { content: ''; flex: 1; border-top: 3px solid var(--rule); }
+
+.ad-a .rows { list-style: none; border-bottom: 6px solid var(--ink); }
+.ad-a .rows li { display: flex; justify-content: space-between; align-items: baseline; padding: 22px 0; font-size: 76px; line-height: 1; }
+.ad-a .rows li + li { border-top: 3px solid var(--rule); }
+.ad-a .rows li:first-child .ter { color: var(--signal); }
+
+.ad-a .claim { font-size: 62px; margin-top: 44px; }
+.ad-a .foot { margin-top: 0; }
+.ad-a .frame { justify-content: space-between; }
+
+html.size-9x16.ad-a .voo { font-size: 330px; }
+html.size-9x16.ad-a .claim { font-size: 66px; }
+
+/* OG 1200×630: totéž rozložené na šířku */
+html.size-og .frame { padding: 52px 64px 44px; }
+html.size-og .brand { font-size: 30px; }
+html.size-og.ad-a .swap { display: grid; grid-template-columns: 1fr 470px; column-gap: 64px; align-items: end; margin-top: 0; }
+html.size-og.ad-a .voo { font-size: 200px; margin-left: -8px; }
+html.size-og.ad-a .voo s::after { border-top-width: 10px; }
+html.size-og.ad-a .note { font-size: 32px; margin-top: 10px; }
+html.size-og.ad-a .swap-mark { font-size: 40px; margin: 0 0 4px; gap: 18px; }
+html.size-og.ad-a .rows { border-bottom-width: 4px; }
+html.size-og.ad-a .rows li { font-size: 44px; padding: 12px 0; }
+html.size-og.ad-a .rows li + li { border-top-width: 2px; }
+html.size-og.ad-a .claim { font-size: 38px; margin-top: 0; }
+html.size-og .foot .source { font-size: 19px; margin-top: 10px; max-width: none; }
+
+/* ---------- Verze B: ISIN do vyhledávání u brokera ---------- */
+.ad-b .claim { font-size: 92px; margin-top: auto; max-width: 11em; }
+.ad-b .foot { margin-top: 104px; margin-bottom: auto; }
+.ad-b .find { margin-top: 80px; }
+.ad-b .search-label { font-size: 38px; margin-bottom: 16px; }
+.ad-b .search { display: flex; align-items: center; border: 5px solid var(--ink); padding: 32px 30px; }
+.ad-b .isin { font-size: 104px; line-height: 1; letter-spacing: 0.01em; }
+.ad-b .caret { width: 8px; height: 112px; background: var(--signal); margin-left: 10px; }
+.ad-b .hit { display: flex; align-items: baseline; gap: 36px; padding: 28px 0 26px; border-bottom: 6px solid var(--ink); font-size: 50px; line-height: 1; }
+.ad-b .hit .ticker { font-size: 60px; }
+.ad-b .hit .ter { margin-left: auto; font-size: 44px; color: var(--signal); }
+.ad-b .brokers { font-size: 40px; line-height: 1.2; }
+

@@ -1,0 +1,124 @@
+---
+import { OPERATOR } from '../lib/operator';
+---
+<section id="faq" data-section="faq" class="section faq">
+  <h2>Časté otázky</h2>
+
+  <details class="faq__item">
+    <summary>Je návod opravdu zdarma?</summary>
+    <div class="faq__a">
+      <p>Ano. Návod vám pošleme po potvrzení e-mailu (klikem na odkaz ve zprávě od nás), nic neplatíte.</p>
+    </div>
+  </details>
+
+  <details class="faq__item">
+    <summary>Nebudete mi posílat spam?</summary>
+    <div class="faq__a">
+      <p>Pošleme vám návod a občas tipy k investování do ETF. Každý e-mail má odkaz na odhlášení, odhlásíte se jedním klikem.</p>
+    </div>
+  </details>
+
+  <details class="faq__item">
+    <summary>Co je KID?</summary>
+    <div class="faq__a">
+      <p>
+        Sdělení klíčových informací: krátký dokument (nejvýše 3 strany), který popisuje fond, jeho rizika a náklady.
+        V EU ho musí mít každý investiční produkt nabízený drobným investorům. U evropských fondů na této stránce
+        odkazujeme na KID tam, kde jsme ho u vydavatele ověřili.
+      </p>
+    </div>
+  </details>
+
+  <details class="faq__item">
+    <summary>Není evropské dvojče daňově horší?</summary>
+    <div class="faq__a">
+      <p>
+        Srážková daň z amerických dividend je srovnatelná: irský fond platí 15 %, vy u amerického ETF s formulářem
+        W-8BEN také 15 %. Rozdíl je v české dani. Výplaty dividend z amerického ETF musíte každý rok přiznat a zdanit.
+        U akumulačního irského fondu se dividendy reinvestují uvnitř fondu a zisk z prodeje po 3 letech držení
+        (časový test) je od daně osvobozen. Jde o obecnou informaci, ne o daňové poradenství.
+      </p>
+      <p class="faq__src">
+        <a href="https://www.zakonyprolidi.cz/cs/1992-586" target="_blank" rel="noopener">Zákon o daních z příjmů (č. 586/1992 Sb.), § 4</a>
+      </p>
+    </div>
+  </details>
+
+  <details class="faq__item">
+    <summary>Kdo za tím stojí a co se stane s mými údaji?</summary>
+    <div class="faq__a">
+      <p>
+        Stránku Indexák provozuje {OPERATOR.name}, IČO {OPERATOR.ico}, {OPERATOR.address}. Váš e-mail použijeme
+        k zaslání návodu a občasných tipů k investování do ETF. Partnerům vaše údaje předáme jen tehdy, když nám k tomu
+        po odeslání formuláře dáte samostatný souhlas. Seznam partnerů a všechny podrobnosti najdete
+        v <a href="/zasady-ochrany-osobnich-udaju">zásadách zpracování osobních údajů</a>.
+      </p>
+    </div>
+  </details>
+</section>
+
+<script>
+  import { track } from '../lib/track';
+  // `toggle` does not bubble: one listener per <details>.
+  document.querySelectorAll<HTMLDetailsElement>('[data-section="faq"] details').forEach((d, i) => {
+    d.addEventListener('toggle', () => {
+      if (d.open) track('faq_opened', { question: i + 1 });
+    });
+  });
+</script>
+
+<style lang="scss">
+  @use '../styles/tokens' as *;
+
+  .faq__item {
+    border-top: 1px solid var(--rule);
+
+    &:last-of-type { border-bottom: 1px solid var(--rule); }
+  }
+
+  summary {
+    display: grid;
+    grid-template-columns: 1fr 1rem;
+    align-items: center;
+    column-gap: $s2;
+    min-height: 48px;
+    padding: $s2 0;
+    font-weight: 600;
+    line-height: 1.3;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker { display: none; }
+
+    // Same disclosure marker as the fund rows.
+    &::after {
+      content: '▸';
+      justify-self: end;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 400;
+      transition: transform 120ms ease-out;
+    }
+  }
+
+  .faq__item[open] > summary::after { transform: rotate(90deg); }
+
+  .faq__a {
+    padding: 0 0 $s3;
+
+    p {
+      max-width: 62ch;
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    p + p { margin-top: $s2; }
+  }
+
+  .faq__src {
+    font-size: 0.8125rem;
+    color: var(--muted);
+
+    a { color: inherit; }
+  }
+</style>

@@ -1,0 +1,210 @@
+[
+  {
+    "id": "xtb",
+    "name": "XTB",
+    "asOf": "2026-10-12",
+    "buyFee": {
+      "value": "0 % do měsíčního objemu 100 000 EUR u akcií a ETF, nad tento limit 0,2 % (min. 10 EUR). Může být účtován poplatek 0,5 % za konverzi měn.",
+      "sourceUrl": "https://www.xtb.com/cz/etf/vanguard-ftse-all-world-ucits-acc-eur-",
+      "asOf": "2026-10-12"
+    },
+    "listings": [
+      {
+        "fundId": "SPYL",
+        "ticker": {
+          "value": "SPYL.DE",
+          "sourceUrl": "https://www.xtb.com/cz/etf/spdr-s-p-500-ucits-acc-eur",
+          "asOf": "2026-10-12"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.xtb.com/cz/etf/spdr-s-p-500-ucits-acc-eur",
+          "asOf": "2026-10-12"
+        }
+      },
+      {
+        "fundId": "VUAA",
+        "ticker": {
+          "value": "VUAA.DE",
+          "sourceUrl": "https://www.xtb.com/cz/etf/vanguard-s-p-500-ucits-acc-eur",
+          "asOf": "2026-10-12"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.xtb.com/cz/etf/vanguard-s-p-500-ucits-acc-eur",
+          "asOf": "2026-10-12"
+        }
+      },
+      {
+        "fundId": "CSPX",
+        "ticker": {
+          "value": "SXR8.DE",
+          "sourceUrl": "https://www.xtb.com/cz/etf/ishares-core-s-p-500-ucits-acc-eur",
+          "asOf": "2026-10-12"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.xtb.com/cz/etf/ishares-core-s-p-500-ucits-acc-eur",
+          "asOf": "2026-10-12"
+        }
+      },
+      {
+        "fundId": "SPYY",
+        "ticker": {
+          "value": "SPYY.DE",
+          "sourceUrl": "https://www.xtb.com/cz/etf/spyy-de",
+          "asOf": "2026-10-12"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.xtb.com/cz/etf/spyy-de",
+          "asOf": "2026-10-12"
+        }
+      },
+      {
+        "fundId": "VWCE",
+        "ticker": {
+          "value": "VWCE.DE",
+          "sourceUrl": "https://www.xtb.com/cz/etf/vanguard-ftse-all-world-ucits-acc-eur-",
+          "asOf": "2026-10-12"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.xtb.com/cz/etf/vanguard-ftse-all-world-ucits-acc-eur-",
+          "asOf": "2026-10-12"
+        }
+      },
+      {
+        "fundId": "FUSD",
+        "ticker": {
+          "value": "FUSD.DE",
+          "sourceUrl": "https://www.xtb.com/cz/etf/fidelity-us-quality-income-ucits-dist-eur",
+          "asOf": "2026-10-12"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.xtb.com/cz/etf/fidelity-us-quality-income-ucits-dist-eur",
+          "asOf": "2026-10-12"
+        }
+      }
+    ],
+    "steps": {
+      "value": [
+        "V mobilní aplikaci XTB přejděte do záložky Trhy.",
+        "V pravém horním rohu vyhledejte požadovaný instrument a klikněte na něj.",
+        "V novém okně zvolte počet kusů, které chcete koupit.",
+        "Klikněte na Buy (Koupit)."
+      ],
+      "sourceUrl": "https://www.xtb.com/cz/help-center/akcie-a-etf/akcie-1",
+      "asOf": "2026-10-12"
+    }
+  },
+  {
+    "id": "trading212",
+    "name": "Trading 212",
+    "asOf": "2026-10-12",
+    "buyFee": {
+      "value": "Provize za obchod: zdarma. Poplatek za směnu měn: 0,15 %.",
+      "sourceUrl": "https://helpcentre.trading212.com/hc/en-us/articles/11471996799517-What-are-the-fees-in-the-Invest-ISAs-and-SIPP",
+      "asOf": "2026-10-12"
+    },
+    "listings": [],
+    "steps": {
+      "value": [
+        "Vyberte požadovaný instrument a otevřete ho.",
+        "Stiskněte BUY (Koupit).",
+        "Zvolte typ tržního pokynu: počet akcií, nebo hodnota.",
+        "Zadejte počet akcií nebo částku, kterou chcete investovat.",
+        "Zkontrolujte pokyn a odešlete ho k provedení."
+      ],
+      "sourceUrl": "https://helpcentre.trading212.com/hc/en-us/articles/360007081257-Market-Orders",
+      "asOf": "2026-10-12"
+    }
+  },
+  {
+    "id": "fio",
+    "name": "Fio banka",
+    "asOf": "2026-10-12",
+    "buyFee": {
+      "value": "Německo (Xetra): do 1 400 EUR včetně 3,95 €, od 1 400 do 3 000 EUR včetně 4,95 €, nad 3 000 EUR 0,15 % z objemu obchodu (min. 6,95 €). Úschova 0 Kč.",
+      "sourceUrl": "https://www.fio.cz/akcie-investice/akcie/akcie-nemecko",
+      "asOf": "2026-10-12"
+    },
+    "listings": [],
+    "steps": {
+      "value": [
+        "V aplikaci e-Broker klikněte u cenného papíru na zelenou šipku pro nákup, nebo použijte zadavač na svislé liště.",
+        "Do pole Ticker vyplňte ticker cenného papíru.",
+        "V poli Trh zvolte XETRA.",
+        "Zadejte množství a maximální limitní cenu, za kterou jste ochotni nakupovat.",
+        "Zvolte účet pro vypořádání peněz.",
+        "Stiskněte Odeslat."
+      ],
+      "sourceUrl": "https://www.fio.cz/docs/cz/manual_ebroker.pdf",
+      "asOf": "2026-10-12"
+    }
+  },
+  {
+    "id": "degiro",
+    "name": "Degiro",
+    "asOf": "2026-10-12",
+    "buyFee": {
+      "value": "ETF z Core Selection: provize 0 €, manipulační poplatek 1 € za obchod. Mohou být účtovány poplatky za měnu, připojení nebo externí produkt a spread.",
+      "sourceUrl": "https://www.degiro.cz/investovani/nakup-etf",
+      "asOf": "2026-10-12"
+    },
+    "listings": [
+      {
+        "fundId": "CSPX",
+        "ticker": {
+          "value": "SXR8",
+          "sourceUrl": "https://www.degiro.cz/poplatky/etf-core-selection",
+          "asOf": "2026-10-12"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.degiro.cz/poplatky/etf-core-selection",
+          "asOf": "2026-10-12"
+        }
+      },
+      {
+        "fundId": "VWCE",
+        "ticker": {
+          "value": "VWCE",
+          "sourceUrl": "https://www.degiro.cz/poplatky/etf-core-selection",
+          "asOf": "2026-10-12"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.degiro.cz/poplatky/etf-core-selection",
+          "asOf": "2026-10-12"
+        }
+      },
+      {
+        "fundId": "FUSD",
+        "ticker": {
+          "value": "FUSD",
+          "sourceUrl": "https://www.degiro.cz/poplatky/etf-core-selection",
+          "asOf": "2026-10-12"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.degiro.cz/poplatky/etf-core-selection",
+          "asOf": "2026-10-12"
+        }
+      }
+    ],
+    "steps": {
+      "value": [
+        "V obchodní platformě DEGIRO zadejte do vyhledávacího pole název, ticker nebo ISIN fondu.",
+        "Otevřete detail produktu a zvolte nákup.",
+        "Zvolte typ pokynu a doplňte případné další údaje.",
+        "Zadejte počet kusů, které chcete koupit.",
+        "Zvolte platnost pokynu (denní nebo GTC).",
+        "Klikněte na Zadat pokyn a potvrďte souhrn."
+      ],
+      "sourceUrl": "https://www.degiro.cz/helpdesk/orders/placing-order/how-do-i-place-order-through-degiro",
+      "asOf": "2026-10-12"
+    }
+  }
+]

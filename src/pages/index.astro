@@ -1,0 +1,66 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import StickyCta from '../components/StickyCta';
+import FundPicker from '../components/FundPicker';
+import FeeCalculator from '../components/FeeCalculator';
+import WhyNot from '../components/WhyNot.astro';
+import GuidePreview from '../components/GuidePreview.astro';
+import Faq from '../components/Faq.astro';
+import Footer from '../components/Footer.astro';
+---
+<Base
+  title="Evropská dvojčata amerických ETF | Indexák"
+  description="VOO, SPY a IVV u evropského brokera nekoupíte. Ukážeme vám jejich evropská dvojčata, poplatky a pošleme návod ke koupi u XTB, Trading 212, Fio a Degiro."
+>
+  <script is:inline slot="head">
+    // keep in sync with heroVariantFromUtm in src/lib/copy.ts
+    // Runs before first paint, so the hero variant switch causes no layout shift.
+    (function () {
+      var c = new URLSearchParams(location.search).get('utm_content') || '';
+      document.documentElement.dataset.variant = c.charAt(0) === 'b' ? 'b' : 'a';
+    })();
+  </script>
+  <header class="masthead"><span class="masthead__brand">Indexák</span></header>
+  <main>
+    <Hero variant="a" />
+    <section id="fondy" data-section="fondy" class="section"><h2>Další fondy z NYSE</h2><FundPicker client:visible /></section>
+    <section id="kalkulacka" data-section="kalkulacka" class="section"><h2>Kolik stojí poplatky</h2><FeeCalculator client:visible /></section>
+    <WhyNot />
+    <GuidePreview />
+    <Faq />
+  </main>
+  <Footer />
+  <StickyCta client:idle />
+</Base>
+
+<script>
+  import { track } from '../lib/track';
+
+  // scroll_depth: each threshold fires once per page load (rAF-throttled, passive listener).
+  const THRESHOLDS = [25, 50, 75, 100] as const;
+  const sent = new Set<number>();
+  let queued = false;
+
+  const check = () => {
+    queued = false;
+    const height = document.documentElement.scrollHeight;
+    const bottom = window.scrollY + window.innerHeight;
+    // 1 px tolerance: fractional scroll positions can stop just short of the very bottom.
+    const seen = bottom >= height - 1 ? 100 : (bottom / height) * 100;
+    for (const t of THRESHOLDS) {
+      if (sent.has(t) || seen < t) continue;
+      sent.add(t);
+      track('scroll_depth', { percent: t });
+    }
+    if (sent.size === THRESHOLDS.length) window.removeEventListener('scroll', onScroll);
+  };
+
+  function onScroll() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(check);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>

@@ -1,0 +1,594 @@
+{
+  "asOf": "2026-10-12",
+  "funds": {
+    "VOO": {
+      "id": "VOO",
+      "kind": "us",
+      "name": {
+        "value": "Vanguard S&P 500 ETF",
+        "sourceUrl": "https://fund-docs.vanguard.com/F0968.pdf",
+        "asOf": "2026-10-12"
+      },
+      "isin": {
+        "value": "US9229083632",
+        "sourceUrl": "https://fund-docs.vanguard.com/F0968.pdf",
+        "asOf": "2026-10-12"
+      },
+      "ter": {
+        "value": 0.03,
+        "sourceUrl": "https://fund-docs.vanguard.com/F0968.pdf",
+        "asOf": "2026-10-12"
+      },
+      "exchange": {
+        "value": "NYSE Arca",
+        "sourceUrl": "https://fund-docs.vanguard.com/F0968.pdf",
+        "asOf": "2026-10-12"
+      },
+      "domicile": {
+        "value": "US",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/36405/000168386321002763/f8950d1.htm",
+        "asOf": "2026-10-12"
+      },
+      "distribution": {
+        "value": "dist",
+        "sourceUrl": "https://fund-docs.vanguard.com/F0968.pdf",
+        "asOf": "2026-10-12"
+      },
+      "replication": {
+        "value": "physical",
+        "sourceUrl": "https://fund-docs.vanguard.com/F0968.pdf",
+        "asOf": "2026-10-12"
+      },
+      "index": {
+        "value": "S&P 500",
+        "sourceUrl": "https://fund-docs.vanguard.com/F0968.pdf",
+        "asOf": "2026-10-12"
+      }
+    },
+    "SPY": {
+      "id": "SPY",
+      "kind": "us",
+      "name": {
+        "value": "State Street SPDR S&P 500 ETF Trust",
+        "sourceUrl": "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+        "asOf": "2026-10-12"
+      },
+      "isin": {
+        "value": "US78462F1030",
+        "sourceUrl": "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+        "asOf": "2026-10-12"
+      },
+      "ter": {
+        "value": 0.0945,
+        "sourceUrl": "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+        "asOf": "2026-10-12"
+      },
+      "exchange": {
+        "value": "NYSE Arca",
+        "sourceUrl": "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+        "asOf": "2026-10-12"
+      },
+      "domicile": {
+        "value": "US",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/884394/000119312521009991/d33381d497.htm",
+        "asOf": "2026-10-12"
+      },
+      "distribution": {
+        "value": "dist",
+        "sourceUrl": "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+        "asOf": "2026-10-12"
+      },
+      "replication": {
+        "value": "physical",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/884394/000119312521009991/d33381d497.htm",
+        "asOf": "2026-10-12"
+      },
+      "index": {
+        "value": "S&P 500",
+        "sourceUrl": "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+        "asOf": "2026-10-12"
+      }
+    },
+    "IVV": {
+      "id": "IVV",
+      "kind": "us",
+      "name": {
+        "value": "iShares Core S&P 500 ETF",
+        "sourceUrl": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+        "asOf": "2026-10-12"
+      },
+      "isin": {
+        "value": "US4642872000",
+        "sourceUrl": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+        "asOf": "2026-10-12"
+      },
+      "ter": {
+        "value": 0.03,
+        "sourceUrl": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+        "asOf": "2026-10-12"
+      },
+      "exchange": {
+        "value": "NYSE Arca",
+        "sourceUrl": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+        "asOf": "2026-10-12"
+      },
+      "domicile": {
+        "value": "US",
+        "sourceUrl": "https://www.ishares.com/us/literature/sai/sai-ishares-trust-3-31.pdf",
+        "asOf": "2026-10-12"
+      },
+      "distribution": {
+        "value": "dist",
+        "sourceUrl": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+        "asOf": "2026-10-12"
+      },
+      "replication": {
+        "value": "physical",
+        "sourceUrl": "https://www.ishares.com/us/literature/summary-prospectus/sp-ishares-core-s-and-p-500-etf-3-31.pdf",
+        "asOf": "2026-10-12"
+      },
+      "index": {
+        "value": "S&P 500",
+        "sourceUrl": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+        "asOf": "2026-10-12"
+      }
+    },
+    "VTI": {
+      "id": "VTI",
+      "kind": "us",
+      "name": {
+        "value": "Vanguard Morningstar Total Stock Market ETF",
+        "sourceUrl": "https://advisors.vanguard.com/investments/products/vti/vanguard-total-stock-market-etf",
+        "asOf": "2026-10-12"
+      },
+      "isin": {
+        "value": "US9229087690",
+        "sourceUrl": "https://fund-docs.vanguard.com/F0970.pdf",
+        "asOf": "2026-10-12"
+      },
+      "ter": {
+        "value": 0.03,
+        "sourceUrl": "https://advisors.vanguard.com/investments/products/vti/vanguard-total-stock-market-etf",
+        "asOf": "2026-10-12"
+      },
+      "exchange": {
+        "value": "NYSE Arca",
+        "sourceUrl": "https://fund-docs.vanguard.com/F0970.pdf",
+        "asOf": "2026-10-12"
+      },
+      "domicile": {
+        "value": "US",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/36405/000168386321002763/f8950d1.htm",
+        "asOf": "2026-10-12"
+      },
+      "distribution": {
+        "value": "dist",
+        "sourceUrl": "https://fund-docs.vanguard.com/F0970.pdf",
+        "asOf": "2026-10-12"
+      },
+      "replication": {
+        "value": "physical",
+        "sourceUrl": "https://fund-docs.vanguard.com/F0970.pdf",
+        "asOf": "2026-10-12"
+      },
+      "index": {
+        "value": "Morningstar US Total Market (dříve CRSP US Total Market)",
+        "sourceUrl": "https://www.vanguardsouthamerica.com/en/home/news/name-changes-for-vanguard-equity-index-funds-and-crsp-morningstar-benchmarks",
+        "asOf": "2026-10-12"
+      }
+    },
+    "VT": {
+      "id": "VT",
+      "kind": "us",
+      "name": {
+        "value": "Vanguard Total World Stock ETF",
+        "sourceUrl": "https://fund-docs.vanguard.com/F3141.pdf",
+        "asOf": "2026-10-12"
+      },
+      "isin": {
+        "value": "US9220427424",
+        "sourceUrl": "https://fund-docs.vanguard.com/F3141.pdf",
+        "asOf": "2026-10-12"
+      },
+      "ter": {
+        "value": 0.06,
+        "sourceUrl": "https://fund-docs.vanguard.com/F3141.pdf",
+        "asOf": "2026-10-12"
+      },
+      "exchange": {
+        "value": "NYSE Arca",
+        "sourceUrl": "https://fund-docs.vanguard.com/F3141.pdf",
+        "asOf": "2026-10-12"
+      },
+      "domicile": {
+        "value": "US",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/857489/000168386323001389/f24384d1.htm",
+        "asOf": "2026-10-12"
+      },
+      "distribution": {
+        "value": "dist",
+        "sourceUrl": "https://fund-docs.vanguard.com/F3141.pdf",
+        "asOf": "2026-10-12"
+      },
+      "replication": {
+        "value": "physical",
+        "sourceUrl": "https://fund-docs.vanguard.com/F3141.pdf",
+        "asOf": "2026-10-12"
+      },
+      "index": {
+        "value": "FTSE Global All Cap",
+        "sourceUrl": "https://fund-docs.vanguard.com/F3141.pdf",
+        "asOf": "2026-10-12"
+      }
+    },
+    "SCHD": {
+      "id": "SCHD",
+      "kind": "us",
+      "name": {
+        "value": "Schwab U.S. Dividend Equity ETF",
+        "sourceUrl": "https://www.schwabassetmanagement.com/products/schd",
+        "asOf": "2026-10-12"
+      },
+      "isin": {
+        "value": "US8085247976",
+        "sourceUrl": "https://www.schwabassetmanagement.com/products/schd",
+        "asOf": "2026-10-12"
+      },
+      "ter": {
+        "value": 0.06,
+        "sourceUrl": "https://www.schwabassetmanagement.com/products/schd",
+        "asOf": "2026-10-12"
+      },
+      "exchange": {
+        "value": "NYSE Arca",
+        "sourceUrl": "https://www.schwabassetmanagement.com/products/schd",
+        "asOf": "2026-10-12"
+      },
+      "domicile": {
+        "value": "US",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1454889/000119312525303635/d61871dncsrs.htm",
+        "asOf": "2026-10-12"
+      },
+      "distribution": {
+        "value": "dist",
+        "sourceUrl": "https://www.schwabassetmanagement.com/products/schd",
+        "asOf": "2026-10-12"
+      },
+      "replication": {
+        "value": "physical",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1454889/000110465926020681/tm266454-15_497k.htm",
+        "asOf": "2026-10-12"
+      },
+      "index": {
+        "value": "Dow Jones U.S. Dividend 100",
+        "sourceUrl": "https://www.schwabassetmanagement.com/products/schd",
+        "asOf": "2026-10-12"
+      }
+    },
+    "SPYL": {
+      "id": "SPYL",
+      "kind": "ucits",
+      "name": {
+        "value": "State Street SPDR S&P 500 UCITS ETF (Acc)",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-sp-500-ucits-etf-spyl-gy",
+        "asOf": "2026-10-12"
+      },
+      "isin": {
+        "value": "IE000XZSV718",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-sp-500-ucits-etf-spyl-gy",
+        "asOf": "2026-10-12"
+      },
+      "ter": {
+        "value": 0.03,
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-sp-500-ucits-etf-spyl-gy",
+        "asOf": "2026-10-12"
+      },
+      "exchange": {
+        "value": "Deutsche Börse",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-sp-500-ucits-etf-spyl-gy",
+        "asOf": "2026-10-12"
+      },
+      "domicile": {
+        "value": "IE",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-sp-500-ucits-etf-spyl-gy",
+        "asOf": "2026-10-12"
+      },
+      "distribution": {
+        "value": "acc",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-sp-500-ucits-etf-spyl-gy",
+        "asOf": "2026-10-12"
+      },
+      "replication": {
+        "value": "physical",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-sp-500-ucits-etf-spyl-gy",
+        "asOf": "2026-10-12"
+      },
+      "index": {
+        "value": "S&P 500",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-sp-500-ucits-etf-spyl-gy",
+        "asOf": "2026-10-12"
+      },
+      "kidUrl": "https://www.ssga.com/library-content/kiids?isin=IE000XZSV718&documentType=kiid&country=uk&language=en_gb&ticker=spyl-gy"
+    },
+    "VUAA": {
+      "id": "VUAA",
+      "kind": "ucits",
+      "name": {
+        "value": "S&P 500 UCITS ETF - (USD) Accumulating",
+        "sourceUrl": "https://www.de.vanguard/professionell/anlageprodukte/etf/aktien/9694/sp-500-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "isin": {
+        "value": "IE00BFMXXD54",
+        "sourceUrl": "https://www.de.vanguard/professionell/anlageprodukte/etf/aktien/9694/sp-500-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "ter": {
+        "value": 0.07,
+        "sourceUrl": "https://www.de.vanguard/professionell/anlageprodukte/etf/aktien/9694/sp-500-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "exchange": {
+        "value": "Deutsche Börse",
+        "sourceUrl": "https://fund-docs.vanguard.com/SandP_500_UCITS_ETF_USD_Accumulating_9694_INT_OFF_ETF_EN.pdf",
+        "asOf": "2026-10-12"
+      },
+      "domicile": {
+        "value": "IE",
+        "sourceUrl": "https://www.de.vanguard/professionell/anlageprodukte/etf/aktien/9694/sp-500-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "distribution": {
+        "value": "acc",
+        "sourceUrl": "https://www.de.vanguard/professionell/anlageprodukte/etf/aktien/9694/sp-500-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "replication": {
+        "value": "physical",
+        "sourceUrl": "https://www.de.vanguard/professionell/anlageprodukte/etf/aktien/9694/sp-500-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "index": {
+        "value": "S&P 500",
+        "sourceUrl": "https://www.de.vanguard/professionell/anlageprodukte/etf/aktien/9694/sp-500-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "kidUrl": "https://fund-docs.vanguard.com/ie00bfmxxd54_priipskid_en.pdf"
+    },
+    "CSPX": {
+      "id": "CSPX",
+      "kind": "ucits",
+      "name": {
+        "value": "iShares Core S&P 500 UCITS ETF USD (Acc)",
+        "sourceUrl": "https://www.ishares.com/gls-download/literature/fact-sheet/cspx-ishares-core-s-p-500-ucits-etf-fund-fact-sheet-en-gb.pdf",
+        "asOf": "2026-10-12"
+      },
+      "isin": {
+        "value": "IE00B5BMR087",
+        "sourceUrl": "https://www.ishares.com/gls-download/literature/fact-sheet/cspx-ishares-core-s-p-500-ucits-etf-fund-fact-sheet-en-gb.pdf",
+        "asOf": "2026-10-12"
+      },
+      "ter": {
+        "value": 0.07,
+        "sourceUrl": "https://www.ishares.com/gls-download/literature/fact-sheet/cspx-ishares-core-s-p-500-ucits-etf-fund-fact-sheet-en-gb.pdf",
+        "asOf": "2026-10-12"
+      },
+      "exchange": {
+        "value": "London Stock Exchange",
+        "sourceUrl": "https://www.ishares.com/uk/individual/en/products/253743/ishares-sp-500-b-ucits-etf-acc-fund",
+        "asOf": "2026-10-12"
+      },
+      "domicile": {
+        "value": "IE",
+        "sourceUrl": "https://www.ishares.com/gls-download/literature/fact-sheet/cspx-ishares-core-s-p-500-ucits-etf-fund-fact-sheet-en-gb.pdf",
+        "asOf": "2026-10-12"
+      },
+      "distribution": {
+        "value": "acc",
+        "sourceUrl": "https://www.ishares.com/gls-download/literature/fact-sheet/cspx-ishares-core-s-p-500-ucits-etf-fund-fact-sheet-en-gb.pdf",
+        "asOf": "2026-10-12"
+      },
+      "replication": {
+        "value": "physical",
+        "sourceUrl": "https://www.ishares.com/gls-download/literature/fact-sheet/cspx-ishares-core-s-p-500-ucits-etf-fund-fact-sheet-en-gb.pdf",
+        "asOf": "2026-10-12"
+      },
+      "index": {
+        "value": "S&P 500",
+        "sourceUrl": "https://www.ishares.com/gls-download/literature/fact-sheet/cspx-ishares-core-s-p-500-ucits-etf-fund-fact-sheet-en-gb.pdf",
+        "asOf": "2026-10-12"
+      },
+      "kidUrl": "https://www.ishares.com/gls-download/literature/kiid/eu-priips-ishares-core-sp-500-ucits-etf-usd-acc-ie00b5bmr087-cs.pdf"
+    },
+    "SPYY": {
+      "id": "SPYY",
+      "kind": "ucits",
+      "name": {
+        "value": "State Street SPDR MSCI All Country World UCITS ETF (Acc)",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-msci-acwi-ucits-etf-spyy-gy",
+        "asOf": "2026-10-12"
+      },
+      "isin": {
+        "value": "IE00B44Z5B48",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-msci-acwi-ucits-etf-spyy-gy",
+        "asOf": "2026-10-12"
+      },
+      "ter": {
+        "value": 0.12,
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-msci-acwi-ucits-etf-spyy-gy",
+        "asOf": "2026-10-12"
+      },
+      "exchange": {
+        "value": "Deutsche Börse",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-msci-acwi-ucits-etf-spyy-gy",
+        "asOf": "2026-10-12"
+      },
+      "domicile": {
+        "value": "IE",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-msci-acwi-ucits-etf-spyy-gy",
+        "asOf": "2026-10-12"
+      },
+      "distribution": {
+        "value": "acc",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-msci-acwi-ucits-etf-spyy-gy",
+        "asOf": "2026-10-12"
+      },
+      "replication": {
+        "value": "physical",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-msci-acwi-ucits-etf-spyy-gy",
+        "asOf": "2026-10-12"
+      },
+      "index": {
+        "value": "MSCI ACWI",
+        "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-msci-acwi-ucits-etf-spyy-gy",
+        "asOf": "2026-10-12"
+      },
+      "kidUrl": "https://www.ssga.com/library-content/kiids?isin=IE00B44Z5B48&documentType=kiid&country=uk&language=en_gb&ticker=spyy-gy"
+    },
+    "VWCE": {
+      "id": "VWCE",
+      "kind": "ucits",
+      "name": {
+        "value": "FTSE All-World UCITS ETF - (USD) Accumulating",
+        "sourceUrl": "https://nl.vanguard/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "isin": {
+        "value": "IE00BK5BQT80",
+        "sourceUrl": "https://nl.vanguard/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "ter": {
+        "value": 0.14,
+        "sourceUrl": "https://nl.vanguard/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "exchange": {
+        "value": "Deutsche Börse",
+        "sourceUrl": "https://fund-docs.vanguard.com/FTSE_All-World_UCITS_ETF_USD_Accumulating_9679_INT_OFF_ETF_EN.pdf",
+        "asOf": "2026-10-12"
+      },
+      "domicile": {
+        "value": "IE",
+        "sourceUrl": "https://nl.vanguard/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "distribution": {
+        "value": "acc",
+        "sourceUrl": "https://nl.vanguard/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "replication": {
+        "value": "physical",
+        "sourceUrl": "https://nl.vanguard/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "index": {
+        "value": "FTSE All-World",
+        "sourceUrl": "https://nl.vanguard/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating",
+        "asOf": "2026-10-12"
+      },
+      "kidUrl": "https://fund-docs.vanguard.com/ie00bk5bqt80_priipskid_en.pdf"
+    },
+    "FUSD": {
+      "id": "FUSD",
+      "kind": "ucits",
+      "name": {
+        "value": "Fidelity US Quality Income UCITS ETF Income USD Shares",
+        "sourceUrl": "https://www.fidelityinternational.com/FILPS/Documents/en/current/pro.en.xx.IE00BYXVGX24.pdf",
+        "asOf": "2026-10-12"
+      },
+      "isin": {
+        "value": "IE00BYXVGX24",
+        "sourceUrl": "https://www.fidelityinternational.com/FILPS/Documents/en/current/pro.en.xx.IE00BYXVGX24.pdf",
+        "asOf": "2026-10-12"
+      },
+      "ter": {
+        "value": 0.25,
+        "sourceUrl": "https://www.fidelityinternational.com/FILPS/Documents/en/current/pro.en.xx.IE00BYXVGX24.pdf",
+        "asOf": "2026-10-12"
+      },
+      "exchange": {
+        "value": "London Stock Exchange",
+        "sourceUrl": "https://www.fidelityinternational.com/FILPS/Documents/en/current/pro.en.xx.IE00BYXVGX24.pdf",
+        "asOf": "2026-10-12"
+      },
+      "domicile": {
+        "value": "IE",
+        "sourceUrl": "https://www.fidelityinternational.com/FILPS/Documents/en/current/pro.en.xx.IE00BYXVGX24.pdf",
+        "asOf": "2026-10-12"
+      },
+      "distribution": {
+        "value": "dist",
+        "sourceUrl": "https://www.fidelityinternational.com/FILPS/Documents/en/current/pro.en.xx.IE00BYXVGX24.pdf",
+        "asOf": "2026-10-12"
+      },
+      "replication": {
+        "value": "physical",
+        "sourceUrl": "https://www.fidelityinternational.com/FILPS/Documents/en/current/pro.en.xx.IE00BYXVGX24.pdf",
+        "asOf": "2026-10-12"
+      },
+      "index": {
+        "value": "Fidelity US Quality Income",
+        "sourceUrl": "https://www.fidelityinternational.com/FILPS/Documents/en/current/pro.en.xx.IE00BYXVGX24.pdf",
+        "asOf": "2026-10-12"
+      }
+    }
+  },
+  "groups": [
+    {
+      "id": "sp500",
+      "label": "S&P 500",
+      "originals": [
+        "VOO",
+        "SPY",
+        "IVV"
+      ],
+      "twins": [
+        "SPYL",
+        "VUAA",
+        "CSPX"
+      ],
+      "exactTwin": true,
+      "calcEnabled": true
+    },
+    {
+      "id": "world",
+      "label": "Celý svět",
+      "originals": [
+        "VT"
+      ],
+      "twins": [
+        "SPYY",
+        "VWCE"
+      ],
+      "exactTwin": false,
+      "calcEnabled": true,
+      "note": "VT sleduje FTSE Global All Cap. Evropské fondy sledují příbuzné indexy (MSCI ACWI, FTSE All-World)."
+    },
+    {
+      "id": "us-total",
+      "label": "Celý americký trh",
+      "originals": [
+        "VTI"
+      ],
+      "twins": [],
+      "exactTwin": false,
+      "calcEnabled": false,
+      "note": "Přesné dvojče neexistuje. VTI sleduje index, který pokrývá prakticky celý americký trh (Morningstar US Total Market, dříve CRSP US Total Market). Evropský fond s ověřenými údaji zde zatím neuvádíme."
+    },
+    {
+      "id": "us-dividend",
+      "label": "Americké dividendové akcie",
+      "originals": [
+        "SCHD"
+      ],
+      "twins": [
+        "FUSD"
+      ],
+      "exactTwin": false,
+      "calcEnabled": false,
+      "note": "UCITS fond na index Dow Jones U.S. Dividend 100 neexistuje. Alternativa sleduje jiný index – americké firmy s kvalitou a dividendovým výnosem."
+    }
+  ]
+}

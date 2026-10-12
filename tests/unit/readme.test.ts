@@ -1,0 +1,109 @@
+// @vitest-environment node
+import { existsSync, readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+import { COMPARISON_TER, MODEL_RETURN } from '../../src/lib/calc';
+
+const REQUIRED_HEADINGS = [
+  '## Výklad zadání',
+  '## Cílová skupina',
+  '## Nabídka a moment žádosti o kontakt',
+  '## Pořadí sekcí a proč',
+  '## Cesta od každého prvku ke kontaktu',
+  '## Klíčová rozhodnutí',
+  '## Reklamy A/B',
+  '## Očekávaná konverze',
+  '## A/B hypotézy',
+  '## Měření',
+  '## Zdroje dat',
+  '## Měsíční aktualizace dat',
+  '## Checklist před spuštěním reklamy',
+  '## Produkční nasazení',
+  '## Lokální spuštění a testy',
+];
+
+describe('README', () => {
+  const md = existsSync('README.md') ? readFileSync('README.md', 'utf8') : '';
+
+  it('has all required headings in order', () => {
+    let pos = -1;
+    for (const h of REQUIRED_HEADINGS) {
+      const i = md.indexOf(`\n${h}\n`);
+      expect(i, `missing or out of order: ${h}`).toBeGreaterThan(pos);
+      pos = i;
+    }
+  });
+
+  it('starts with the interpretation of the brief', () => {
+    expect(md.split('\n## ')[1]).toMatch(/^Výklad zadání\n+.*PRIIPs/s);
+  });
+
+  it('links existing ad PNGs and docs', () => {
+    for (const f of ['ads/a-4x5.png', 'ads/a-9x16.png', 'ads/b-4x5.png', 'ads/b-9x16.png', 'ads/copy.md', 'docs/brevo-setup.md', 'docs/lighthouse-mobile.json']) {
+      expect(md).toContain(`(${f})`);
+      expect(existsSync(f), f).toBe(true);
+    }
+  });
+
+  it('contains sample size result and formula', () => {
+    expect(md).toContain('10 319');
+    expect(md).toMatch(/α\s*=\s*0,05/);
+    expect(md).toContain('(p₂ − p₁)²');
+  });
+
+  it('states numbers consistent with calc.ts', () => {
+    const cz = (n: number) => n.toLocaleString('cs-CZ', { maximumFractionDigits: 2 });
+    expect(md).toContain(`${cz(MODEL_RETURN * 100)} % p.a.`); // 0.07*100 = 7.000000000000001 → „7"
+    expect(md).toContain(`${cz(COMPARISON_TER)} % p.a.`);     // „1,5"
+  });
+
+  it('marks conversion as an estimate and has launch status', () => {
+    expect(md).toMatch(/odhad/i);
+    expect(md).toContain('1 000 návštěv');
+    expect(md).toMatch(/Stav: připraveno, blokuje:/);
+  });
+
+  it('does not mention funds that are not in the data', () => {
+    for (const t of ['FWRA', 'ZPR3', 'CRSP US Total Market Index']) expect(md).not.toContain(t);
+  });
+
+  it('describes Trading 212 and Fio as not yet verified (broker table, prose and checklist)', () => {
+    expect(md).toMatch(/^\| Trading 212 \| \*\*žádné zatím neověřené\*\*/m);
+    expect(md).toMatch(/^\| Fio banka \| \*\*žádné zatím neověřené\*\*/m);
+    expect(md).toContain('U tohoto brokera jsme dostupnost zatím neověřili.');
+    expect(md).toMatch(/^- \[ \] .*\*\*Trading 212 a Fio zatím nemají žádný ověřený fond\*\*/m);
+    expect(md).toMatch(/blokuje:.*ověření (dat )?brokerů Trading 212 a Fio/);
+    // never claimed as verified
+    expect(md).not.toMatch(/Trading 212 (a Fio )?(jsou|je) ověřen/);
+  });
+
+  it('does not overclaim: nothing has been measured in production yet', () => {
+    const answer = md.split('\n').find((l) => l.startsWith('**Mohli bychom zítra spustit reklamu?**'))!;
+    expect(answer).not.toMatch(/měření a testy jsou hotové/);
+    expect(answer).toMatch(/na produkci .*zatím nic neměřilo/);
+  });
+
+  it('measurement section matches the code: aid never in PostHog URLs, consent switches in place', () => {
+    const sec = md.slice(md.indexOf('### Měření bez souhlasu a se souhlasem'), md.indexOf('## Reklamy A/B'));
+    expect(sec).toContain('`$current_url`');
+    expect(sec).toContain('`$referrer`');
+    expect(sec).toContain('`before_send`');
+    expect(sec).toMatch(/bez znovunačtení stránky/);
+    expect(sec).toContain('`identify(aid)`');
+  });
+
+  it('paid tiers are only Vercel and Brevo; PostHog, Meta and Upstash are accounts to set up', () => {
+    const status = md.split('\n').find((l) => l.startsWith('**Stav: připraveno, blokuje:**'))!;
+    const paid = status.match(/placené tarify \(([^)]*)\)/)![1];
+    expect(paid).toMatch(/Vercel/);
+    expect(paid).toMatch(/Brevo/);
+    for (const t of ['PostHog', 'Meta', 'Upstash']) expect(paid).not.toContain(t);
+    expect(status).toMatch(/účty .*\(PostHog, Meta, Upstash\)/);
+  });
+
+  it('rounds the minimum detectable effect and words the H3 row precisely', () => {
+    expect(md).not.toContain('6,85 %');
+    expect(md).toContain('4 → ≈ 6,8 %');
+    expect(md).toMatch(/^\| 3 \|.*\| z 60 % na 66 % odeslání \|/m);
+  });
+});
+

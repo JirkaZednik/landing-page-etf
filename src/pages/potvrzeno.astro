@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import PhoneOffer from '../components/PhoneOffer';
+---
+<Base title="Návod ke stažení | Indexák" description="Váš návod ke koupi evropských dvojčat ETF." noindex>
+  <header class="masthead"><a href="/" class="masthead__brand thanks__home">Indexák</a></header>
+  <main class="thanks">
+    <h1>E-mail je potvrzený. Tady je váš návod.</h1>
+    <a href="/navod-etf.pdf" download data-pdf class="thanks__pdf">Stáhnout návod (PDF)</a>
+    <p class="thanks__muted">Stejný návod vám posíláme i e-mailem.</p>
+    <hr class="thanks__rule" />
+    <PhoneOffer client:visible page="potvrzeno" />
+  </main>
+</Base>
+
+<script>
+  import { track } from '../lib/track';
+  track('doi_confirmed');
+  document.querySelector('[data-pdf]')?.addEventListener('click', () => track('pdf_downloaded'));
+</script>

@@ -1,0 +1,162 @@
+---
+import Base from '../layouts/Base.astro';
+import { OPERATOR } from '../lib/operator';
+import { CONSENT_TEXT_VERSION } from '../lib/copy';
+
+// Operator data only from OPERATOR (src/lib/operator.ts); no other company name is hardcoded here.
+const PURPOSES: [purpose: string, data: string, basis: string][] = [
+  ['Zaslání návodu a obsahových e-mailů s tipy k investování do ETF', 'E-mail, zvolený fond, údaje z kalkulačky, zdroj návštěvy (UTM)', 'Souhlas udělený odesláním formuláře, odvolatelný odkazem v každém e-mailu'],
+  ['Telefonický kontakt kvůli pomoci s nákupem u brokera', 'Telefon, zvolený broker', 'Samostatný souhlas (a)'],
+  ['Předání partnerům', 'E-mail, telefon, zvolený broker', 'Samostatný souhlas (b)'],
+  ['Měření návštěvnosti bez cookies', 'Anonymní agregované události', 'Oprávněný zájem'],
+  ['Měření a propojení cesty, měření reklam Meta, Google Analytics', 'Identifikátor návštěvy, události na stránce; pro Meta navíc hash e-mailu, IP adresa, prohlížeč (Conversions API, jen se souhlasem)', 'Souhlas v nastavení cookies'],
+  ['Ochrana formuláře před zneužitím', 'IP adresa (krátkodobě)', 'Oprávněný zájem'],
+  ['Doložení souhlasu', 'Verze textu a čas souhlasu', 'Plnění právní povinnosti'],
+];
+---
+<Base title="Zásady zpracování osobních údajů | Indexák" description="Kdo zpracovává vaše osobní údaje na stránce Indexák, proč a jak dlouho.">
+  <header class="masthead"><a href="/" class="masthead__brand privacy__home">Indexák</a></header>
+  <main class="legal privacy">
+    <h1>Zásady zpracování osobních údajů</h1>
+    <p class="legal__version">Platné od 11. 10. 2026. Verze textu souhlasu {CONSENT_TEXT_VERSION}.</p>
+
+    <h2>Správce</h2>
+    <p>
+      {OPERATOR.name}, IČO {OPERATOR.ico}, se sídlem {OPERATOR.address}, e-mail
+      <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a>, telefon {OPERATOR.phone}. Stránku Indexák provozuje
+      správce pod touto značkou.
+    </p>
+
+    <h2>Účely a právní základ</h2>
+    <div class="privacy__table">
+      <table>
+        <thead>
+          <tr><th scope="col">Účel</th><th scope="col">Údaje</th><th scope="col">Právní základ</th></tr>
+        </thead>
+        <tbody>
+          {PURPOSES.map(([purpose, data, basis]) => (
+            <tr><td data-label="Účel">{purpose}</td><td data-label="Údaje">{data}</td><td data-label="Právní základ">{basis}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="partneri">Seznam partnerů</h2>
+    <p>
+      Seznam partnerů doplní provozovatel před spuštěním reklamní kampaně. Dokud zde seznam není uveden, vaše údaje
+      žádnému partnerovi nepředáváme.
+    </p>
+
+    <h2>Zpracovatelé a další příjemci</h2>
+    <ul>
+      <li>Brevo (Sendinblue SAS, Francie) – rozesílání e-mailů a správa kontaktů</li>
+      <li>PostHog Inc., datové centrum v EU (eu.i.posthog.com) – měření návštěvnosti</li>
+      <li>Vercel Inc., USA – hosting stránky; předání do USA na základě standardních smluvních doložek</li>
+      <li>Upstash Inc., databáze v EU – ochrana formuláře proti zneužití (počítadlo požadavků podle IP adresy)</li>
+      <li>Meta Platforms Ireland Ltd. – měření reklam, jen se souhlasem v nastavení cookies; při shromáždění a předání údajů jsme s Meta společnými správci</li>
+      <li>Google Ireland Ltd. – Google Analytics 4, jen se souhlasem v nastavení cookies</li>
+    </ul>
+
+    <h2>Doba uložení</h2>
+    <ul>
+      <li>E-mail a údaje k obsahovým e-mailům: do odvolání souhlasu, nejdéle 3 roky od posledního otevření e-mailu.</li>
+      <li>Telefon: do odvolání souhlasu, nejdéle 12 měsíců.</li>
+      <li>Záznam o souhlasu: po dobu zpracování a 3 roky poté.</li>
+      <li>IP adresa pro ochranu formuláře: 10 minut.</li>
+      <li>Analytická data: 12 měsíců.</li>
+    </ul>
+
+    <h2>Vaše práva</h2>
+    <ul>
+      <li>Máte právo na přístup, opravu, výmaz, omezení zpracování a přenositelnost údajů a právo vznést námitku.</li>
+      <li>
+        Souhlas můžete kdykoli odvolat (odkazem v e-mailu nebo na <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a>),
+        aniž by to ovlivnilo zpracování před odvoláním.
+      </li>
+      <li>
+        Můžete podat stížnost u dozorového úřadu: Úřad pro ochranu osobních údajů, Pplk. Sochora 27, 170 00 Praha 7,
+        <a href="https://uoou.gov.cz" target="_blank" rel="noopener">www.uoou.gov.cz</a>.
+      </li>
+    </ul>
+
+    <p class="privacy__more">
+      Cookies a měření popisujeme na stránce <a href="/cookies">Cookies</a>.
+      <button type="button" data-consent-open>Nastavení cookies</button>
+    </p>
+  </main>
+</Base>
+
+<style lang="scss">
+  @use '../styles/tokens' as *;
+
+  .privacy {
+    max-width: calc(68ch + 2 * #{$s3});
+
+    h1 {
+      margin: 0 0 $s2;
+      font-size: 1.625rem;
+      line-height: 1.12;
+      letter-spacing: -0.015em;
+      text-wrap: balance;
+    }
+
+    h2 {
+      margin: $s5 0 $s2;
+      padding-top: $s3;
+      border-top: 1px solid var(--rule);
+      font-size: 1.125rem;
+      line-height: 1.2;
+    }
+
+    ul { padding-left: 1.1em; }
+    li + li { margin-top: $s2; }
+  }
+
+  .privacy__home { color: var(--ink); text-decoration: none; }
+
+  .privacy__table {
+    th { font-size: 0.8125rem; color: var(--muted); font-weight: 400; border-bottom-color: var(--ink); }
+  }
+
+  // Narrow screens: each purpose becomes a stacked block with inline labels (no sideways scroll).
+  @media (max-width: 40rem) {
+    .privacy__table {
+      thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+      }
+
+      tr {
+        display: block;
+        padding: $s2 0;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      tr:first-child { border-top: 1px solid var(--ink); }
+
+      td {
+        display: block;
+        padding: 0;
+        border: 0;
+      }
+
+      td:first-child { font-weight: 600; }
+
+      td:not(:first-child)::before {
+        content: attr(data-label) ': ';
+        color: var(--muted);
+      }
+    }
+  }
+
+  .privacy__more {
+    margin-top: $s5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $s2 $s3;
+  }
+</style>

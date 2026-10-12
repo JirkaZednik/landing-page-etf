@@ -1,0 +1,149 @@
+---
+import LeadForm from './LeadForm';
+import { getBrokers, twinsSortedByTer } from '../lib/pairs';
+import { formatTer } from '../lib/format';
+
+const twins = twinsSortedByTer('sp500');
+const broker = getBrokers()[0];
+const steps = broker.steps.value.slice(0, 3);
+---
+<section id="navod" data-section="navod" class="section guide">
+  <h2>Co je v návodu</h2>
+  <p class="guide__sub">PDF, 3–4 strany. Pošleme ho na váš e-mail po jeho potvrzení.</p>
+
+  <!-- Stylised pages in HTML (real text, no images); decorative, the list below says the same. -->
+  <div class="guide__pages" aria-hidden="true">
+    <div class="page">
+      <p class="page__title">Jak koupit S&amp;P 500 a další americké indexy u XTB, Trading 212, Fio a Degiro</p>
+      <table class="page__table">
+        <tbody>
+          {twins.map((f) => (
+            <tr>
+              <td class="page__tk">{f.id}</td>
+              <td class="page__num">{formatTer(f.ter.value)}</td>
+              <td class="page__num">{f.isin.value}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div class="page__lines"><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="page page--2">
+      <p class="page__title">{broker.name}: postup krok za krokem</p>
+      {steps.length > 0 && (
+        <ol class="page__steps">
+          {steps.map((s) => <li>{s}</li>)}
+        </ol>
+      )}
+    </div>
+  </div>
+
+  <ul class="guide__list">
+    <li>Pro XTB, Trading 212, Fio a Degiro: poplatek za nákup a postup krok za krokem. Která dvojčata broker nabízí, s ISIN a tickerem k vyhledání, uvádíme tam, kde jsme to u brokera ověřili.</li>
+    <li>Tabulka všech párů originál → dvojče s TER a ISIN.</li>
+    <li>Akumulace vs. distribuce a co to znamená pro daně v ČR (časový test).</li>
+    <li>Údaje o brokerech ověřujeme na jejich stránkách; datum ověření je uvedené v návodu.</li>
+  </ul>
+
+  <LeadForm client:visible placement="preview" pair="sp500" />
+</section>
+
+<style lang="scss">
+  @use '../styles/tokens' as *;
+
+  .guide__sub {
+    margin: -$s2 0 $s4;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  // Two A4 sheets side by side, the second overlapping slightly and set $s3 lower.
+  .guide__pages {
+    display: flex;
+    align-items: flex-start;
+    margin: 0 0 $s4;
+    padding-bottom: $s3;
+  }
+
+  .page {
+    flex: none;
+    width: 44%;
+    aspect-ratio: 210 / 297;
+    overflow: hidden;
+    padding: 7% 6%;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    font-size: 8px;
+    line-height: 1.35;
+
+    p { margin: 0; }
+
+    &--2 {
+      position: relative;
+      margin: $s3 0 0 -4%;
+    }
+  }
+
+  .page__title {
+    margin-bottom: 0.9em !important;
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  .page__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 7px;
+
+    td {
+      padding: 0.35em 0;
+      border-top: 1px solid var(--rule);
+      white-space: nowrap;
+    }
+
+    tr:last-child td { border-bottom: 1px solid var(--rule); }
+  }
+
+  .page__tk,
+  .page__num {
+    font-family: $font-mono;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .page__tk { font-weight: 600; }
+  .page__num { text-align: right; padding-left: 0.6em !important; }
+
+  // Body-copy placeholder strokes below the table (the text would be too small to read anyway).
+  .page__lines {
+    display: grid;
+    gap: 0.7em;
+    margin-top: 1.2em;
+
+    span { display: block; height: 1px; background: var(--rule); }
+    span:nth-child(2n) { width: 82%; }
+  }
+
+  .page__steps {
+    margin: 0;
+    padding-left: 1.3em;
+    font-size: 7px;
+    line-height: 1.4;
+
+    li + li { margin-top: 0.5em; }
+    li::marker { font-family: $font-mono; font-weight: 600; }
+  }
+
+  .guide__list {
+    max-width: 62ch;
+    margin: 0 0 $s4;
+    padding-left: 1.1em;
+
+    li { padding-left: $s1; text-wrap: pretty; }
+    li + li { margin-top: $s2; }
+    li::marker { color: var(--signal); }
+  }
+
+  .guide :global(.lead-form) { max-width: none; }
+</style>

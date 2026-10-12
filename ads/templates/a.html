@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="cs"><head><meta charset="utf-8">
+{{tokens}}
+<link rel="stylesheet" href="ads.css">
+<script>document.documentElement.className = 'ad-a size-' + (new URLSearchParams(location.search).get('size') || '4x5');</script>
+</head><body><main class="frame">
+  <p class="brand">Indexák</p>
+  <div class="swap">
+    <div class="orig">
+      <p class="voo ticker"><s>VOO</s></p>
+      <p class="note">u evropského brokera nedostupné</p>
+    </div>
+    <div class="alt">
+      <p class="swap-mark" aria-hidden="true"><span>⇄</span></p>
+      <ul class="rows">{{sp500.rows}}</ul>
+    </div>
+  </div>
+  <div class="foot">
+    <p class="claim">Stejný index S&amp;P 500. Evropský fond, který koupíte.</p>
+    <p class="source">TER ročně. Zdroj: vydavatelé fondů, k&nbsp;{{asOf}}. Nejde o&nbsp;investiční doporučení.</p>
+  </div>
+</main></body></html>
