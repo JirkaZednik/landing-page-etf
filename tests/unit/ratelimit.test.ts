@@ -33,6 +33,18 @@ describe('checkRateLimit', () => {
       expect(Ratelimit.slidingWindow).toHaveBeenCalledWith(5, '10 m');
       expect(limit).toHaveBeenCalledWith('subscribe:1.2.3.4');
     });
+    it('custom opts → slidingWindow(20, "10 m"); limiter cached per (limit, window)', async () => {
+      limit.mockResolvedValue({ success: true });
+      const check = await load();
+      const { Ratelimit } = await import('@upstash/ratelimit');
+      await check('profile:1.2.3.4', { limit: 20, window: '10 m' });
+      await check('profile:1.2.3.5', { limit: 20, window: '10 m' });
+      await check('subscribe:1.2.3.4');
+      await check('subscribe:1.2.3.5');
+      expect(Ratelimit.slidingWindow).toHaveBeenCalledWith(20, '10 m');
+      expect(Ratelimit.slidingWindow).toHaveBeenCalledWith(5, '10 m');
+      expect(ctor).toHaveBeenCalledTimes(2);
+    });
     it('over the limit → false', async () => {
       limit.mockResolvedValue({ success: false });
       expect(await (await load())('subscribe:1.2.3.4')).toBe(false);

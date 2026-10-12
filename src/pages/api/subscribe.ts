@@ -4,26 +4,13 @@ import { isUuid, isValidEmail } from '../../lib/validate';
 import { createDoiContact } from '../../server/brevo';
 import { env } from '../../server/env';
 import { sendLeadEvent } from '../../server/meta-capi';
+import { isSameOrigin } from '../../server/origin';
 import { parseBody } from '../../server/parse-body';
 import { checkRateLimit } from '../../server/ratelimit';
 
 export const prerender = false;
 
 const PLACEMENTS: Placement[] = ['hero', 'card', 'calc', 'preview'];
-
-function sameOrigin(req: Request): boolean {
-  const site = env('SITE_URL');
-  if (!site) return false;
-  try {
-    const expected = new URL(site).origin;
-    const origin = req.headers.get('origin');
-    if (origin) return origin === expected;
-    const referer = req.headers.get('referer');
-    return referer ? new URL(referer).origin === expected : false;
-  } catch {
-    return false;
-  }
-}
 
 const fail = (error: 'invalid_email' | 'rate_limited' | 'server', status: number, isForm: boolean) =>
   isForm
@@ -43,7 +30,7 @@ const posInt = (s: string | undefined) => {
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   const { data, isForm } = await parseBody(request);
-  if (!sameOrigin(request)) return fail('server', 403, isForm);
+  if (!isSameOrigin(request)) return fail('server', 403, isForm);
   if (!(await checkRateLimit(`subscribe:${clientAddress}`))) return fail('rate_limited', 429, isForm);
 
   const aid = isUuid(data.aid ?? '') ? data.aid : crypto.randomUUID();
