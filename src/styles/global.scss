@@ -236,3 +236,389 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
     body { padding-bottom: var(--sticky-cta-h); }
   }
 }
+
+// Obsahové sekce pod hero (Task 10/11).
+.section {
+  max-width: 34rem;
+  padding: $s5 $s3 $s4;
+  border-top: 2px solid var(--ink);
+
+  > h2 {
+    margin: 0 0 $s3;
+    font-size: 1.375rem;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+}
+
+// Spojovací motiv ⇄ (stejný jako v AnswerCard) pro React ostrůvky.
+.pair-rule {
+  display: flex;
+  align-items: center;
+  gap: $s2;
+  height: 1.25rem;
+  margin: $s1 0 0;
+  color: var(--signal);
+  font-family: $font-mono;
+  font-size: 1.125rem;
+  line-height: 1;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid var(--rule);
+  }
+}
+
+// Čipy: skutečné radio v <fieldset>; šipky fungují nativně.
+.chips {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $s2;
+  margin: 0 0 $s3;
+  padding: 0;
+  border: 0;
+
+  &--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  legend {
+    grid-column: 1 / -1;
+    padding: 0;
+    margin-bottom: $s2;
+    font-size: 0.9375rem;
+  }
+}
+
+.chip {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 44px;
+  padding: $s2;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  line-height: 1.25;
+  cursor: pointer;
+
+  // Visually hidden but focusable and announced.
+  input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &:has(input:checked) {
+    border: 2px solid var(--ink);
+    padding: calc(#{$s2} - 1px);
+  }
+
+  &:has(input:focus-visible) {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+
+  &__tk {
+    font-family: $font-mono;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  &__label {
+    color: var(--muted);
+    font-size: 0.8125rem;
+  }
+
+  input:checked ~ &__label { color: var(--ink); }
+}
+
+.chips--2 .chip__label { font-size: 0.9375rem; color: var(--ink); }
+
+// Karta fondu: originál nahoře (muted), ⇄, pak dvojčata v řádcích.
+.fund-card {
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+  padding: $s2 0 $s1;
+
+  p { margin: 0; }
+
+  &__orig {
+    color: var(--muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+
+    a { color: inherit; margin-left: $s1; }
+  }
+
+  &__tk {
+    font-family: $font-mono;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.01em;
+  }
+
+  &__orig &__tk { font-size: 0.875rem; font-weight: 400; }
+
+  &__num {
+    font-family: $font-mono;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__rule {
+    margin: $s2 0 0;
+    border: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  &__note {
+    display: grid;
+    gap: $s1;
+    padding: $s2 0;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+
+    p:not(.fund-card__missing) { color: var(--muted); }
+  }
+
+  &__missing { font-weight: 600; }
+
+  &__h {
+    margin: $s2 0 0;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  &__twins {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li + li { border-top: 1px solid var(--rule); }
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr auto 1rem;
+    align-items: baseline;
+    align-content: center;
+    column-gap: $s2;
+    min-height: 44px;
+    padding: $s1 0;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker { display: none; }
+
+    &::after {
+      content: '▸';
+      justify-self: end;
+      color: var(--muted);
+      font-size: 0.75rem;
+      transition: transform 120ms ease-out;
+    }
+  }
+
+  .twin[open] > &__row::after { transform: rotate(90deg); }
+
+  &__index {
+    font-size: 0.875rem;
+    line-height: 1.3;
+  }
+
+  &__other { color: var(--muted); }
+
+  &__ter {
+    font-family: $font-mono;
+    font-variant-numeric: tabular-nums;
+    font-size: 1rem;
+    text-align: right;
+  }
+
+  &__more {
+    padding: 0 0 $s2 calc(4.5rem + #{$s2});
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  &__isin {
+    color: var(--muted);
+
+    span {
+      color: var(--ink);
+      font-family: $font-mono;
+      font-variant-numeric: tabular-nums;
+      user-select: all;
+    }
+  }
+
+  &__links {
+    display: flex;
+    gap: $s3;
+
+    a { display: inline-block; padding: $s1 0; }
+  }
+
+  &__foot {
+    display: grid;
+    gap: $s2;
+    justify-items: start;
+    margin-top: $s2;
+    padding-top: $s3;
+    border-top: 1px solid var(--rule);
+  }
+
+  &__cta {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 $s3;
+    border: 1px solid var(--ink);
+    border-radius: 2px;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  &__calc {
+    display: inline-block;
+    padding: $s2 0;
+    font-size: 0.9375rem;
+  }
+
+  &__src {
+    color: var(--muted);
+    font-size: 0.75rem;
+    line-height: 1.4;
+
+    a { color: inherit; }
+  }
+}
+
+// Kalkulačka: vstupy nahoře, výsledek jako tabulka (Fond · TER · Na poplatcích).
+.calc {
+  display: grid;
+  gap: $s4;
+
+  &__inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $s3;
+
+    .chips { grid-column: 1 / -1; margin: 0; }
+  }
+
+  &__field {
+    display: grid;
+    gap: $s1;
+
+    label { font-size: 0.9375rem; }
+
+    input {
+      min-height: 48px;
+      width: 100%;
+      padding: 0 $s2;
+      border: 1px solid var(--ink);
+      border-radius: 2px;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: $font-mono;
+      font-size: 1rem;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  &__hint {
+    color: var(--muted);
+    font-size: 0.8125rem;
+  }
+
+  &__result {
+    border-top: 2px solid var(--ink);
+    padding-top: $s2;
+
+    p { margin: 0; }
+  }
+
+  &__h {
+    margin: 0 0 $s1;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  &__deposited { font-size: 1rem; margin-bottom: $s2 !important; }
+
+  &__num {
+    font-family: $font-mono;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+
+    .calc__col-fund { width: 40%; }
+    .calc__col-ter { width: 25%; }
+
+    th, td {
+      padding: $s2 0;
+      text-align: left;
+      vertical-align: baseline;
+      font-weight: 400;
+    }
+
+    th:not(:first-child), td { text-align: right; }
+
+    thead th {
+      padding-top: 0;
+      color: var(--muted);
+      font-size: 0.8125rem;
+      border-bottom: 1px solid var(--ink);
+    }
+
+    tbody tr + tr { border-top: 1px solid var(--rule); }
+
+    td {
+      font-family: $font-mono;
+      font-variant-numeric: tabular-nums;
+      font-size: 1rem;
+    }
+  }
+
+  &__tk {
+    font-family: $font-mono;
+    font-weight: 600 !important;
+  }
+
+  &__diff {
+    padding: $s2 0 $s3;
+    border-top: 1px solid var(--ink);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  &__table--cmp {
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+
+    th { font-size: 0.875rem; line-height: 1.35; }
+  }
+
+  &__note {
+    padding-top: $s2;
+    color: var(--muted);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+
+  .lead-form { max-width: none; }
+}

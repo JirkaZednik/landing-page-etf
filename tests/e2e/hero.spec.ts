@@ -120,15 +120,18 @@ test.describe('with consent decided', () => {
     await page.waitForLoadState('networkidle');
     const sticky = page.locator('[data-sticky-cta]');
     await expect(sticky).toBeHidden();
-    // Task 9 page has only the hero; give it length so the form can leave the viewport.
+    // Give the page length past the last form, then scroll to the very bottom: every lead form
+    // (hero #form, and the calculator form since Task 10) is above, so the bar jumps back to the last one.
     await page.evaluate(lengthenPage);
-    await page.evaluate(() => window.scrollTo(0, 2500));
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     await expect(sticky).toBeVisible();
+    const forms = page.locator('form[action="/api/subscribe"]');
+    const last = (await forms.count()) - 1;
     await sticky.getByRole('button', { name: 'Pošlete mi návod zdarma' }).click();
-    await expect(page.locator('#form input[name="email"]')).toBeFocused();
+    await expect(forms.nth(last).locator('input[name="email"]')).toBeFocused();
     await expect(sticky).toBeHidden();
     const ev = await page.evaluate(() => window.__events.find((e) => e.name === 'sticky_cta_clicked')?.props);
-    expect(ev).toEqual({ target: 'form-0' });
+    expect(ev).toEqual({ target: `form-${last}` });
   });
 
   test('while the sticky bar is shown, the page bottom scrolls fully above it', async ({ page }) => {
