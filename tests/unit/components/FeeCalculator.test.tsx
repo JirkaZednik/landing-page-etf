@@ -9,7 +9,7 @@ vi.mock('../../../src/lib/track', () => ({
 vi.mock('../../../src/lib/consent', () => ({ getConsent: vi.fn(() => null), onConsentChange: vi.fn(() => () => {}) }));
 import { track } from '../../../src/lib/track';
 import FeeCalculator from '../../../src/components/FeeCalculator';
-import { CALC_GROUP_EVENT } from '../../../src/components/FundCard';
+import FundCard, { CALC_GROUP_EVENT } from '../../../src/components/FundCard';
 import { clampInputs, COMPARISON_TER } from '../../../src/lib/calc';
 import { formatCzk } from '../../../src/lib/format';
 import { twinsSortedByTer } from '../../../src/lib/pairs';
@@ -119,6 +119,18 @@ describe('FeeCalculator', () => {
     expect(screen.getByRole('radio', { name: /celý svět/i })).toBeChecked();
     act(() => { window.dispatchEvent(new CustomEvent(CALC_GROUP_EVENT, { detail: 'us-total' })); });
     expect(screen.getByRole('radio', { name: /celý svět/i })).toBeChecked();
+  });
+
+  it('a world-card click before the calculator has hydrated still preselects "Celý svět" on mount', async () => {
+    const card = render(<FundCard groupId="world" onCta={vi.fn()} />);
+    await user.click(screen.getByRole('link', { name: 'Spočítat poplatky v kalkulačce' }));
+    card.unmount();
+    render(<FeeCalculator />); // mounts (hydrates) only now
+    expect(screen.getByRole('radio', { name: /celý svět/i })).toBeChecked();
+    cleanup();
+    // the pending choice is consumed once: a later mount starts at the default again
+    render(<FeeCalculator />);
+    expect(screen.getByRole('radio', { name: /S&P 500/i })).toBeChecked();
   });
 
   it('calc_used is debounced to one call', async () => {

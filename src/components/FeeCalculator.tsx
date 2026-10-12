@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import LeadForm from './LeadForm';
-import { CALC_GROUP_EVENT } from './FundCard';
+import { CALC_GROUP_EVENT, takePendingCalcGroup } from '../lib/calc-group';
 import { clampInputs, computeFees, LIMITS } from '../lib/calc';
 import { formatCzk, formatTer } from '../lib/format';
 import { getGroup, twinsSortedByTer } from '../lib/pairs';
@@ -38,9 +38,13 @@ export default function FeeCalculator({ initialGroup }: Props) {
   const first = rows[0];
   const last = rows.at(-1);
 
-  // A fund card ("Spočítat poplatky v kalkulačce") can preselect the group.
+  // A fund card ("Spočítat poplatky v kalkulačce") can preselect the group: live via the event,
+  // or (clicked before this island hydrated) via the pending choice read on mount.
   useEffect(() => {
+    const pending = takePendingCalcGroup();
+    if (isCalcGroup(pending)) setGroup(pending);
     const onPick = (e: Event) => {
+      takePendingCalcGroup();
       const id = (e as CustomEvent).detail;
       if (isCalcGroup(id)) setGroup(id);
     };

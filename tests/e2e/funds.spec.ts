@@ -60,3 +60,14 @@ test('world card "Spočítat poplatky" preselects the world group in the calcula
   await page.locator('#fondy').getByRole('link', { name: 'Spočítat poplatky v kalkulačce' }).click();
   await expect(page.locator('#kalkulacka').getByRole('radio', { name: 'Celý svět' })).toBeChecked();
 });
+
+test('world card "Spočítat poplatky" preselects "Celý svět" even before the calculator island has hydrated', async ({ page }) => {
+  await setup(page);
+  await hydrated(page, '#fondy');
+  // the calculator (client:visible) has not hydrated yet: the click is what brings it into view
+  await expect(page.locator('#kalkulacka astro-island')).toHaveAttribute('ssr', /.*/);
+  await page.locator('#fondy').getByRole('link', { name: 'Spočítat poplatky v kalkulačce' }).click();
+  await expect(page.locator('#kalkulacka astro-island')).not.toHaveAttribute('ssr', /.*/);
+  await expect(page.locator('#kalkulacka').getByRole('radio', { name: 'Celý svět' })).toBeChecked();
+  await expect(page.locator('#kalkulacka').getByTestId('calc-row').first()).toHaveAttribute('data-fund', 'SPYY');
+});

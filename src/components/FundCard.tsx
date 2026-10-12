@@ -2,11 +2,11 @@ import { getData, getGroup, originalsOf, twinsSortedByTer } from '../lib/pairs';
 import { formatDateCz, formatTer } from '../lib/format';
 import { track } from '../lib/track';
 import type { GroupId } from '../lib/types';
+import { CALC_GROUP_EVENT, requestCalcGroup } from '../lib/calc-group';
 
 type Props = { groupId: GroupId; onCta: (groupId: GroupId) => void };
 
-/** Event the card sends when the visitor wants this group in the fee calculator. */
-export const CALC_GROUP_EVENT = 'ix:calc-group';
+export { CALC_GROUP_EVENT };
 
 // Shown only where no UCITS fund tracks the original's index or anything close (preflight T10):
 // the world twins track related indexes and say so in the group note instead.
@@ -87,7 +87,7 @@ export default function FundCard({ groupId, onCta }: Props) {
           <a
             href="#kalkulacka"
             className="fund-card__calc"
-            onClick={() => window.dispatchEvent(new CustomEvent(CALC_GROUP_EVENT, { detail: groupId }))}
+            onClick={() => requestCalcGroup(groupId)}
           >
             Spočítat poplatky v kalkulačce
           </a>
