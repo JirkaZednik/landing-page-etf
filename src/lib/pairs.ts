@@ -32,6 +32,34 @@ export function twinsSortedByTer(id: GroupId): Fund[] {
     .sort((a, b) => a.ter.value - b.ter.value || a.id.localeCompare(b.id));
 }
 
+// Primary sources only: fund issuers and SEC filings (aggregators are not allowed).
+const SOURCE_HOSTS = [
+  'vanguard', // de.vanguard, nl.vanguard
+  'vanguard.com',
+  'vanguard.co.uk',
+  'vanguardsouthamerica.com',
+  'ssga.com',
+  'ishares.com',
+  'blackrock.com',
+  'schwabassetmanagement.com',
+  'invesco.com',
+  'fidelity.co.uk',
+  'fidelityinternational.com',
+  'sec.gov',
+];
+
+function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname.toLowerCase();
+  } catch {
+    return '';
+  }
+}
+
+function isAllowedHost(host: string): boolean {
+  return SOURCE_HOSTS.some((h) => host === h || host.endsWith('.' + h));
+}
+
 function isIsoDate(s: unknown): boolean {
   if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
   const d = new Date(s + 'T00:00:00Z');
@@ -66,6 +94,8 @@ export function validateData(d: EtfData): string[] {
       const s = f[field];
       if (typeof s.sourceUrl !== 'string' || !s.sourceUrl.startsWith('https://'))
         errors.push(`funds.${f.id}.${field}.sourceUrl: must be https`);
+      else if (!isAllowedHost(hostOf(s.sourceUrl)))
+        errors.push(`funds.${f.id}.${field}: sourceUrl host not allowed: ${hostOf(s.sourceUrl)}`);
       if (!isIsoDate(s.asOf)) errors.push(`funds.${f.id}.${field}.asOf: must be YYYY-MM-DD`);
     }
     if (!isValidIsin(f.isin.value)) errors.push(`funds.${f.id}.isin: invalid ISIN`);
@@ -76,6 +106,8 @@ export function validateData(d: EtfData): string[] {
       errors.push(`funds.${f.id}.exchange: US original must trade on NYSE Arca`);
     if (f.kidUrl !== undefined && !f.kidUrl.startsWith('https://'))
       errors.push(`funds.${f.id}.kidUrl: must be https`);
+    else if (f.kidUrl !== undefined && !isAllowedHost(hostOf(f.kidUrl)))
+      errors.push(`funds.${f.id}.kidUrl: sourceUrl host not allowed: ${hostOf(f.kidUrl)}`);
   }
 
   for (const id of GROUP_IDS) {

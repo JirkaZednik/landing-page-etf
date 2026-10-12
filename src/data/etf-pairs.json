@@ -26,7 +26,7 @@
       },
       "domicile": {
         "value": "US",
-        "sourceUrl": "https://fund-docs.vanguard.com/F0968.pdf",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/36405/000168386321002763/f8950d1.htm",
         "asOf": "2026-10-12"
       },
       "distribution": {
@@ -70,7 +70,7 @@
       },
       "domicile": {
         "value": "US",
-        "sourceUrl": "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/884394/000119312521009991/d33381d497.htm",
         "asOf": "2026-10-12"
       },
       "distribution": {
@@ -80,7 +80,7 @@
       },
       "replication": {
         "value": "physical",
-        "sourceUrl": "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/884394/000119312521009991/d33381d497.htm",
         "asOf": "2026-10-12"
       },
       "index": {
@@ -114,7 +114,7 @@
       },
       "domicile": {
         "value": "US",
-        "sourceUrl": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+        "sourceUrl": "https://www.ishares.com/us/literature/sai/sai-ishares-trust-3-31.pdf",
         "asOf": "2026-10-12"
       },
       "distribution": {
@@ -124,7 +124,7 @@
       },
       "replication": {
         "value": "physical",
-        "sourceUrl": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+        "sourceUrl": "https://www.ishares.com/us/literature/summary-prospectus/sp-ishares-core-s-and-p-500-etf-3-31.pdf",
         "asOf": "2026-10-12"
       },
       "index": {
@@ -158,7 +158,7 @@
       },
       "domicile": {
         "value": "US",
-        "sourceUrl": "https://fund-docs.vanguard.com/F0970.pdf",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/36405/000168386321002763/f8950d1.htm",
         "asOf": "2026-10-12"
       },
       "distribution": {
@@ -202,7 +202,7 @@
       },
       "domicile": {
         "value": "US",
-        "sourceUrl": "https://fund-docs.vanguard.com/F3141.pdf",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/857489/000168386323001389/f24384d1.htm",
         "asOf": "2026-10-12"
       },
       "distribution": {
@@ -246,7 +246,7 @@
       },
       "domicile": {
         "value": "US",
-        "sourceUrl": "https://www.schwabassetmanagement.com/products/schd",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1454889/000119312525303635/d61871dncsrs.htm",
         "asOf": "2026-10-12"
       },
       "distribution": {
@@ -256,7 +256,7 @@
       },
       "replication": {
         "value": "physical",
-        "sourceUrl": "https://www.schwabassetmanagement.com/products/schd",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1454889/000110465926020681/tm266454-15_497k.htm",
         "asOf": "2026-10-12"
       },
       "index": {
@@ -284,7 +284,7 @@
         "asOf": "2026-10-12"
       },
       "exchange": {
-        "value": "Xetra",
+        "value": "Deutsche Börse",
         "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-sp-500-ucits-etf-spyl-gy",
         "asOf": "2026-10-12"
       },
@@ -329,8 +329,8 @@
         "asOf": "2026-10-12"
       },
       "exchange": {
-        "value": "Xetra",
-        "sourceUrl": "https://www.de.vanguard/professionell/anlageprodukte/etf/aktien/9694/sp-500-ucits-etf-usd-accumulating",
+        "value": "Deutsche Börse",
+        "sourceUrl": "https://fund-docs.vanguard.com/SandP_500_UCITS_ETF_USD_Accumulating_9694_INT_OFF_ETF_EN.pdf",
         "asOf": "2026-10-12"
       },
       "domicile": {
@@ -419,7 +419,7 @@
         "asOf": "2026-10-12"
       },
       "exchange": {
-        "value": "Xetra",
+        "value": "Deutsche Börse",
         "sourceUrl": "https://www.ssga.com/uk/en_gb/institutional/etfs/spdr-msci-acwi-ucits-etf-spyy-gy",
         "asOf": "2026-10-12"
       },
@@ -464,8 +464,8 @@
         "asOf": "2026-10-12"
       },
       "exchange": {
-        "value": "Xetra",
-        "sourceUrl": "https://nl.vanguard/professional/product/etf/equity/9679/ftse-all-world-ucits-etf-usd-accumulating",
+        "value": "Deutsche Börse",
+        "sourceUrl": "https://fund-docs.vanguard.com/FTSE_All-World_UCITS_ETF_USD_Accumulating_9679_INT_OFF_ETF_EN.pdf",
         "asOf": "2026-10-12"
       },
       "domicile": {
@@ -489,51 +489,6 @@
         "asOf": "2026-10-12"
       },
       "kidUrl": "https://fund-docs.vanguard.com/ie00bk5bqt80_priipskid_en.pdf"
-    },
-    "FWRA": {
-      "id": "FWRA",
-      "kind": "ucits",
-      "name": {
-        "value": "Invesco FTSE All-World UCITS ETF Acc",
-        "sourceUrl": "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE000716YHJ7_factsheet_en.pdf",
-        "asOf": "2026-10-12"
-      },
-      "isin": {
-        "value": "IE000716YHJ7",
-        "sourceUrl": "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE000716YHJ7_factsheet_en.pdf",
-        "asOf": "2026-10-12"
-      },
-      "ter": {
-        "value": 0.15,
-        "sourceUrl": "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE000716YHJ7_factsheet_en.pdf",
-        "asOf": "2026-10-12"
-      },
-      "exchange": {
-        "value": "London Stock Exchange",
-        "sourceUrl": "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE000716YHJ7_factsheet_en.pdf",
-        "asOf": "2026-10-12"
-      },
-      "domicile": {
-        "value": "IE",
-        "sourceUrl": "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE000716YHJ7_factsheet_en.pdf",
-        "asOf": "2026-10-12"
-      },
-      "distribution": {
-        "value": "acc",
-        "sourceUrl": "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE000716YHJ7_factsheet_en.pdf",
-        "asOf": "2026-10-12"
-      },
-      "replication": {
-        "value": "physical",
-        "sourceUrl": "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE000716YHJ7_factsheet_en.pdf",
-        "asOf": "2026-10-12"
-      },
-      "index": {
-        "value": "FTSE All-World",
-        "sourceUrl": "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE000716YHJ7_factsheet_en.pdf",
-        "asOf": "2026-10-12"
-      },
-      "kidUrl": "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/kid/IE000716YHJ7_kid_en.pdf"
     },
     "FUSD": {
       "id": "FUSD",
@@ -605,8 +560,7 @@
       ],
       "twins": [
         "SPYY",
-        "VWCE",
-        "FWRA"
+        "VWCE"
       ],
       "exactTwin": false,
       "calcEnabled": true,

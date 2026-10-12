@@ -48,6 +48,14 @@ describe('validateData', () => {
     const d = clone(); d.funds.SPYL.isin.asOf = '11. 10. 2026';
     expect(validateData(d)).toContain('funds.SPYL.isin.asOf: must be YYYY-MM-DD');
   });
+  it('reports aggregator sourceUrl host', () => {
+    const d = clone(); d.funds.SPYL.ter.sourceUrl = 'https://www.justetf.com/en/etf-profile.html?isin=IE000XZSV718';
+    expect(validateData(d)).toContain('funds.SPYL.ter: sourceUrl host not allowed: www.justetf.com');
+  });
+  it('rejects lookalike hosts of allowed domains', () => {
+    const d = clone(); d.funds.SPYL.ter.sourceUrl = 'https://notssga.com/x';
+    expect(validateData(d)).toContain('funds.SPYL.ter: sourceUrl host not allowed: notssga.com');
+  });
   it('reports invalid ISIN check digit', () => {
     const d = clone(); d.funds.SPYL.isin.value = 'IE000XZSV719';
     expect(validateData(d)).toContain('funds.SPYL.isin: invalid ISIN');
