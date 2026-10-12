@@ -37,20 +37,56 @@ function expire(name: string): void {
 }
 
 function cookieNames(): string[] {
-  return document.cookie.split(';').map((c) => decodeURIComponent(c.split('=')[0].trim())).filter(Boolean);
+  return document.cookie.split(';').map((c) => {
+    const raw = c.split('=')[0].trim();
+    try {
+      return decodeURIComponent(raw);
+    } catch {
+      return raw; // malformed third-party cookie name: keep it as is, never throw
+    }
+  }).filter(Boolean);
+}
+
+// `aid` links a person's Brevo record to analytics events: it must never reach PostHog inside a URL
+// ($current_url, $referrer, $initial_*, $session_entry_*). With consent it is sent via identify() only.
+function stripAid(value: string): string {
+  if (!/[?&]aid=/.test(value)) return value;
+  return value
+    .replace(/([?&])aid=[^&#]*(&?)/g, (_m, sep: string, amp: string) => (amp ? sep : sep === '?' ? '?' : ''))
+    .replace(/\?(#|$)/, '$1');
+}
+
+function scrub(v: unknown): unknown {
+  if (typeof v === 'string') return stripAid(v);
+  if (Array.isArray(v)) return v.map(scrub);
+  if (v && typeof v === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, x] of Object.entries(v)) out[k] = scrub(x);
+    return out;
+  }
+  return v;
+}
+
+type PhEvent = { properties: Record<string, unknown>; $set?: unknown; $set_once?: unknown };
+export function scrubAid<T extends PhEvent>(e: T | null): T | null {
+  if (!e) return e;
+  e.properties = scrub(e.properties) as Record<string, unknown>;
+  if (e.$set) e.$set = scrub(e.$set);
+  if (e.$set_once) e.$set_once = scrub(e.$set_once);
+  return e;
 }
 
 // Removes what a revoked purpose left in the browser (storage keys and cookies on host and parent domains).
 function purge(purpose: 'analytics' | 'meta' | 'ga4'): void {
   const match =
-    purpose === 'analytics' ? (n: string) => n.startsWith('ph_')
+    purpose === 'analytics' ? (n: string) => n.startsWith('ph_') || n.startsWith('__ph_')
     : purpose === 'meta' ? (n: string) => n === '_fbp'
     : (n: string) => n === '_ga' || n.startsWith('_ga_');
   for (const n of cookieNames()) if (match(n)) expire(n);
   if (purpose !== 'analytics') return;
   for (const store of [localStorage, sessionStorage]) {
     try {
-      for (const k of Object.keys(store)) if (k.startsWith('ph_')) store.removeItem(k);
+      for (const k of Object.keys(store)) if (k.startsWith('ph_') || k.startsWith('__ph_')) store.removeItem(k);
     } catch {
       // blocked storage
     }
@@ -112,23 +148,30 @@ function apply(c: ConsentState | null): void {
     window.gtag?.('config', ga4Id);
   }
 
-  if (c?.analytics && !lastConsent?.analytics && ph && !phCookieless) ph.identify(getAid());
+  if (c?.analytics && !lastConsent?.analytics && ph) {
+    if (phCookieless) {
+      // switch the live instance to persistent storage in place (no reload: a reload would re-send
+      // page_view and Meta PageView and wipe a half-typed e-mail). 'on_reject' + opt_in is the
+      // posthog-js path that leaves cookieless mode at runtime.
+      ph.set_config({ cookieless_mode: 'on_reject', persistence: 'localStorage+cookie' });
+      ph.opt_in_capturing({ captureEventName: null });
+      phCookieless = false;
+    }
+    ph.identify(getAid());
+  }
 
-  // Loaded third-party scripts cannot be switched off reliably: reload without them.
+  // Loaded third-party scripts cannot be switched off reliably: reload without them (revoke only).
   const revoked =
     (lastConsent?.analytics && !c?.analytics) ||
     (lastConsent?.meta && !c?.meta) ||
     (lastConsent?.ga4 && !c?.ga4);
-  // An instance started cookieless cannot switch to persistent storage at runtime
-  // (posthog-js set_config does not rebuild cookieless state): reload, which re-inits with consent.
-  const analyticsGranted = !!c?.analytics && !lastConsent?.analytics && ph !== null && phCookieless;
   if (revoked) {
     if (lastConsent?.analytics && !c?.analytics) purge('analytics');
     if (lastConsent?.meta && !c?.meta) purge('meta');
     if (lastConsent?.ga4 && !c?.ga4) purge('ga4');
   }
   lastConsent = c;
-  if (revoked || analyticsGranted) location.reload();
+  if (revoked) location.reload();
 }
 
 function send(e: EventName, props: Props): void {
@@ -192,6 +235,7 @@ export function initAnalytics(): void {
       capture_pageview: false,
       autocapture: false,
       disable_session_recording: true,
+      before_send: scrubAid,
     };
     // read consent now: it may have been granted while posthog-js was loading
     phCookieless = !getConsent()?.analytics;
