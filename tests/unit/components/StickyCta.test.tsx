@@ -9,6 +9,7 @@ import StickyCta from '../../../src/components/StickyCta';
 
 type Entry = { target: Element; isIntersecting: boolean };
 let ioCallback: (entries: Entry[]) => void;
+let observed: Set<Element>;
 let forms: HTMLFormElement[];
 let reducedMotion = false;
 const NAME = 'Pošlete mi návod zdarma';
@@ -22,6 +23,8 @@ const showBar = () => act(() => ioCallback(forms.map((f) => ({ target: f, isInte
 beforeEach(() => {
   vi.clearAllMocks();
   reducedMotion = false;
+  observed = new Set();
+  delete document.documentElement.dataset.stickyBar;
   document.body.innerHTML = '';
   forms = [0, 1, 2].map((i) => {
     const f = document.createElement('form');
@@ -36,7 +39,10 @@ beforeEach(() => {
   });
   vi.stubGlobal('IntersectionObserver', class {
     constructor(cb: (e: Entry[]) => void) { ioCallback = cb; }
-    observe() {} unobserve() {} disconnect() {} takeRecords() { return []; }
+    observe(el: Element) { observed.add(el); }
+    unobserve(el: Element) { observed.delete(el); }
+    disconnect() { observed.clear(); }
+    takeRecords() { return []; }
   });
   vi.stubGlobal('matchMedia', (q: string) => ({ matches: q.includes('reduce') && reducedMotion, media: q, addEventListener() {}, removeEventListener() {} }));
   vi.stubGlobal('innerHeight', 844);
@@ -96,5 +102,40 @@ describe('StickyCta', () => {
     showBar();
     await userEvent.click(screen.getByRole('button', { name: NAME }));
     expect(forms[1].scrollIntoView).toHaveBeenCalledWith({ behavior: 'auto', block: 'center' });
+  });
+
+  it('observes a form added after mount; when it intersects, the bar hides', async () => {
+    render(<StickyCta />);
+    showBar();
+    const late = document.createElement('form');
+    late.setAttribute('action', '/api/subscribe');
+    document.body.appendChild(late);
+    await act(async () => { await Promise.resolve(); }); // MutationObserver delivery
+    expect(observed.has(late)).toBe(true);
+    act(() => ioCallback([{ target: late, isIntersecting: true }]));
+    expect(screen.queryByRole('button', { name: NAME })).toBeNull();
+  });
+
+  it('stops watching a removed form and shows the bar if it was the one in view', async () => {
+    render(<StickyCta />);
+    act(() => ioCallback([{ target: forms[1], isIntersecting: true }]));
+    expect(screen.queryByRole('button', { name: NAME })).toBeNull();
+    forms[1].remove();
+    await act(async () => { await Promise.resolve(); });
+    expect(observed.has(forms[1])).toBe(false);
+    expect(screen.getByRole('button', { name: NAME })).toBeVisible();
+  });
+
+  it('flags html[data-sticky-bar=shown] only while the bar is shown, and disconnects on unmount', () => {
+    const { unmount } = render(<StickyCta />);
+    expect(document.documentElement.dataset.stickyBar).toBeUndefined();
+    showBar();
+    expect(document.documentElement.dataset.stickyBar).toBe('shown');
+    act(() => ioCallback([{ target: forms[0], isIntersecting: true }]));
+    expect(document.documentElement.dataset.stickyBar).toBeUndefined();
+    act(() => ioCallback([{ target: forms[0], isIntersecting: false }]));
+    unmount();
+    expect(document.documentElement.dataset.stickyBar).toBeUndefined();
+    expect(observed.size).toBe(0);
   });
 });

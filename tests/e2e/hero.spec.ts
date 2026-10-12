@@ -19,6 +19,17 @@ const collectEvents = (page: Page) =>
     window.addEventListener('ix:track', (e) => window.__events.push((e as CustomEvent).detail));
   });
 
+// Stand-in for the rest of the page (Task 11): a tall block and a last link, as a footer would have.
+const lengthenPage = () => {
+  const spacer = document.createElement('div');
+  spacer.style.height = '3000px';
+  const last = document.createElement('a');
+  last.href = '#';
+  last.id = 'e2e-last-link';
+  last.textContent = 'Poslední odkaz';
+  document.body.append(spacer, last);
+};
+
 async function measure(page: Page, url: string) {
   await page.addInitScript(() => {
     window.__cls = 0;
@@ -110,13 +121,29 @@ test.describe('with consent decided', () => {
     const sticky = page.locator('[data-sticky-cta]');
     await expect(sticky).toBeHidden();
     // Task 9 page has only the hero; give it length so the form can leave the viewport.
-    await page.evaluate(() => { document.body.style.paddingBottom = '3000px'; window.scrollTo(0, 2500); });
+    await page.evaluate(lengthenPage);
+    await page.evaluate(() => window.scrollTo(0, 2500));
     await expect(sticky).toBeVisible();
     await sticky.getByRole('button', { name: 'Pošlete mi návod zdarma' }).click();
     await expect(page.locator('#form input[name="email"]')).toBeFocused();
     await expect(sticky).toBeHidden();
     const ev = await page.evaluate(() => window.__events.find((e) => e.name === 'sticky_cta_clicked')?.props);
     expect(ev).toEqual({ target: 'form-0' });
+  });
+
+  test('while the sticky bar is shown, the page bottom scrolls fully above it', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await page.evaluate(lengthenPage);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const sticky = page.locator('[data-sticky-cta]');
+    await expect(sticky).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-sticky-bar', 'shown');
+    // the bar appeared after the scroll; scroll to the (now taller) bottom again
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const bar = (await sticky.boundingBox())!;
+    const last = (await page.locator('#e2e-last-link').boundingBox())!;
+    expect(last.y + last.height).toBeLessThanOrEqual(bar.y);
   });
 });
 
@@ -140,7 +167,8 @@ test.describe('consent banner open (first visit)', () => {
     await page.goto('/');
     await expect(page.getByRole('region', { name: 'Souhlas s cookies' })).toBeVisible();
     await page.waitForLoadState('networkidle');
-    await page.evaluate(() => { document.body.style.paddingBottom = '3000px'; window.scrollTo(0, 2500); });
+    await page.evaluate(lengthenPage);
+    await page.evaluate(() => window.scrollTo(0, 2500));
     await page.waitForTimeout(300);
     await expect(page.locator('[data-sticky-cta]')).toBeHidden();
   });

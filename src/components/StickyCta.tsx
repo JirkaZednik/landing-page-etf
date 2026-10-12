@@ -11,19 +11,43 @@ export default function StickyCta() {
   const inView = useRef(new Set<Element>());
 
   useEffect(() => {
-    const forms = document.querySelectorAll(FORMS);
-    if (!forms.length || typeof IntersectionObserver === 'undefined') return;
+    if (typeof IntersectionObserver === 'undefined') return;
+    const watched = new Set<Element>();
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) {
-        if (e.isIntersecting) inView.current.add(e.target);
+        if (e.isIntersecting && watched.has(e.target)) inView.current.add(e.target);
         else inView.current.delete(e.target);
       }
       setReady(true);
       setVisible(inView.current.size === 0);
     });
-    forms.forEach((f) => io.observe(f));
-    return () => io.disconnect();
+    // Forms can appear later (client-only islands) or go away: keep the watched set in sync.
+    const sync = () => {
+      const now = new Set(document.querySelectorAll(FORMS));
+      for (const f of now) if (!watched.has(f)) { watched.add(f); io.observe(f); }
+      for (const f of watched) {
+        if (now.has(f)) continue;
+        watched.delete(f);
+        io.unobserve(f);
+        if (inView.current.delete(f)) setVisible(inView.current.size === 0);
+      }
+    };
+    sync();
+    const mo = typeof MutationObserver === 'undefined' ? null : new MutationObserver(sync);
+    mo?.observe(document.body, { childList: true, subtree: true });
+    return () => { mo?.disconnect(); io.disconnect(); };
   }, []);
+
+  // html[data-sticky-bar] (not data-sticky-cta: that marks the bar element itself and is used as a selector).
+  // Reserve room at the page bottom while the fixed bar is shown, so it never covers the
+  // last content or a focused element (CSS: body padding + scroll-padding, mobile only).
+  const shown = ready && visible;
+  useEffect(() => {
+    const root = document.documentElement;
+    if (shown) root.dataset.stickyBar = 'shown';
+    else delete root.dataset.stickyBar;
+    return () => { delete root.dataset.stickyBar; };
+  }, [shown]);
 
   const jump = () => {
     const forms = Array.from(document.querySelectorAll<HTMLFormElement>(FORMS));
@@ -41,7 +65,7 @@ export default function StickyCta() {
     track('sticky_cta_clicked', { target: 'form-' + i });
   };
 
-  if (!ready || !visible) return null;
+  if (!shown) return null;
 
   return (
     <div data-sticky-cta className="sticky-cta">

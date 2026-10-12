@@ -226,3 +226,13 @@ a {
 }
 
 html[data-consent-banner='open'] .sticky-cta { display: none; }
+
+// Bar height: 48 px button + 2 × $s2 padding + 1 px rule, plus the safe area.
+@media (max-width: 47.99rem) {
+  html[data-sticky-bar='shown']:not([data-consent-banner='open']) {
+    --sticky-cta-h: calc(48px + 2 * #{$s2} + 1px + env(safe-area-inset-bottom));
+    scroll-padding-bottom: var(--sticky-cta-h);
+
+    body { padding-bottom: var(--sticky-cta-h); }
+  }
+}
