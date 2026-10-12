@@ -1,0 +1,60 @@
+---
+import AnswerCard from './AnswerCard.astro';
+import LeadForm from './LeadForm';
+import { HERO_COPY } from '../lib/copy';
+import type { HeroVariant } from '../lib/types';
+
+interface Props { variant: HeroVariant }
+const { variant } = Astro.props;
+---
+<section data-section="hero" data-default={variant} class="hero">
+  {(['a', 'b'] as const).map((v) => (
+    <div data-hero={v} class="hero__copy">
+      <h1>{HERO_COPY[v].h1}</h1>
+      <p>{HERO_COPY[v].sub}</p>
+    </div>
+  ))}
+  <AnswerCard />
+  <LeadForm client:load placement="hero" pair="sp500" id="form" />
+</section>
+
+<style lang="scss">
+  @use '../styles/tokens' as *;
+
+  .hero {
+    display: grid;
+    gap: 0.875rem;
+    padding: 0 $s3 $s4;
+    max-width: 34rem;
+  }
+
+  // Both variants are in the HTML; the head script sets html[data-variant] before first paint,
+  // so the switch never moves layout. Without JS the SSR default (data-default) shows.
+  // The rule sets below are mutually exclusive, so no specificity contest between them.
+  :global(html:not([data-variant])) .hero[data-default='a'] [data-hero='b'],
+  :global(html:not([data-variant])) .hero[data-default='b'] [data-hero='a'],
+  :global(html[data-variant='a']) [data-hero='b'],
+  :global(html[data-variant='b']) [data-hero='a'] { display: none; }
+
+  .hero__copy {
+    h1 {
+      margin: 0 0 $s2;
+      font-size: 1.625rem;
+      line-height: 1.12;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      text-wrap: balance;
+    }
+
+    p {
+      margin: 0;
+      max-width: 44ch;
+      color: var(--muted);
+      font-size: 0.9375rem;
+      line-height: 1.4;
+      text-wrap: pretty;
+    }
+  }
+
+  .hero :global(.lead-form) { max-width: none; }
+</style>

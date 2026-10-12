@@ -183,3 +183,46 @@ a {
   height: 1px;
   overflow: hidden;
 }
+
+// Hlavička: jen značka, 40 px (rozpočet první obrazovky, Task 9).
+.masthead {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 $s3;
+
+  &__brand {
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    font-variation-settings: 'opsz' 72;
+  }
+}
+
+// Sticky CTA (mobil): jen pod 48rem, ustupuje cookie liště.
+.sticky-cta {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 40;
+  padding: $s2 $s3 calc(#{$s2} + env(safe-area-inset-bottom));
+  background: var(--paper);
+  border-top: 1px solid var(--rule);
+
+  button {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    padding: 0 $s3;
+    border: 0;
+    border-radius: 2px;
+    background: var(--signal);
+    color: var(--paper);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  @media (min-width: 48rem) { display: none; }
+}
+
+html[data-consent-banner='open'] .sticky-cta { display: none; }

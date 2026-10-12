@@ -1,0 +1,186 @@
+---
+import { getData, originalsOf, twinsSortedByTer } from '../lib/pairs';
+import { formatDateCz, formatTer } from '../lib/format';
+
+const originals = originalsOf('sp500');
+const twins = twinsSortedByTer('sp500');
+const exchange = originals[0].exchange.value;
+const asOf = formatDateCz(getData().asOf);
+const DIST = { acc: 'akumulační', dist: 'distribuční' } as const;
+---
+<section data-answer-card aria-label="Evropská dvojčata ETF na S&P 500" class="answer">
+  <p class="answer__orig">
+    Originál ({exchange}):{' '}
+    {originals.map((f, i) => (
+      <>{i > 0 && <span class="answer__sep"> · </span>}<span class="answer__tk">{f.id}</span> <span class="answer__num">{formatTer(f.ter.value)}</span></>
+    ))}
+  </p>
+
+  <div class="pair-rule" aria-hidden="true">⇄</div>
+
+  <ul class="answer__twins" role="list">
+    {twins.map((f) => (
+      <li>
+        {/* No whitespace before <summary>: the row text must start with the ticker. */}
+        <details data-twin={f.id} class="twin"><summary class="twin__row"><span class="twin__tk">{f.id}</span> <span class="twin__dist">{DIST[f.distribution.value]}</span> <span class="twin__ter">{formatTer(f.ter.value)}</span></summary>
+          <div class="twin__more">
+            <p class="twin__isin">ISIN <span>{f.isin.value}</span></p>
+            <p class="twin__links">
+              <a href={f.ter.sourceUrl} target="_blank" rel="noopener" data-source-link={f.id}>Údaje vydavatele</a>
+              {f.kidUrl && (
+                <a href={f.kidUrl} target="_blank" rel="noopener" data-source-link={f.id}>KID</a>
+              )}
+            </p>
+          </div>
+        </details>
+      </li>
+    ))}
+  </ul>
+
+  <p class="answer__src">Zdroj: <a href="#zdroje">vydavatelé fondů</a>, k {asOf}</p>
+</section>
+
+<script>
+  import { track } from '../lib/track';
+  document.addEventListener('click', (e) => {
+    const a = (e.target as Element | null)?.closest?.('[data-source-link]');
+    if (a instanceof HTMLElement && a.dataset.sourceLink) track('source_link_clicked', { fund: a.dataset.sourceLink });
+  });
+</script>
+
+<style lang="scss">
+  @use '../styles/tokens' as *;
+
+  .answer {
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding: $s2 0 $s1;
+  }
+
+  .answer__orig {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .answer__tk,
+  .answer__num {
+    font-family: $font-mono;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.75rem;
+  }
+
+  .answer__sep { padding: 0 0.2em; }
+
+  // The motif: originals above, twins below, joined by ⇄ on a hairline.
+  .pair-rule {
+    display: flex;
+    align-items: center;
+    gap: $s2;
+    height: 1.25rem;
+    margin: $s1 0 0;
+    color: var(--signal);
+    font-family: $font-mono;
+    font-size: 1.125rem;
+    line-height: 1;
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      border-top: 1px solid var(--rule);
+    }
+  }
+
+  .answer__twins {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li + li { border-top: 1px solid var(--rule); }
+  }
+
+  .twin__row {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr auto 1rem;
+    align-items: baseline;
+    align-content: center;
+    min-height: 40px;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker { display: none; }
+
+    // Disclosure marker; turns when the row opens.
+    &::after {
+      content: '▸';
+      justify-self: end;
+      color: var(--muted);
+      font-size: 0.75rem;
+      transition: transform 120ms ease-out;
+    }
+  }
+
+  .twin[open] > .twin__row::after { transform: rotate(90deg); }
+
+  .twin__tk {
+    font-family: $font-mono;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.01em;
+  }
+
+  .twin__dist {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  .twin__ter {
+    font-family: $font-mono;
+    font-variant-numeric: tabular-nums;
+    font-size: 1rem;
+    text-align: right;
+    padding-right: $s2;
+  }
+
+  .twin__more {
+    padding: 0 0 $s2 4.5rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+
+    p { margin: 0; }
+  }
+
+  .twin__isin {
+    color: var(--muted);
+
+    span {
+      color: var(--ink);
+      font-family: $font-mono;
+      font-variant-numeric: tabular-nums;
+      user-select: all;
+    }
+  }
+
+  .twin__links {
+    display: flex;
+    gap: $s3;
+
+    a {
+      display: inline-block;
+      padding: $s1 0;
+    }
+  }
+
+  .answer__src {
+    margin: 0;
+    padding-top: $s1;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 0.75rem;
+    line-height: 1.4;
+
+    a { color: inherit; }
+  }
+</style>

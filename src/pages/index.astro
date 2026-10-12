@@ -1,9 +1,23 @@
 ---
 import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import StickyCta from '../components/StickyCta';
 ---
 <Base
   title="Indexák – evropská dvojčata amerických ETF"
   description="Které evropské ETF sledují stejný index jako VOO, SPY a IVV a kolik stojí."
 >
-  <main><h1>Indexák</h1></main>
+  <script is:inline slot="head">
+    // keep in sync with heroVariantFromUtm in src/lib/copy.ts
+    // Runs before first paint, so the hero variant switch causes no layout shift.
+    (function () {
+      var c = new URLSearchParams(location.search).get('utm_content') || '';
+      document.documentElement.dataset.variant = c.charAt(0) === 'b' ? 'b' : 'a';
+    })();
+  </script>
+  <header class="masthead"><span class="masthead__brand">Indexák</span></header>
+  <main>
+    <Hero variant="a" />
+  </main>
+  <StickyCta client:idle />
 </Base>
