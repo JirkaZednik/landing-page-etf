@@ -129,3 +129,57 @@ a {
 @media (max-width: 40rem) {
   .legal { overflow-x: auto; }
 }
+
+// LeadForm (progresivní vylepšení: funguje i bez JS)
+.lead-form {
+  position: relative;
+  display: grid;
+  gap: $s2;
+  max-width: 28rem;
+
+  label { font-size: 0.9375rem; }
+
+  input[type='email'] {
+    min-height: 48px;
+    padding: 0 $s2;
+    border: 1px solid var(--ink);
+    border-radius: 2px;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+  }
+
+  button[type='submit'] {
+    min-height: 48px;
+    padding: 0 $s3;
+    border: 0;
+    border-radius: 2px;
+    background: var(--signal);
+    color: var(--paper);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled { opacity: 0.6; cursor: progress; }
+  }
+
+  input[aria-invalid='true'] { border-color: var(--ink); border-width: 2px; }
+}
+
+.lead-form__error { margin: 0; font-size: 0.9375rem; font-weight: 600; }
+
+.lead-form__micro {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+// Ne display:none – některé boty skryté pole přeskakují.
+.lead-form__hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
