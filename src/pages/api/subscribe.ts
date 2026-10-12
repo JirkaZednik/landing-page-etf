@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { waitUntil } from '@vercel/functions';
 import type { Placement } from '../../lib/types';
 import { isUuid, isValidEmail } from '../../lib/validate';
 import { createDoiContact } from '../../server/brevo';
@@ -7,6 +8,7 @@ import { sendLeadEvent } from '../../server/meta-capi';
 import { isSameOrigin } from '../../server/origin';
 import { parseBody } from '../../server/parse-body';
 import { checkRateLimit } from '../../server/ratelimit';
+import { clip } from '../../server/clip';
 
 export const prerender = false;
 
@@ -22,7 +24,6 @@ const success = (aid: string, isForm: boolean) =>
     ? new Response(null, { status: 303, headers: { Location: `/dekujeme?aid=${aid}` } })
     : Response.json({ ok: true, redirect: `/dekujeme?aid=${aid}` });
 
-const clip = (s: string | undefined) => (s ?? '').trim().slice(0, 100);
 const posInt = (s: string | undefined) => {
   const n = Number(s);
   return Number.isInteger(n) && n > 0 ? n : null;
@@ -59,12 +60,15 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   if (!r.ok) return fail('server', 502, isForm);
 
   // CAPI only with marketing consent (see /cookies) and never for no-JS form posts.
+  // Not awaited: the visitor's redirect must not wait for Meta (up to the 3 s timeout).
+  // waitUntil keeps the Vercel function alive until it settles (no-op outside Vercel).
   if (!isForm && data.consent_marketing === '1' && isUuid(data.event_id ?? '')) {
-    await sendLeadEvent({
+    const capi = sendLeadEvent({
       email, eventId: data.event_id, ip: clientAddress,
       userAgent: request.headers.get('user-agent') ?? '',
       sourceUrl: request.headers.get('referer') ?? env('SITE_URL'),
-    });
+    }).catch(() => {}); // sendLeadEvent logs its own errors; never an unhandled rejection
+    waitUntil(capi);
   }
   return success(aid, isForm);
 };

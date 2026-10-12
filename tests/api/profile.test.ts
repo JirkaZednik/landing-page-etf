@@ -44,6 +44,10 @@ describe('POST /api/profile', () => {
       CONSENT_CALL_AT: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/), CONSENT_TEXT_VERSION: V,
     });
   });
+  it('consent_text_version is trimmed and clipped to 100 characters like every other free-text attribute', async () => {
+    await run({ aid: AID, broker: 'xtb', consent_text_version: ` ${'x'.repeat(5000)} ` });
+    expect(bodyOf(sent()[0]).attributes.CONSENT_TEXT_VERSION).toBe('x'.repeat(100));
+  });
   it('phone with both consents → CONSENT_PARTNERS true', async () => {
     await run({ aid: AID, phone: '777123456', consent_call: true, consent_partners: true, consent_text_version: V });
     expect(bodyOf(sent()[0]).attributes.CONSENT_PARTNERS).toBe(true);

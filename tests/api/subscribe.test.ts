@@ -164,6 +164,42 @@ describe('POST /api/subscribe', () => {
     const r = await run(jsonReq(P, { ...full, consent_marketing: '1' }));
     expect(await r.json()).toEqual({ ok: true, redirect: `/dekujeme?aid=${AID}` });
   });
+  it('a slow CAPI call does not delay the response; it is handed to Vercel waitUntil', async () => {
+    let finishCapi!: () => void;
+    fetchMock.mockImplementation((url: string) =>
+      String(url).includes('api.brevo.com')
+        ? Promise.resolve(new Response('{}', { status: 201 }))
+        : new Promise<Response>((res) => { finishCapi = () => res(new Response('{}', { status: 200 })); }));
+    const waitUntil = vi.fn();
+    const CTX = Symbol.for('@vercel/request-context');
+    (globalThis as Record<symbol, unknown>)[CTX] = { get: () => ({ waitUntil }) };
+    try {
+      const pending = Symbol('pending');
+      const r = await Promise.race([
+        run(jsonReq(P, { ...full, consent_marketing: '1' })),
+        new Promise((res) => setTimeout(() => res(pending), 200)),
+      ]);
+      expect(r).not.toBe(pending); // answered while Meta has not replied yet
+      expect(await (r as Response).json()).toEqual({ ok: true, redirect: `/dekujeme?aid=${AID}` });
+      expect(calls(fetchMock, 'graph.facebook.com')).toHaveLength(1);
+      expect(waitUntil).toHaveBeenCalledTimes(1);
+      const kept = waitUntil.mock.calls[0][0] as Promise<void>;
+      finishCapi();
+      await expect(kept).resolves.toBeUndefined();
+    } finally {
+      delete (globalThis as Record<symbol, unknown>)[CTX];
+    }
+  });
+  it('a rejected CAPI promise outside Vercel (no waitUntil) is caught, not unhandled', async () => {
+    fetchMock.mockImplementation(async (url: string) => {
+      if (String(url).includes('api.brevo.com')) return new Response('{}', { status: 201 });
+      throw new TypeError('network down');
+    });
+    const r = await run(jsonReq(P, { ...full, consent_marketing: '1' }));
+    expect(r.status).toBe(200);
+    await new Promise((res) => setTimeout(res, 10));
+    expect(console.error).toHaveBeenCalledWith('[capi]', 'TypeError');
+  });
   it('without META_TEST_EVENT_CODE the field is omitted', async () => {
     vi.stubEnv('META_TEST_EVENT_CODE', '');
     await run(jsonReq(P, { ...full, consent_marketing: '1' }));

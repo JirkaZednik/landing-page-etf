@@ -5,6 +5,7 @@ import { upsertProfile } from '../../server/brevo';
 import { isSameOrigin } from '../../server/origin';
 import { parseBody } from '../../server/parse-body';
 import { checkRateLimit } from '../../server/ratelimit';
+import { clip } from '../../server/clip';
 
 export const prerender = false;
 
@@ -43,7 +44,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     phone,
     consentCall: phone ? true : undefined,
     consentPartners: phone ? isTrue(data.consent_partners) : undefined,
-    consentTextVersion: data.consent_text_version || '',
+    consentTextVersion: clip(data.consent_text_version),
   });
   if (r.ok) return Response.json({ ok: true });
   if (r.error === 'phone_taken') return fail('phone_taken', 409);
