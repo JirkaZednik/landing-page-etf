@@ -564,7 +564,7 @@
       ],
       "exactTwin": false,
       "calcEnabled": true,
-      "note": "VT sleduje FTSE Global All Cap. Evropské fondy sledují příbuzné indexy (MSCI ACWI, FTSE All-World) – liší se hlavně podílem malých firem."
+      "note": "VT sleduje FTSE Global All Cap. Evropské fondy sledují příbuzné indexy (MSCI ACWI, FTSE All-World)."
     },
     {
       "id": "us-total",

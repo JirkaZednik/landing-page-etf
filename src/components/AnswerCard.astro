@@ -41,11 +41,7 @@ const DIST = { acc: 'akumulační', dist: 'distribuční' } as const;
 </section>
 
 <script>
-  import { track } from '../lib/track';
-  document.addEventListener('click', (e) => {
-    const a = (e.target as Element | null)?.closest?.('[data-source-link]');
-    if (a instanceof HTMLElement && a.dataset.sourceLink) track('source_link_clicked', { fund: a.dataset.sourceLink });
-  });
+  import '../lib/source-links';
 </script>
 
 <style lang="scss">

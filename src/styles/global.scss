@@ -238,10 +238,12 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
 }
 
 // Obsahové sekce pod hero (Task 10/11).
+// Rytmus mezi sekcemi $s6, dělicí linka 1px --rule; levé zarovnání jako hero ($s3).
 .section {
   max-width: 34rem;
-  padding: $s5 $s3 $s4;
-  border-top: 2px solid var(--ink);
+  margin-top: $s6;
+  padding: $s5 $s3 0;
+  border-top: 1px solid var(--rule);
 
   > h2 {
     margin: 0 0 $s3;
