@@ -1,46 +1,48 @@
 // @vitest-environment node
-import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { beforeAll, describe, expect, it } from 'vitest';
-import { imageSizeFromFile } from 'image-size/fromFile';
-import { getFund } from '../../src/lib/pairs';
+import { describe, expect, it } from 'vitest';
+import { getBrokers, getFund, twinsSortedByTer } from '../../src/lib/pairs';
 import { heroVariantFromUtm } from '../../src/lib/copy';
+import { fillTemplate } from '../../scripts/render-ads';
 
-const SIZES = { '4x5': [1080, 1350], '9x16': [1080, 1920] } as const;
+// Pure template/copy checks; rendering to PNG is tested in tests/build/ads-render.test.ts.
+const tpl = (v: 'a' | 'b') => readFileSync(`ads/templates/${v}.html`, 'utf8');
 
-describe('ads', () => {
-  beforeAll(() => {
-    execFileSync('npm', ['run', 'ads'], { stdio: 'inherit' });
-  }, 180_000);
-
-  for (const v of ['a', 'b'] as const)
-    for (const [ratio, [w, h]] of Object.entries(SIZES))
-      it(`ads/${v}-${ratio}.png is ${w}x${h}`, async () => {
-        const d = await imageSizeFromFile(`ads/${v}-${ratio}.png`);
-        expect([d.width, d.height]).toEqual([w, h]);
-      });
-
-  it('public/og.png is 1200x630 (Base.astro default og:image)', async () => {
-    const d = await imageSizeFromFile('public/og.png');
-    expect([d.width, d.height]).toEqual([1200, 630]);
-  });
-
-  it('template B takes SPYL ISIN and TER from data, not hardcoded', async () => {
-    const raw = readFileSync('ads/templates/b.html', 'utf8');
+describe('ads templates', () => {
+  it('template B takes SPYL ISIN and TER from data, not hardcoded', () => {
+    const raw = tpl('b');
     const spyl = getFund('SPYL');
     expect(raw).not.toContain(spyl.isin.value);
     expect(raw).toContain('{{SPYL.isin}}');
     expect(raw).not.toMatch(/\d,\d{2}\s?%/); // žádné TER natvrdo
-    const { fillTemplate } = await import('../../scripts/render-ads');
     const filled = fillTemplate(raw);
     expect(filled).toContain(spyl.isin.value);
     expect(filled).not.toContain('{{');
   });
 
+  it('template B does not imply SPYL is available at every broker', () => {
+    const filled = fillTemplate(tpl('b'));
+    expect(filled).toContain(`Postup pro: ${getBrokers().map((b) => b.name).join(' · ')}`);
+    expect(filled).toContain('Dostupnost fondů se u brokerů liší.');
+  });
+
   it('template A has no hardcoded TER or ISIN', () => {
-    const raw = readFileSync('ads/templates/a.html', 'utf8');
+    const raw = tpl('a');
     expect(raw).not.toMatch(/\d,\d{2}\s?%/);
     expect(raw).not.toMatch(/\b[A-Z]{2}[A-Z0-9]{9}\d\b/);
+  });
+
+  it('filled template A lists sp500 twins ordered by TER (SPYL, CSPX, VUAA)', () => {
+    const filled = fillTemplate(tpl('a'));
+    expect(filled).not.toContain('{{');
+    const tickers = [...filled.matchAll(/<li><span class="ticker">([A-Z0-9]+)<\/span>/g)].map((m) => m[1]);
+    expect(tickers).toEqual(['SPYL', 'CSPX', 'VUAA']);
+    expect(tickers).toEqual(twinsSortedByTer('sp500').map((f) => f.id));
+  });
+
+  it('fillTemplate rejects unknown placeholders and funds', () => {
+    expect(() => fillTemplate('{{nope}}')).toThrow(/Unknown placeholder/);
+    expect(() => fillTemplate('{{FOO.ter}}')).toThrow(/Unknown fund/);
   });
 
   it('copy.md has exact texts from spec §9 and UTM matching hero variant', () => {
@@ -53,7 +55,8 @@ describe('ads', () => {
       'S&P 500 u vašeho brokera: přesný ISIN a postup',
       'Získat návod',
     ]) expect(md).toContain(s);
-    for (const m of md.matchAll(/utm_content=([a-z0-9-]+)/g))
-      expect(heroVariantFromUtm(m[1])).toBe(m[1][0]);
+    const utms = [...md.matchAll(/utm_content=([a-z0-9-]+)/g)].map((m) => m[1]);
+    expect(utms).toHaveLength(4);
+    for (const u of utms) expect(heroVariantFromUtm(u)).toBe(u[0]);
   });
 });

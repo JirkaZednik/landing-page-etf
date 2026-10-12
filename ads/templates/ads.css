@@ -69,5 +69,5 @@ html.size-og .foot .source { font-size: 19px; margin-top: 10px; max-width: none;
 .ad-b .hit { display: flex; align-items: baseline; gap: 36px; padding: 28px 0 26px; border-bottom: 6px solid var(--ink); font-size: 50px; line-height: 1; }
 .ad-b .hit .ticker { font-size: 60px; }
 .ad-b .hit .ter { margin-left: auto; font-size: 44px; color: var(--signal); }
-.ad-b .brokers { font-size: 44px; line-height: 1.2; }
+.ad-b .brokers { font-size: 40px; line-height: 1.2; }
 
