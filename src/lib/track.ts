@@ -1,4 +1,5 @@
 import type { EventName } from './types';
+import { isUuid } from './validate';
 import { getConsent, onConsentChange, type ConsentState } from './consent';
 
 declare global {
@@ -13,7 +14,6 @@ declare global {
 type Props = Record<string, string | number | boolean>;
 type Ph = typeof import('posthog-js').default;
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'] as const;
 
 let aid: string | null = null;
@@ -60,7 +60,7 @@ function purge(purpose: 'analytics' | 'meta' | 'ga4'): void {
 export function getAid(): string {
   if (aid) return aid;
   const fromUrl = new URLSearchParams(location.search).get('aid');
-  aid = fromUrl && UUID_RE.test(fromUrl) ? fromUrl : crypto.randomUUID();
+  aid = fromUrl && isUuid(fromUrl) ? fromUrl : crypto.randomUUID();
   return aid;
 }
 
