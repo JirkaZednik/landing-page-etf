@@ -3,6 +3,7 @@ import '@fontsource-variable/newsreader/index.css';
 import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/ibm-plex-mono/600.css';
 import '../styles/global.scss';
+import ConsentBanner from '../components/ConsentBanner';
 
 interface Props {
   title: string;
@@ -39,5 +40,11 @@ const og = new URL(ogImage ?? '/og.png', Astro.site);
   </head>
   <body>
     <slot />
+    <ConsentBanner client:only="react" />
+    <script>
+      import { initAnalytics } from '../lib/track';
+      const start = () => initAnalytics();
+      if ('requestIdleCallback' in window) requestIdleCallback(start); else setTimeout(start, 1);
+    </script>
   </body>
 </html>

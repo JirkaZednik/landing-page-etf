@@ -45,3 +45,87 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+// Cookie lišta: nemodální region ukotvený dole, kompaktní (≤ ~140 px v hlavním zobrazení),
+// aby nezakrývala hero formulář na 390×844.
+.consent {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 50;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: $s2 $s3;
+  background: var(--paper);
+  border-top: 1px solid var(--rule);
+  font-size: 0.75rem;
+  line-height: 1.3;
+
+  &__text { margin: 0 0 $s2; max-width: 60rem; }
+
+  &__actions {
+    display: flex;
+    gap: $s2;
+    align-items: stretch;
+    max-width: 60rem;
+  }
+
+  &__btn,
+  &__link {
+    min-height: 44px;
+    padding: 0 $s3;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  &__btn {
+    flex: 1 1 0;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+  }
+
+  &__link {
+    flex: 0 0 auto;
+    background: none;
+    border: 0;
+    text-decoration: underline;
+    text-decoration-color: var(--signal);
+    text-underline-offset: 0.15em;
+  }
+
+  &__options { display: grid; gap: 0; max-width: 60rem; margin-bottom: $s2; }
+
+  &__opt {
+    display: flex;
+    align-items: center;
+    gap: $s2;
+    min-height: 44px;
+    font-size: 0.875rem;
+
+    input { width: 1.25rem; height: 1.25rem; flex: none; accent-color: var(--ink); }
+  }
+}
+
+.legal {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: $s4 $s3 $s6;
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+  th, td { text-align: left; vertical-align: top; padding: $s2; border-bottom: 1px solid var(--rule); }
+  [data-consent-open] {
+    min-height: 44px;
+    padding: 0 $s3;
+    font: inherit;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    cursor: pointer;
+  }
+  &__version { color: var(--muted); font-size: 0.875rem; }
+}
+
+@media (max-width: 40rem) {
+  .legal { overflow-x: auto; }
+}
