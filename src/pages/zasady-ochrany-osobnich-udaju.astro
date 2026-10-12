@@ -9,7 +9,7 @@ const PURPOSES: [purpose: string, data: string, basis: string][] = [
   ['Telefonický kontakt kvůli pomoci s nákupem u brokera', 'Telefon, zvolený broker', 'Samostatný souhlas (a)'],
   ['Předání partnerům', 'E-mail, telefon, zvolený broker', 'Samostatný souhlas (b)'],
   ['Měření návštěvnosti bez cookies', 'Anonymní agregované události', 'Oprávněný zájem'],
-  ['Měření a propojení cesty, měření reklam Meta, Google Analytics', 'Identifikátor návštěvy, události na stránce', 'Souhlas v nastavení cookies'],
+  ['Měření a propojení cesty, měření reklam Meta, Google Analytics', 'Identifikátor návštěvy, události na stránce; pro Meta navíc hash e-mailu, IP adresa, prohlížeč (Conversions API, jen se souhlasem)', 'Souhlas v nastavení cookies'],
   ['Ochrana formuláře před zneužitím', 'IP adresa (krátkodobě)', 'Oprávněný zájem'],
   ['Doložení souhlasu', 'Verze textu a čas souhlasu', 'Plnění právní povinnosti'],
 ];
@@ -54,6 +54,7 @@ const PURPOSES: [purpose: string, data: string, basis: string][] = [
       <li>Vercel Inc., USA – hosting stránky; předání do USA na základě standardních smluvních doložek</li>
       <li>Upstash Inc., databáze v EU – ochrana formuláře proti zneužití (počítadlo požadavků podle IP adresy)</li>
       <li>Meta Platforms Ireland Ltd. – měření reklam, jen se souhlasem v nastavení cookies; při shromáždění a předání údajů jsme s Meta společnými správci</li>
+      <li>Google Ireland Ltd. – Google Analytics 4, jen se souhlasem v nastavení cookies</li>
     </ul>
 
     <h2>Doba uložení</h2>

@@ -9,7 +9,9 @@ test('privacy page content', async ({ page }) => {
   for (const h of ['Správce', 'Účely a právní základ', 'Seznam partnerů', 'Zpracovatelé', 'Doba uložení', 'Vaše práva'])
     await expect(page.getByRole('heading', { level: 2, name: h })).toBeVisible();
   await expect(page.locator('main')).toContainText('Clientelo Czech s.r.o., IČO 22193456');
-  for (const p of ['Brevo', 'PostHog', 'Vercel', 'Upstash', 'Meta Platforms Ireland']) await expect(page.locator('main')).toContainText(p);
+  for (const p of ['Brevo', 'PostHog', 'Vercel', 'Upstash', 'Meta Platforms Ireland', 'Google Ireland Ltd.']) await expect(page.locator('main')).toContainText(p);
+  // Meta Conversions API data (src/server/meta-capi.ts), same wording as /cookies.
+  await expect(page.locator('main')).toContainText('hash e-mailu, IP adresa, prohlížeč (Conversions API, jen se souhlasem)');
   await expect(page.locator('main')).toContainText('Dokud zde seznam není uveden, vaše údaje žádnému partnerovi nepředáváme.');
   await expect(page.getByRole('link', { name: 'www.uoou.gov.cz' })).toHaveAttribute('href', 'https://uoou.gov.cz');
   await expect(page.locator('main')).not.toContainText(/TODO|TBD|\[doplnit\]|lorem/i);

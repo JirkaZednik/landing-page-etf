@@ -55,6 +55,12 @@ test.describe('homepage', () => {
     expect(await events(page, 'source_link_clicked')).toEqual([{ fund: 'priips' }]);
   });
 
+  test('guide copy mentions the e-mail confirmation (double opt-in)', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('[data-section="navod"]')).toContainText('Pošleme ho na váš e-mail po jeho potvrzení.');
+    await expect(page.locator('[data-section="faq"] details').first()).toContainText('po potvrzení e-mailu');
+  });
+
   test('faq: 5 questions, operator question', async ({ page }) => {
     await page.goto('/');
     const faq = page.locator('[data-section="faq"] details');
