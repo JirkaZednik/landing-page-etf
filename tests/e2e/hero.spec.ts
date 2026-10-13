@@ -214,6 +214,23 @@ test.describe('redesign (EU blue and gold)', () => {
     expect(btn.width).toBeGreaterThanOrEqual(2);
   });
 
+  test.describe('desktop 1440×900', () => {
+    test.use({ viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false });
+
+    for (const v of ['a', 'b'] as const) {
+      test(`variant ${v}: H1 ≤ 3 lines and the trust row ends above the fold`, async ({ page }) => {
+        await page.goto(`/?utm_content=${v}`);
+        await page.waitForLoadState('networkidle');
+        await page.evaluate(() => document.fonts.ready);
+        const lines = await page.locator('h1:visible').evaluate((el) =>
+          Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)));
+        expect(lines).toBeLessThanOrEqual(3);
+        const trust = (await page.locator('[data-section="hero"] [data-trust]').boundingBox())!;
+        expect(trust.y + trust.height).toBeLessThanOrEqual(900);
+      });
+    }
+  });
+
   test.describe('360 px wide', () => {
     test.use({ viewport: { width: 360, height: 780 } });
 

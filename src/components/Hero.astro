@@ -90,6 +90,13 @@ const { variant } = Astro.props;
       text-wrap: balance;
 
       @media (max-width: 899.98px) { max-width: 22ch; }
+
+      // Desktop: wider measure, calmer size – variant A wraps to 3 lines (mock proportions).
+      @media (min-width: 900px) {
+        max-width: 860px;
+        font-size: 2.625rem;
+        line-height: 1.06;
+      }
     }
 
     p {
