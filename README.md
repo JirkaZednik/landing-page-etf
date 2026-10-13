@@ -38,7 +38,7 @@ Výstupy: landing page (Astro 5 + React ostrůvky, TypeScript, SCSS), PDF návod
 - tabulka všech párů originál → dvojče s TER a ISIN,
 - akumulace vs. distribuce a co to znamená pro daně v ČR (časový test).
 
-**Proč právě návod ke koupi:** je to jediná hodnota, kterou stránka zdarma nedává. Co koupit, ukážeme hned; jak to koupit u *vašeho* brokera, je v návodu – po odeslání e-mailu si ho hned stáhnete na `/dekujeme` a stejný návod pošleme i e-mailem.
+**Proč právě návod ke koupi:** je to jediná hodnota, kterou stránka zdarma nedává. Co koupit, ukážeme hned; jak to koupit u *vašeho* brokera, je v návodu – po odeslání formuláře si ho hned stáhnete na `/dekujeme` a stejný návod pošleme i e-mailem.
 
 **Hlavní moment žádosti:** na první obrazovce, přímo pod kartou odpovědi. K odeslání nevede žádná interakce navíc. Další místa: odkaz „Poslat návod pro tento fond" v kartách dalších fondů, formulář pod výsledkem kalkulačky, formulář u náhledu návodu a sticky lišta.
 
@@ -109,7 +109,7 @@ Personalizovaný výběr fondů („jaký jste investor") se blíží investičn
 
 ### Single opt-in: návod hned po odeslání
 
-Slíbenou hodnotu návštěvník dostane hned: PDF ke stažení na `/dekujeme` a stejný návod e-mailem, nic dalšího nepotvrzuje. Single opt-in jsme zvolili místo double opt-in (DOI), protože DOI není v ČR právně nutný pro zaslání návodu, o který si člověk sám řekl, s každým krokem navíc by část leadů odpadla a kvalitu leadu ověřuje validace e-mailu (v prohlížeči i na serveru, s honeypotem a rate limitem) a telefonát. Cena: v seznamu skončí víc neplatných nebo cizích adres; hlídáme proto míru tvrdých odrazů e-mailu s návodem v Brevo. Souhlas s obchodními sděleními zůstává jako text pod tlačítkem formuláře. Telefon a broker se ke kontaktu přiřazují přes `aid` (v Brevo `ext_id`), takže e-mail potvrzovat nemusí. Když Brevo `aid` odmítne kvůli konfliktu identifikátoru (stejné `aid` už má jiný kontakt, např. po opravě překlepu v e-mailu), server zkusí jednou nové `aid` a přesměruje s ním; pokud konflikt trvá (e-mail už má jiné `ext_id`), kontakt se uloží bez `ext_id` – e-mail s návodem přijde, ale broker a telefon z této návštěvy se ke kontaktu nepřiřadí (vznikne kontakt bez e-mailu).
+Slíbenou hodnotu návštěvník dostane hned: PDF ke stažení na `/dekujeme` a stejný návod e-mailem, nic dalšího nepotvrzuje. Single opt-in jsme zvolili místo double opt-in (DOI), protože DOI není v ČR právně nutný pro zaslání návodu, o který si člověk sám řekl, s každým krokem navíc by část leadů odpadla a kvalitu leadu ověřuje validace e-mailu (v prohlížeči i na serveru, s honeypotem a rate limitem) a telefonát. Cena: v seznamu skončí víc neplatných nebo cizích adres; hlídáme proto míru tvrdých odrazů e-mailu s návodem v Brevo. Souhlas s obchodními sděleními zůstává jako text pod tlačítkem formuláře. Telefon a broker se ke kontaktu přiřazují přes `aid` (v Brevo `ext_id`), takže e-mail potvrzovat nemusí. Když Brevo `aid` odmítne kvůli konfliktu identifikátoru (stejné `aid` už má jiný kontakt, např. po opravě překlepu v e-mailu), server zkusí jednou nové `aid` a přesměruje s ním; pokud konflikt trvá (e-mail už má jiné `ext_id`), kontakt se uloží bez `ext_id` a s novým `aid` v atributu `AID`, na které se přesměruje – e-mail s návodem přijde, ale broker a telefon z této návštěvy se ke kontaktu nepřiřadí (vznikne kontakt bez e-mailu, nikdy se nepřipíšou cizímu kontaktu).
 
 ### Telefon až po e-mailu, dva oddělené souhlasy
 
@@ -163,7 +163,7 @@ První vyhodnocení má smysl po cca 1 000 návštěv na variantu – jako kontr
 
 ## A/B hypotézy
 
-Seřazeno podle očekávaného dopadu. Dvouvýběrový test podílů, oboustranný, α = 0,05 (z = 1,960), síla 0,8 (z = 0,842):
+Seřazeno podle očekávaného dopadu na počet leadů, ne podle velikosti efektu: H3 (+40 %) je až za H2 (+30 %), protože hýbe menší, sekundární metrikou (míra telefonů mezi leady), kdežto H2 mění hlavní konverzi. Dvouvýběrový test podílů, oboustranný, α = 0,05 (z = 1,960), síla 0,8 (z = 0,842):
 
 ```
 n na variantu = ( z₁₋α/₂ · √(2·p̄·(1−p̄)) + z₁₋β · √(p₁(1−p₁) + p₂(1−p₂)) )² / (p₂ − p₁)²
@@ -180,7 +180,7 @@ Při ~1 000 návštěvách na variantu je nejmenší spolehlivě zjistitelný ef
 | 2 | Formulář na první obrazovce zvyšuje konverzi bez ztráty kvality | formulář pod odpovědí v hero vs. až pod kalkulačkou | konverze; hlídací metrika míra tvrdých odrazů e-mailu s návodem (Brevo) | +30 % relativně (4 → 5,2 %) | ≈ 4 784 návštěv |
 | 3 | Nabídka telefonu nad tlačítkem PDF zvýší podíl telefonů, protože ji uvidí každý lead | na `/dekujeme` nabídka telefonu nad tlačítkem „Stáhnout návod (PDF)" vs. pod ním (dnešní stav) | míra telefonů z leadů (`phone_submitted` / leady); hlídací metrika `pdf_downloaded` / leady | +40 % relativně (5 → 7 % leadů) | ≈ 2 213 leadů ≈ 55 300 návštěv (při konverzi 4 %) |
 
-Vzorek H3 je v leadech, protože se randomizuje až na `/dekujeme`: p₁ = 5 % (střed odhadu „lead → telefon"), p₂ = 7 % (+40 % relativně), p̄ = 6 %: (1,960 · √(2 · 0,06 · 0,94) + 0,842 · √(0,05 · 0,95 + 0,07 · 0,93))² / 0,02² = (0,6583 + 0,2825)² / 0,0004 ≈ **2 213 leadů na variantu**; při konverzi 4 % to je 2 213 / 0,04 ≈ 55 300 návštěv na variantu. Test reklam A vs. B běží paralelně na úrovni kreativ v Meta (metrika: konverze podle `hero_variant` / `utm_content`). Efekty jsou předpoklady pro plánování vzorku, ne slib.
+Vzorek H3 je v leadech, protože se randomizuje až na `/dekujeme`: výchozí míra p₁ = 5 % (v dolní polovině odhadu 3–8 % „lead → telefon"), p₂ = 7 % (+40 % relativně), p̄ = 6 %: (1,960 · √(2 · 0,06 · 0,94) + 0,842 · √(0,05 · 0,95 + 0,07 · 0,93))² / 0,02² = (0,6583 + 0,2825)² / 0,0004 ≈ **2 213 leadů na variantu**; při konverzi 4 % to je 2 213 / 0,04 ≈ 55 300 návštěv na variantu. Test reklam A vs. B běží paralelně na úrovni kreativ v Meta (metrika: konverze podle `hero_variant` / `utm_content`). Efekty jsou předpoklady pro plánování vzorku, ne slib.
 
 ## Měření
 

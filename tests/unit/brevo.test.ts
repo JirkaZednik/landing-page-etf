@@ -14,7 +14,7 @@ beforeEach(() => {
 });
 
 const lead = () => createLeadContact({ email: 'jan.novak@seznam.cz', aid: AID, attributes: { AID, PLACEMENT: 'hero' } });
-const prof = () => upsertProfile({ aid: AID, phone: '+420777123456', consentCall: true, consentTextVersion: '2026-10-11' });
+const prof = () => upsertProfile({ aid: AID, phone: '+420777123456', consentCall: true, consentTextVersion: '2026-10-13' });
 
 describe('createLeadContact', () => {
   it('creates the contact with one POST /v3/contacts (single opt-in), ext_id = aid', async () => {
@@ -73,9 +73,13 @@ describe('createLeadContact', () => {
     fetchMock.mockResolvedValueOnce(conflict()).mockResolvedValueOnce(conflict()).mockResolvedValueOnce(res(204));
     const r = await lead();
     expect(fetchMock).toHaveBeenCalledTimes(3);
-    const [, , last] = bodies();
-    expect(last).toEqual({ email: 'jan.novak@seznam.cz', listIds: [7], updateEnabled: true, attributes: { AID, PLACEMENT: 'hero' } });
-    expect(r).toEqual({ ok: true, aid: AID });
+    const [, retry, last] = bodies();
+    expect(last.AID).toBeUndefined();
+    expect(last.attributes.AID).toMatch(UUID);
+    expect(last.attributes.AID).not.toBe(AID);
+    expect(last).toEqual({ email: 'jan.novak@seznam.cz', listIds: [7], updateEnabled: true, attributes: { AID: last.attributes.AID, PLACEMENT: 'hero' } });
+    expect(r).toEqual({ ok: true, aid: last.attributes.AID });
+    expect(last.attributes.AID).toBe(retry.ext_id);
     expect(console.error).toHaveBeenCalledWith('[brevo] ext_id conflict twice, contact saved without ext_id');
   });
   it('final retry failing → brevo', async () => {

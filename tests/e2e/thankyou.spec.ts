@@ -61,7 +61,7 @@ test('/dekujeme flow: guide PDF at once → broker → phone with (a) without (b
 
   await hydrated(page, '.broker-picker');
   await page.getByRole('radio', { name: 'XTB' }).check();
-  await expect.poll(() => bodies[0]).toEqual({ aid: AID, broker: 'xtb', consent_text_version: '2026-10-11' });
+  await expect.poll(() => bodies[0]).toEqual({ aid: AID, broker: 'xtb', consent_text_version: '2026-10-13' });
   await expect(page.getByTestId('broker-twin').first()).toBeVisible();
 
   await page.locator('.phone-offer').scrollIntoViewIfNeeded();
@@ -71,7 +71,7 @@ test('/dekujeme flow: guide PDF at once → broker → phone with (a) without (b
   await page.getByLabel(/telefonicky kontaktoval/).check();
   await page.getByRole('button', { name: 'Zavolejte mi' }).click();
   await expect(page.getByText('Děkujeme, číslo máme. Ozveme se vám.')).toBeVisible();
-  expect(bodies[1]).toEqual({ aid: AID, phone: '+420777123456', consent_call: true, consent_partners: false, consent_text_version: '2026-10-11' });
+  expect(bodies[1]).toEqual({ aid: AID, phone: '+420777123456', consent_call: true, consent_partners: false, consent_text_version: '2026-10-13' });
 });
 
 // Review Focus 2: opened from history / bookmark without ?aid=
@@ -106,5 +106,5 @@ test('hero form → /dekujeme with aid → broker choice', async ({ page }) => {
   await expect(page).toHaveURL(`/dekujeme?aid=${AID}`);
   await hydrated(page, '.broker-picker');
   await page.getByRole('radio', { name: 'Degiro' }).check();
-  await expect.poll(() => bodies[0]).toEqual({ aid: AID, broker: 'degiro', consent_text_version: '2026-10-11' });
+  await expect.poll(() => bodies[0]).toEqual({ aid: AID, broker: 'degiro', consent_text_version: '2026-10-13' });
 });

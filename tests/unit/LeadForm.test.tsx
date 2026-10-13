@@ -66,7 +66,7 @@ describe('LeadForm SSR (works without JS)', () => {
       aid: val('aid'), event_id: val('event_id'),
     }).toEqual({
       placement: 'calc', pair: 'world', calc_deposit: '5000', calc_horizon: '30',
-      consent_text_version: '2026-10-11', consent_marketing: '0', aid: '', event_id: '',
+      consent_text_version: '2026-10-13', consent_marketing: '0', aid: '', event_id: '',
     });
     for (const n of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content']) expect(val(n)).toBe('');
     const hp = f.querySelector('input[name="website"]')!;
@@ -110,7 +110,7 @@ describe('LeadForm with JS', () => {
     const body = JSON.parse(init.body);
     expect(body).toMatchObject({
       email: 'jan.novak@seznam.cz', aid: AID, placement: 'calc', pair: 'sp500', calc_deposit: '3000', calc_horizon: '20',
-      utm_source: 'meta', utm_content: 'b', consent_marketing: '1', consent_text_version: '2026-10-11', website: '',
+      utm_source: 'meta', utm_content: 'b', consent_marketing: '1', consent_text_version: '2026-10-13', website: '',
     });
     expect(body.event_id).toMatch(UUID);
     expect(firePixelLead).toHaveBeenCalledWith(body.event_id);

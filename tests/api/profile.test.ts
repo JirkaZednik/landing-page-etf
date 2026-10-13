@@ -7,7 +7,7 @@ import { checkRateLimit } from '../../src/server/ratelimit';
 import { POST, prerender } from '../../src/pages/api/profile';
 
 const P = '/api/profile';
-const V = '2026-10-11';
+const V = '2026-10-13';
 let brevo: () => Response;
 let fetchMock: ReturnType<typeof vi.fn>;
 const run = async (body: object, headers?: Record<string, string>) => {

@@ -37,7 +37,7 @@ describe('PhoneOffer', () => {
     expect(fetch).toHaveBeenCalledTimes(1);
     const [url, init] = fetch.mock.calls[0];
     expect(url).toBe('/api/profile');
-    expect(JSON.parse(init.body)).toEqual({ aid: 'test-aid', phone: normalized, consent_call: true, consent_partners: false, consent_text_version: '2026-10-11' });
+    expect(JSON.parse(init.body)).toEqual({ aid: 'test-aid', phone: normalized, consent_call: true, consent_partners: false, consent_text_version: '2026-10-13' });
     expect(await screen.findByText('Děkujeme, číslo máme. Ozveme se vám.')).toBeInTheDocument();
     expect(track).toHaveBeenCalledWith('phone_submitted', { page: 'dekujeme', consent_partners: false });
   });

@@ -10,7 +10,7 @@ const P = '/api/subscribe';
 const full = {
   email: ' Jan.Novak@Seznam.cz ', aid: AID, event_id: EVENT_ID, pair: 'sp500', calc_deposit: '3000', calc_horizon: '20',
   placement: 'calc', utm_source: 'meta', utm_medium: 'paid', utm_campaign: 'launch', utm_content: 'b',
-  consent_text_version: '2026-10-11', consent_marketing: '0', website: '',
+  consent_text_version: '2026-10-13', consent_marketing: '0', website: '',
 };
 let brevo: () => Response;
 let fetchMock: ReturnType<typeof vi.fn>;
@@ -43,15 +43,15 @@ describe('POST /api/subscribe', () => {
       attributes: {
         AID, PAIR: 'sp500', CALC_DEPOSIT: 3000, CALC_HORIZON: 20, PLACEMENT: 'calc',
         UTM_SOURCE: 'meta', UTM_MEDIUM: 'paid', UTM_CAMPAIGN: 'launch', UTM_CONTENT: 'b',
-        CONSENT_TEXT_VERSION: '2026-10-11', CONSENT_AT: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/),
+        CONSENT_TEXT_VERSION: '2026-10-13', CONSENT_AT: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/),
       },
     });
   });
 
   it('omits empty attributes and falls back to placement hero', async () => {
-    await run(jsonReq(P, { email: 'a@seznam.cz', aid: AID, placement: 'evil', consent_text_version: '2026-10-11' }));
+    await run(jsonReq(P, { email: 'a@seznam.cz', aid: AID, placement: 'evil', consent_text_version: '2026-10-13' }));
     expect(bodyOf(calls(fetchMock, 'api.brevo.com')[0]).attributes).toEqual({
-      AID, PLACEMENT: 'hero', CONSENT_TEXT_VERSION: '2026-10-11', CONSENT_AT: expect.any(String),
+      AID, PLACEMENT: 'hero', CONSENT_TEXT_VERSION: '2026-10-13', CONSENT_AT: expect.any(String),
     });
   });
 

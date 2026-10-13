@@ -44,7 +44,7 @@ describe('BrokerPicker', () => {
     expect(rows[0]).toHaveTextContent('SPYL.DE'); expect(rows[0]).toHaveTextContent('IE000XZSV718');
     expect(rows[1]).toHaveTextContent('CSPX.UK'); expect(rows[1]).toHaveTextContent('IE00B5BMR087');
     expect(fetch).toHaveBeenCalledWith('/api/profile', expect.objectContaining({ method: 'POST' }));
-    expect(JSON.parse(fetch.mock.calls[0][1].body)).toEqual({ aid: 'test-aid', broker: 'xtb', consent_text_version: '2026-10-11' });
+    expect(JSON.parse(fetch.mock.calls[0][1].body)).toEqual({ aid: 'test-aid', broker: 'xtb', consent_text_version: '2026-10-13' });
     expect(track).toHaveBeenCalledWith('broker_selected', { broker: 'xtb' });
   });
 

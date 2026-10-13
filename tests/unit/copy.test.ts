@@ -23,7 +23,7 @@ describe('copy', () => {
   });
   it('keeps Task 8 exports', () => {
     expect(FORM_COPY.button).toBe('Pošlete mi návod');
-    expect(CONSENT_TEXT_VERSION).toBe('2026-10-11');
+    expect(CONSENT_TEXT_VERSION).toBe('2026-10-13');
   });
   it('PHONE_COPY texts', () => {
     expect(PHONE_COPY.heading).toBe('Chcete pomoct s prvním nákupem?');
