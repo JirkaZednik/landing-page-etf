@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { getBrokers, getFund, twinsSortedByTer } from '../../src/lib/pairs';
+import { getBrokers, getFund, originalsOf, twinsSortedByTer } from '../../src/lib/pairs';
 import { heroVariantFromUtm } from '../../src/lib/copy';
 import { fillTemplate } from '../../scripts/render-ads';
 
@@ -42,6 +42,40 @@ describe('ads templates', () => {
     const tickers = [...filled.matchAll(/<li><span class="ticker">([A-Z0-9]+)<\/span>/g)].map((m) => m[1]);
     expect(tickers).toEqual(['SPYL', 'CSPX', 'VUAA']);
     expect(tickers).toEqual(twinsSortedByTer('sp500').map((f) => f.id));
+  });
+
+  it('both templates use the hero look: logo, two-curve illustration labelled from data, gold CTA', () => {
+    for (const v of ['a', 'b'] as const) {
+      const raw = tpl(v);
+      expect(raw).toContain('class="logo"');
+      expect(raw).toContain('{{twins}}');
+      expect(raw).toContain(`{{cta.${v}}}`);
+      const filled = fillTemplate(raw);
+      const svg = filled.match(/<svg class="twins"[\s\S]*?<\/svg>/)?.[0] ?? '';
+      expect(svg).toContain(`>${originalsOf('sp500')[0].id}</text>`);
+      expect(svg).toContain(`>${twinsSortedByTer('sp500')[0].id}</text>`);
+      expect(svg.match(/<path /g)).toHaveLength(2);
+    }
+  });
+
+  it('the CTA on each creative is the Meta button text from copy.md, unchanged', () => {
+    const md = readFileSync('ads/copy.md', 'utf8');
+    const button = (v: 'A' | 'B') => md.split(`## Verze ${v}`)[1].match(/^- Tlačítko: (.+)$/m)![1];
+    expect(fillTemplate(tpl('a'))).toContain(`<p class="cta">${button('A')}</p>`);
+    expect(fillTemplate(tpl('b'))).toContain(`<p class="cta">${button('B')}</p>`);
+    expect(button('A')).toBe('Více informací');
+    expect(button('B')).toBe('Získat návod');
+  });
+
+  it('on-image texts are unchanged by the redesign', () => {
+    const a = fillTemplate(tpl('a'));
+    expect(a).toContain('<p class="note">u evropského brokera nedostupné</p>');
+    // nbsp only keeps „S&P 500“ on one line; the visible text is unchanged
+    expect(a.replace(/&nbsp;/g, ' ')).toContain('<p class="claim">Stejný index S&amp;P 500. Evropský fond, který koupíte.</p>');
+    expect(a).toMatch(/<p class="source">TER ročně\. Zdroj: vydavatelé fondů, k&nbsp;[^<]+\. Nejde o&nbsp;investiční doporučení\.<\/p>/);
+    const b = fillTemplate(tpl('b'));
+    expect(b).toContain('<p class="claim">Přesný ISIN a&nbsp;postup pro vašeho brokera.</p>');
+    expect(b).toContain('<p class="search-label">Hledat</p>');
   });
 
   it('fillTemplate rejects unknown placeholders and funds', () => {

@@ -10,6 +10,7 @@ const REQUIRED_HEADINGS = [
   '## Pořadí sekcí a proč',
   '## Cesta od každého prvku ke kontaktu',
   '## Klíčová rozhodnutí',
+  '## Vizuální styl',
   '## Reklamy A/B',
   '## Očekávaná konverze',
   '## A/B hypotézy',
@@ -31,6 +32,22 @@ describe('README', () => {
       expect(i, `missing or out of order: ${h}`).toBeGreaterThan(pos);
       pos = i;
     }
+  });
+
+  it('has a short "Vizuální styl" section with the palette, fonts and the mockup link', () => {
+    const sec = md.slice(md.indexOf('\n## Vizuální styl\n'), md.indexOf('\n## Reklamy A/B\n'));
+    const scss = readFileSync('src/styles/tokens.scss', 'utf8');
+    for (const k of ['night', 'euro', 'euro-d', 'gold', 'mint', 'mint-text', 'mint-bg', 'cloud', 'ink', 'muted']) {
+      const hex = scss.match(new RegExp(`^\\$${k}:\\s*(#[0-9A-Fa-f]{6})`, 'm'))![1];
+      expect(sec, k).toContain(`\`--${k}\``);
+      expect(sec, k).toContain(hex);
+    }
+    expect(sec).toContain('Bricolage Grotesque');
+    expect(sec).toContain('Figtree');
+    expect(sec).toContain('(docs/design/2026-10-13-redesign-mockup.html)');
+    expect(existsSync('docs/design/2026-10-13-redesign-mockup.html')).toBe(true);
+    expect(sec.split('\n').filter((l) => l.trim()).length).toBeLessThanOrEqual(20);
+    expect(md).not.toMatch(/motiv `⇄`/);
   });
 
   it('starts with the interpretation of the brief', () => {

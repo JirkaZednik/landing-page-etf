@@ -4,17 +4,22 @@
 <link rel="stylesheet" href="ads.css">
 <script>document.documentElement.className = 'ad-b size-' + (new URLSearchParams(location.search).get('size') || '4x5');</script>
 </head><body><main class="frame">
-  <p class="brand">ETF Dvojče</p>
+  <div class="logo">
+    <svg class="logo__mark" viewBox="0 0 34 22" aria-hidden="true"><circle class="logo__l" cx="11" cy="11" r="10"/><circle class="logo__r" cx="23" cy="11" r="10"/></svg>
+    <p class="brand">ETF Dvojče</p>
+  </div>
+  <div class="art">{{twins}}</div>
   <p class="claim">Přesný ISIN a&nbsp;postup pro vašeho brokera.</p>
-  <div class="find">
+  <div class="card find">
     <p class="search-label">Hledat</p>
     <div class="search" role="img" aria-label="Vyhledávání v aplikaci brokera">
       <span class="isin">{{SPYL.isin}}</span><span class="caret"></span>
     </div>
     <p class="hit"><span class="ticker">SPYL</span><span class="index">S&amp;P 500</span><span class="ter">TER {{SPYL.ter}}</span></p>
+    <p class="brokers">Postup pro: {{brokers}}</p>
   </div>
   <div class="foot">
-    <p class="brokers">Postup pro: {{brokers}}</p>
+    <p class="cta">{{cta.b}}</p>
     <p class="source">Zdroj: {{SPYL.source}}, k&nbsp;{{asOf}}. Nejde o&nbsp;investiční doporučení. Dostupnost fondů se u brokerů liší.</p>
   </div>
 </main></body></html>

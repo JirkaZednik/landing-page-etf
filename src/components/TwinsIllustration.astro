@@ -1,32 +1,24 @@
 ---
-import { originalsOf, twinsSortedByTer } from '../lib/pairs';
+import { CURVE_ORIG, CURVE_TWIN, LABEL_BASELINE, PILL_HEIGHT, STARS, STAR_R, twinsPills } from '../lib/twins-art';
 
 /** Hero illustration: two parallel curves (original in EU blue, its European twin in gold), labels
- *  from data (first original, lowest-TER twin) and an arc of gold dots (the EU stars). Decorative. */
-const original = originalsOf('sp500')[0].id;
-const twin = twinsSortedByTer('sp500')[0].id;
-const pillW = (t: string) => Math.max(64, Math.round(t.length * 11.5 + 30));
-const wO = pillW(original);
-const wT = pillW(twin);
-// Arc of five dots above the top of the curves.
-const stars = [-2, -1, 0, 1, 2].map((i) => {
-  const a = (i * 26 * Math.PI) / 180;
-  return { cx: +(160 + 22 * Math.sin(a)).toFixed(1), cy: +(34 - 22 * Math.cos(a)).toFixed(1) };
-});
+ *  from data (first original, lowest-TER twin) and an arc of gold dots (the EU stars). Decorative.
+ *  Geometry is shared with the ad creatives and the guide PDF (src/lib/twins-art.ts). */
+const { orig, twin } = twinsPills('sp500');
 ---
 <svg class="twins" data-twins-illustration viewBox="0 0 300 130" width="300" height="130" aria-hidden="true" focusable="false">
-  <path class="twins__curve twins__curve--orig" d="M18 108 C60 108 70 46 108 46 S150 84 176 70 230 26 282 22" />
-  <path class="twins__curve twins__curve--twin" d="M18 118 C60 118 70 56 108 56 S150 94 176 80 230 36 282 32" />
-  <g transform={`translate(${86 - wO / 2} 8)`}>
-    <rect width={wO} height="34" rx="17" class="twins__pill--orig" />
-    <text x={wO / 2} y="23" text-anchor="middle" class="twins__label twins__label--orig">{original}</text>
+  <path class="twins__curve twins__curve--orig" d={CURVE_ORIG} />
+  <path class="twins__curve twins__curve--twin" d={CURVE_TWIN} />
+  <g transform={`translate(${orig.x} ${orig.y})`}>
+    <rect width={orig.width} height={PILL_HEIGHT} rx={PILL_HEIGHT / 2} class="twins__pill--orig" />
+    <text x={orig.width / 2} y={LABEL_BASELINE} text-anchor="middle" class="twins__label twins__label--orig">{orig.label}</text>
   </g>
-  <g transform={`translate(${218 - wT / 2} 92)`}>
-    <rect width={wT} height="34" rx="17" class="twins__pill--twin" />
-    <text x={wT / 2} y="23" text-anchor="middle" class="twins__label twins__label--twin">{twin}</text>
+  <g transform={`translate(${twin.x} ${twin.y})`}>
+    <rect width={twin.width} height={PILL_HEIGHT} rx={PILL_HEIGHT / 2} class="twins__pill--twin" />
+    <text x={twin.width / 2} y={LABEL_BASELINE} text-anchor="middle" class="twins__label twins__label--twin">{twin.label}</text>
   </g>
   <g class="twins__stars">
-    {stars.map((s) => <circle cx={s.cx} cy={s.cy} r="2.4" />)}
+    {STARS.map((s) => <circle cx={s.cx} cy={s.cy} r={STAR_R} />)}
   </g>
 </svg>
 
