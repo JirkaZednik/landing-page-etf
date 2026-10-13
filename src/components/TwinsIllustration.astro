@@ -1,0 +1,72 @@
+---
+import { CURVE_ORIG, CURVE_TWIN, LABEL_BASELINE, PILL_HEIGHT, STARS, STAR_R, twinsPills } from '../lib/twins-art';
+
+/** Hero illustration: two parallel curves (original in EU blue, its European twin in gold), labels
+ *  from data (first original, lowest-TER twin) and an arc of gold dots (the EU stars). Decorative.
+ *  Geometry is shared with the ad creatives and the guide PDF (src/lib/twins-art.ts). */
+const { orig, twin } = twinsPills('sp500');
+---
+<svg class="twins" data-twins-illustration viewBox="0 0 300 130" width="300" height="130" aria-hidden="true" focusable="false">
+  <path class="twins__curve twins__curve--orig" d={CURVE_ORIG} />
+  <path class="twins__curve twins__curve--twin" d={CURVE_TWIN} />
+  <g transform={`translate(${orig.x} ${orig.y})`}>
+    <rect width={orig.width} height={PILL_HEIGHT} rx={PILL_HEIGHT / 2} class="twins__pill--orig" />
+    <text x={orig.width / 2} y={LABEL_BASELINE} text-anchor="middle" class="twins__label twins__label--orig">{orig.label}</text>
+  </g>
+  <g transform={`translate(${twin.x} ${twin.y})`}>
+    <rect width={twin.width} height={PILL_HEIGHT} rx={PILL_HEIGHT / 2} class="twins__pill--twin" />
+    <text x={twin.width / 2} y={LABEL_BASELINE} text-anchor="middle" class="twins__label twins__label--twin">{twin.label}</text>
+  </g>
+  <g class="twins__stars">
+    {STARS.map((s) => <circle cx={s.cx} cy={s.cy} r={STAR_R} />)}
+  </g>
+</svg>
+
+<style lang="scss">
+  @use '../styles/tokens' as *;
+
+  .twins {
+    display: block;
+    width: 150px;
+    height: auto;
+    margin: 0 auto;
+    overflow: visible;
+
+    @media (min-width: 900px) { width: 220px; }
+  }
+
+  .twins__curve {
+    fill: none;
+    stroke-width: 6;
+    stroke-linecap: round;
+    // The one load animation on the page: the curves draw in (skipped with reduced motion).
+    stroke-dasharray: 400;
+    stroke-dashoffset: 0;
+    animation: twins-draw 900ms cubic-bezier(0.3, 0.7, 0.3, 1) both;
+  }
+
+  .twins__curve--orig { stroke: $euro; }
+  .twins__curve--twin { stroke: $gold; animation-delay: 120ms; }
+
+  .twins__pill--orig { fill: $white; opacity: 0.14; }
+  .twins__pill--twin { fill: $gold; }
+
+  .twins__label {
+    font-family: $font-display;
+    font-weight: 800;
+    font-size: 17px;
+  }
+
+  .twins__label--orig { fill: $white; }
+  .twins__label--twin { fill: $night; }
+
+  .twins__stars { fill: $gold; }
+
+  @keyframes twins-draw {
+    from { stroke-dashoffset: 400; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .twins__curve { animation: none; }
+  }
+</style>

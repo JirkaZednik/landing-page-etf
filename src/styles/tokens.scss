@@ -1,12 +1,34 @@
-// Design tokeny (závazné). Žádné další barvy.
-$paper: #F6F3EA;
-$ink: #141414;
-$signal: #0B5D3B;
-$muted: #5C5A52;
-$rule: #C9C3B3;
+// Design tokeny – redesign 2026-10-13 „EU modrá a zlatá“ (závazné, viz plán Global Constraints).
+// Kontrast všech použitých dvojic hlídá tests/unit/design-tokens.test.ts.
+$night: #0F2257;      // hero, tmavé plochy, patička
+$euro: #2F5BFF;       // sekundární tlačítka, ilustrace (ne text na tmavém)
+$euro-d: #1E44D8;     // text odkazů a štítků na světlém
+$gold: #FFC93C;       // hlavní CTA, nejnižší TER (text na zlaté vždy $night)
+$mint: #33D6A6;       // fajfky, úspora – jen plocha, ne text
+$mint-text: #0B7A57;  // zelený text (nejnižší TER)
+$mint-bg: #DDF8EE;    // organické tvary
+$cloud: #F3F6FF;      // světlé sekce, čipy
+$ink: #141A33;        // text
+$muted: #5A6385;      // sekundární text
+$white: #FFFFFF;
 
-$font-text: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
-$font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+// Doplňky z makety (ne nové barvy značky):
+$on-night-muted: #C9D3F5; // nejsvětlejší povolený sekundární text na $night
+$line: #E6EBFA;           // vlasové linky v kartách
+$alert: #B4233A;          // štítek „nedostupné“ v kartě odpovědi
+$alert-bg: #FFE7EB;
+
+// '… Fallback' = size-adjusted local Arial (src/styles/_fallback-fonts.scss) against the font-swap shift.
+$font-display: 'Bricolage Grotesque', 'Bricolage Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+$font-text: 'Figtree Variable', 'Figtree Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+$radius-card: 24px;
+$radius-inner: 12px;
+$radius-pill: 999px;
+$shadow-float: 0 24px 60px -20px rgba(4, 10, 40, 0.55);       // plovoucí karta na tmavém (hero)
+$shadow-float-light: 0 18px 40px -18px rgba(15, 34, 87, 0.35); // tatáž plovoucí karta na světlém (kalkulačka)
+// Organický mátový tvar (max. 2× na stránce).
+$blob-radius: 46% 54% 52% 48% / 55% 45% 55% 45%;
 
 $s1: 0.25rem;
 $s2: 0.5rem;

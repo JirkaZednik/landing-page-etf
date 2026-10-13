@@ -119,6 +119,22 @@ E-mail je jediné pole formuláře (nejnižší tření). Nepovinný telefon nab
 
 Bez souhlasu běží jen PostHog v `cookieless_mode` (anonymní agregované události bez trvalého ID); Meta Pixel, CAPI a GA4 nikdy. `aid` se bez souhlasu do PostHogu neposílá ani v adresách: `before_send` ho odstraní z `$current_url`, `$referrer` a všech ostatních hodnot i klíčů vlastností události; heatmapy jsou navíc vypnuté (`capture_heatmaps: false`), protože jejich data jsou klíčovaná adresou stránky (ověřeno testem s reálnou knihovnou posthog-js na `/dekujeme?aid=…`). Když návštěvník souhlas s analytikou udělí, PostHog se přepne na trvalé úložiště bez znovunačtení stránky (žádný druhý `page_view` ani Meta `PageView`, rozepsaný e-mail zůstane) a `identify(aid)` propojí celou cestu včetně `/dekujeme`; z adres se `aid` odstraňuje i se souhlasem. Stránka se znovu načte jen při odvolání souhlasu. Zdrojem pravdy pro počet kontaktů je Brevo.
 
+## Vizuální styl
+
+„EU modrá a zlatá“ (redesign 13. 10. 2026): tmavě modrý hero se dvěma souběžnými křivkami (americký originál modře, evropské dvojče zlatě) a obloukem zlatých teček, bílé karty, zlaté hlavní tlačítko. Závazná maketa: [docs/design/2026-10-13-redesign-mockup.html](docs/design/2026-10-13-redesign-mockup.html).
+
+| Token | Hex | Použití |
+|---|---|---|
+| `--night` | #0F2257 | hero, tmavé plochy, patička, nadpisy v PDF |
+| `--euro` | #2F5BFF | sekundární tlačítka, křivka originálu |
+| `--euro-d` | #1E44D8 | odkazy a štítky na světlém |
+| `--gold` | #FFC93C | hlavní CTA, nejnižší TER (text na zlaté vždy `--night`) |
+| `--mint` / `--mint-text` / `--mint-bg` | #33D6A6 / #0B7A57 / #DDF8EE | fajfky / zelený text / organické tvary |
+| `--cloud` | #F3F6FF | světlé sekce, čipy |
+| `--ink` / `--muted` | #141A33 / #5A6385 | text / sekundární text |
+
+Písma: **Bricolage Grotesque** (600/800) pro nadpisy, logo, tickery a tlačítka, **Figtree** (400–700) pro text; na webu self-hostovaná přes `@fontsource`, v PDF a na kreativách jako statické TTF v `public/fonts/pdf/` (OFL). Jediný zdroj barev je `src/styles/tokens.scss`; PDF a kreativy je čtou přes `src/styles/palette.ts`, kontrast WCAG AA hlídá `tests/unit/design-tokens.test.ts`.
+
 ## Reklamy A/B
 
 Meta (Instagram + Facebook), kategorie kampaně Financial products and services; počítáme s omezeními Meta pro finanční weby (Core Setup). Obě verze vedou na stejnou URL; podle `utm_content` (první písmeno `a`/`b`) se mění nadpis a podnadpis hero, karta S&P 500 a formulář zůstávají. Bez UTM se zobrazí hero A. Texty i URL s UTM: [ads/copy.md](ads/copy.md).
@@ -147,7 +163,7 @@ Formát [9:16](ads/b-9x16.png).
 - **Hero B:** „S&P 500 u vašeho brokera: který fond vybrat a jak ho najít." / „Tři evropské fondy na S&P 500 a jejich poplatky vidíte hned. Postup pro XTB, Trading 212, Fio a Degiro vám pošleme e-mailem."
 - **URL:** `{SITE_URL}/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=b-4x5` (resp. `b-9x16`)
 
-Čísla a ISIN na kreativách generuje `npm run ads` z `src/data/etf-pairs.json` (stejný skript vyrenderuje `public/og.png`). Oproti návrhu ve spec §9 používají kreativy motiv `⇄` a pořadí dvojčat z dat; u verze B je řádek brokerů označen „Postup pro: …" a zdrojová řádka dodává „Dostupnost fondů se u brokerů liší.", aby kreativa netvrdila, že každý broker nabízí SPYL.
+Čísla a ISIN na kreativách generuje `npm run ads` z `src/data/etf-pairs.json` (stejný skript vyrenderuje `public/og.png`). Kreativy mají vizuál hero (tmavě modré pozadí, ilustrace dvou křivek se štítky z dat, bílá karta, zlaté tlačítko s textem tlačítka z `ads/copy.md`); oproti návrhu ve spec §9 berou pořadí dvojčat z dat; u verze B je řádek brokerů označen „Postup pro: …" a zdrojová řádka dodává „Dostupnost fondů se u brokerů liší.", aby kreativa netvrdila, že každý broker nabízí SPYL.
 
 ## Očekávaná konverze
 
@@ -215,15 +231,15 @@ Pozor při čtení: `pdf_downloaded` se počítá při každém kliknutí na tla
 
 **PostHog dashboard** „ETF Dvojče – konverze": ČEKÁ na vytvoření po nasazení, postup v [docs/brevo-setup.md](docs/brevo-setup.md) § 9.6.
 
-**Výkon (cíl LCP < 1,5 s, CLS < 0,1):** [docs/lighthouse-mobile.json](docs/lighthouse-mobile.json) je z **lokálního** produkčního buildu (12. 10. 2026, Lighthouse 13.5.0, mobil, simulované 4G), ne z produkce:
+**Výkon (cíl LCP < 1,5 s, CLS < 0,1):** [docs/lighthouse-mobile.json](docs/lighthouse-mobile.json) je z **lokálního** produkčního buildu (13. 10. 2026, Lighthouse 13.5.0, mobil, simulované 4G, statický server s hlavičkami z `vercel.json` a brotli; uložen medián z 5 běhů podle LCP), ne z produkce:
 
 | Metrika | Lokální build | Cíl |
 |---|---|---|
-| LCP | 1 089 ms v uloženém běhu; v opakovaných bězích bimodální, cca 1,06 s nebo cca 1,96 s (4 z 8 běhů nad cílem) | < 1 500 ms |
-| CLS | 0,0007 | < 0,1 |
-| Výkon / přístupnost / best practices / SEO | 1,00 / 1,00 / 1,00 / 1,00 | – |
+| LCP | 2 110 ms v uloženém (mediánovém) běhu; v 10 bězích bimodální, 1,52–1,62 s (4×) nebo 2,11–2,63 s (6×), medián ≈ 2,1 s | < 1 500 ms |
+| CLS | 0 ve všech 10 bězích (kritická písma se přednačítají, záložní písmo má sladěné metriky) | < 0,1 |
+| Výkon / přístupnost / best practices / SEO | 0,99 / 1,00 / 1,00 / 1,00 | – |
 
-LCP tedy zatím **nepovažujeme za splněné**; rozhodne měření na produkční URL podle [docs/brevo-setup.md](docs/brevo-setup.md) § 9.5.
+LCP tedy lokálně **splněné není**; rozhodne měření na produkční URL podle [docs/brevo-setup.md](docs/brevo-setup.md) § 9.5.
 
 ## Zdroje dat
 

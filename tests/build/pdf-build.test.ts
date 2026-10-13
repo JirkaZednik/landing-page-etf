@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { PDFParse } from 'pdf-parse';
-import { getBrokers, getData, getFund } from '../../src/lib/pairs';
+import { getBrokers, getData, getFund, originalsOf, twinsSortedByTer } from '../../src/lib/pairs';
 import { formatDateCz } from '../../src/lib/format';
 import { sectionFor } from '../unit/helpers/pdf-text';
 
@@ -22,6 +22,19 @@ describe('build-pdf', () => {
     expect(existsSync(PDF)).toBe(true);
     expect(readFileSync(PDF).subarray(0, 4).toString('latin1')).toBe('%PDF');
     expect(statSync(PDF).size).toBeLessThan(1024 * 1024);
+  });
+
+  it('opens with the ETF Dvojče brand and the twins motif labelled from data', () => {
+    const head = text.slice(0, text.indexOf('Návod pro ')).replace(/\s+/g, ' ');
+    expect(head).toContain('ETF Dvojče');
+    expect(head).toContain(originalsOf('sp500')[0].id);
+    expect(head).toContain(twinsSortedByTer('sp500')[0].id);
+  });
+
+  it('numbers every page', () => {
+    const pages = Number(text.match(/strana 1\/(\d+)/)?.[1]);
+    expect(pages).toBeGreaterThan(1);
+    for (let i = 1; i <= pages; i++) expect(text).toContain(`strana ${i}/${pages}`);
   });
 
   it('contains SPYL with its ISIN from data', () => {

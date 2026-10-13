@@ -1,11 +1,19 @@
 @use 'tokens' as *;
+@use 'fallback-fonts';
 
 :root {
-  --paper: #{$paper};
+  --night: #{$night};
+  --euro: #{$euro};
+  --euro-d: #{$euro-d};
+  --gold: #{$gold};
+  --mint: #{$mint};
+  --mint-text: #{$mint-text};
+  --mint-bg: #{$mint-bg};
+  --cloud: #{$cloud};
   --ink: #{$ink};
-  --signal: #{$signal};
   --muted: #{$muted};
-  --rule: #{$rule};
+  --white: #{$white};
+  --line: #{$line};
   color-scheme: light;
 }
 
@@ -13,28 +21,54 @@
 
 body {
   margin: 0;
-  background: var(--paper);
-  color: var(--ink);
+  background: $white;
+  color: $ink;
   font-family: $font-text;
   font-size: 1.0625rem;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
 }
 
+h1, h2, h3 {
+  font-family: $font-display;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+h1, h2 { text-wrap: balance; }
+
+// Kód (názvy cookies) bez neproporcionálního písma: tichý čip v textovém písmu.
 code, kbd, samp {
-  font-family: $font-mono;
-  font-variant-numeric: tabular-nums;
+  padding: 0.05em 0.4em;
+  border-radius: 6px;
+  background: $cloud;
+  color: $ink;
+  font-family: $font-text;
+  font-size: 0.92em;
+  font-weight: 600;
 }
 
 a {
-  color: var(--ink);
-  text-decoration-color: var(--signal);
+  color: $euro-d;
   text-underline-offset: 0.15em;
 }
 
 :focus-visible {
-  outline: 2px solid var(--signal);
+  outline: 2px solid $euro-d;
   outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -47,18 +81,25 @@ a {
 }
 
 // Cookie lišta: nemodální region ukotvený dole, kompaktní (≤ ~140 px v hlavním zobrazení),
-// aby nezakrývala hero formulář na 390×844.
+// aby nezakrývala hero formulář na 390×844. Odmítnout a Přijmout mají stejnou váhu.
 .consent {
   position: fixed;
   inset: auto 0 0 0;
   z-index: 50;
   max-height: 70vh;
   overflow-y: auto;
-  padding: $s2 $s3;
-  background: var(--paper);
-  border-top: 1px solid var(--rule);
+  padding: $s2 max(#{$s3}, calc((100% - 1080px) / 2));
+  background: $white;
+  border-top: 1px solid $line;
+  box-shadow: 0 -10px 30px -18px rgba(15, 34, 87, 0.45);
+  color: $ink;
   font-size: 0.75rem;
   line-height: 1.3;
+
+  &:focus { outline: none; }
+  &:focus-visible { outline: 2px solid $euro-d; outline-offset: -2px; }
+
+  a { color: $euro-d; }
 
   &__text { margin: 0 0 $s2; max-width: 60rem; }
 
@@ -73,24 +114,27 @@ a {
   &__link {
     min-height: 44px;
     padding: 0 $s3;
-    font: inherit;
-    font-size: 0.875rem;
-    color: var(--ink);
+    font: 800 0.875rem $font-display;
     cursor: pointer;
   }
 
   &__btn {
     flex: 1 1 0;
-    background: var(--paper);
-    border: 1px solid var(--ink);
+    border: 1.5px solid $night;
+    border-radius: $radius-pill;
+    background: $white;
+    color: $night;
+
+    &:hover { background: $cloud; }
   }
 
   &__link {
     flex: 0 0 auto;
-    background: none;
     border: 0;
+    border-radius: $radius-pill;
+    background: none;
+    color: $euro-d;
     text-decoration: underline;
-    text-decoration-color: var(--signal);
     text-underline-offset: 0.15em;
   }
 
@@ -103,74 +147,236 @@ a {
     min-height: 44px;
     font-size: 0.875rem;
 
-    input { width: 1.25rem; height: 1.25rem; flex: none; accent-color: var(--ink); }
+    input { width: 1.25rem; height: 1.25rem; flex: none; accent-color: $euro-d; }
+  }
+
+  @media (min-width: 900px) {
+    &__actions { max-width: 32rem; }
   }
 }
 
+// Právní stránky: světlá plocha --cloud, nadpis na středu, text v bílé kartě.
 .legal {
-  max-width: 48rem;
-  margin: 0 auto;
-  padding: $s4 $s3 $s6;
+  padding: $s5 $s3 $s6;
+  background: $cloud;
 
-  table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
-  th, td { text-align: left; vertical-align: top; padding: $s2; border-bottom: 1px solid var(--rule); }
+  > h1 {
+    max-width: 10em; // = 20ch with Bricolage; em keeps the wrap stable across the font swap
+    margin: 0 auto $s4;
+    font-size: clamp(1.75rem, 6vw, 2.5rem);
+    line-height: 1.08;
+    text-align: center;
+  }
+
+  > .legal__version { margin: -#{$s3} auto $s4; text-align: center; }
+
+  &__card {
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: $s4 $s3;
+    border-radius: $radius-card;
+    background: $white;
+    line-height: 1.55;
+
+    @media (min-width: 640px) { padding: $s5 40px; }
+
+    > :first-child { margin-top: 0; }
+
+    h2 {
+      margin: $s5 0 $s2;
+      font-size: 1.25rem;
+      line-height: 1.2;
+    }
+
+    h2:first-child { margin-top: 0; }
+
+    p { margin: 0 0 $s3; }
+  }
+
+  ul { margin: 0 0 $s3; padding-left: 1.2em; }
+  li + li { margin-top: $s2; }
+  li::marker { color: $euro-d; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; line-height: 1.45; }
+  th, td { text-align: left; vertical-align: top; padding: 10px $s2; border-bottom: 1px solid $line; }
+  th { color: $muted; font-size: 0.8125rem; font-weight: 600; }
+  th:first-child, td:first-child { padding-left: 0; }
+
+  &__table { margin: 0 0 $s3; }
+
+  // Úzký displej: každý řádek jako blok s popisky (žádný posun do strany).
+  @media (max-width: 40rem) {
+    &__table {
+      thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+      }
+
+      tr {
+        display: block;
+        padding: 12px 0;
+        border-bottom: 1px solid $line;
+      }
+
+      td {
+        display: block;
+        padding: 0;
+        border: 0;
+      }
+
+      td:first-child { font-weight: 700; }
+
+      td:not(:first-child)::before {
+        content: attr(data-label) ': ';
+        color: $muted;
+      }
+    }
+  }
+
   [data-consent-open] {
     min-height: 44px;
-    padding: 0 $s3;
-    font: inherit;
-    color: var(--ink);
-    background: var(--paper);
-    border: 1px solid var(--ink);
+    padding: 0 18px;
+    border: 1.5px solid $euro-d;
+    border-radius: $radius-pill;
+    background: $white;
+    color: $euro-d;
+    font: 800 0.9375rem $font-display;
     cursor: pointer;
+
+    &:hover { background: $cloud; }
   }
-  &__version { color: var(--muted); font-size: 0.875rem; }
+
+  &__version { color: $muted; font-size: 0.875rem; }
 }
 
-@media (max-width: 40rem) {
-  .legal { overflow-x: auto; }
+// 404: krátké sdělení na středu, návrat zlatým tlačítkem.
+.notfound {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: $s3;
+  min-height: calc(100vh - 48px);
+  padding: $s6 $s3;
+  background: $cloud;
+  text-align: center;
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.75rem, 7vw, 3rem);
+    line-height: 1.05;
+  }
+
+  p { margin: 0; color: $muted; }
 }
 
-// LeadForm (progresivní vylepšení: funguje i bez JS)
+// Zlaté tlačítko-odkaz (hlavní akce mimo formulář): text vždy --night.
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 28px;
+  border-radius: $radius-pill;
+  background: $gold;
+  color: $night;
+  font: 800 1.0625rem $font-display;
+  text-decoration: none;
+
+  &:hover { background: color-mix(in srgb, #{$gold} 88%, #{$white}); }
+  &:focus-visible { outline: 3px solid $euro-d; outline-offset: 3px; }
+}
+
+// Sekundární tlačítko (EU modrá, bílý text 5.17:1).
+.btn-euro {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: $radius-pill;
+  background: $euro;
+  color: $white;
+  font: 800 1rem $font-display;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover { background: $euro-d; }
+  &:focus-visible { outline: 3px solid $euro-d; outline-offset: 3px; }
+  &:disabled { opacity: 0.7; cursor: progress; }
+}
+
+// LeadForm (progresivní vylepšení: funguje i bez JS). Pole a tlačítko v jedné bílé „pilulce“.
 .lead-form {
   position: relative;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: $s2;
-  max-width: 28rem;
+  max-width: 520px;
 
-  label { font-size: 0.9375rem; }
+  &__label { font-size: 0.9375rem; }
+
+  &__field {
+    display: flex;
+    gap: 6px;
+    padding: 6px;
+    border: 1px solid $muted; // hranice pole na světlém ≥ 3:1 (v hero bez rámečku)
+    border-radius: $radius-pill;
+    background: $white;
+  }
 
   input[type='email'] {
+    flex: 1 1 auto;
+    min-width: 0;
     min-height: 48px;
-    padding: 0 $s2;
-    border: 1px solid var(--ink);
-    border-radius: 2px;
-    background: var(--paper);
-    color: var(--ink);
-    font: inherit;
+    padding: 0 6px 0 14px;
+    border: 0;
+    border-radius: $radius-pill;
+    background: $white;
+    color: $ink;
+    font: 500 1rem $font-text;
+
+    &::placeholder { color: $muted; opacity: 1; }
+    &:focus-visible { outline: 2px solid $euro; outline-offset: 0; }
   }
 
   button[type='submit'] {
+    flex: none;
     min-height: 48px;
-    padding: 0 $s3;
+    padding: 0 18px;
     border: 0;
-    border-radius: 2px;
-    background: var(--signal);
-    color: var(--paper);
-    font: inherit;
-    font-weight: 600;
+    border-radius: $radius-pill;
+    background: $gold;
+    color: $night;
+    font: 800 1rem $font-display;
+    white-space: nowrap;
     cursor: pointer;
 
-    &:disabled { opacity: 0.6; cursor: progress; }
+    &:hover { background: color-mix(in srgb, #{$gold} 88%, #{$white}); }
+    &:focus-visible { outline: 3px solid $euro; outline-offset: 0; }
+    &:disabled { opacity: 0.7; cursor: progress; }
   }
 
-  input[aria-invalid='true'] { border-color: var(--ink); border-width: 2px; }
+  input[aria-invalid='true'] { box-shadow: inset 0 0 0 2px $alert; }
 }
 
-.lead-form__error { margin: 0; font-size: 0.9375rem; font-weight: 600; }
+.lead-form__error {
+  justify-self: center;
+  margin: 0;
+  padding: 2px 12px;
+  border-radius: $radius-pill;
+  background: $alert-bg;
+  color: $alert;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
 
 .lead-form__micro {
   margin: 0;
-  color: var(--muted);
+  color: $muted;
   font-size: 0.8125rem;
   line-height: 1.45;
 }
@@ -184,19 +390,57 @@ a {
   overflow: hidden;
 }
 
-// Hlavička: jen značka, 40 px (rozpočet první obrazovky, Task 9).
+// Formulář v hero (tmavé pozadí): popisek jen pro čtečky (pole má placeholder i jméno), vystředěno.
+.hero .lead-form {
+  justify-self: center;
+  width: 100%;
+  margin-top: 0;
+
+  .lead-form__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .lead-form__field { border: 0; }
+
+  .lead-form__micro {
+    max-width: 30rem;
+    margin: 0 auto;
+    color: $on-night-muted;
+    font-size: 0.78125rem;
+
+    a { color: $white; }
+  }
+
+  a:focus-visible { outline-color: $gold; }
+}
+
+// Hlavička: logo na středu, bílý pruh nad hero.
 .masthead {
   display: flex;
   align-items: center;
-  height: 40px;
+  justify-content: center;
+  height: 48px;
   padding: 0 $s3;
+  background: $white;
 
   &__brand {
-    font-size: 1.125rem;
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: $ink;
+    font-family: $font-display;
+    font-size: 1.25rem;
+    font-weight: 800;
     letter-spacing: -0.01em;
-    font-variation-settings: 'opsz' 72;
+    text-decoration: none;
   }
+
+  .logo__mark { display: block; flex: none; }
 }
 
 // Sticky CTA (mobil): jen pod 48rem, ustupuje cookie liště.
@@ -205,8 +449,9 @@ a {
   inset: auto 0 0 0;
   z-index: 40;
   padding: $s2 $s3 calc(#{$s2} + env(safe-area-inset-bottom));
-  background: var(--paper);
-  border-top: 1px solid var(--rule);
+  background: $white;
+  border-top: 1px solid $line;
+  box-shadow: 0 -10px 30px -18px rgba(15, 34, 87, 0.45);
 
   button {
     display: block;
@@ -214,12 +459,13 @@ a {
     min-height: 48px;
     padding: 0 $s3;
     border: 0;
-    border-radius: 2px;
-    background: var(--signal);
-    color: var(--paper);
-    font: inherit;
-    font-weight: 600;
+    border-radius: $radius-pill;
+    background: $gold;
+    color: $night;
+    font: 800 1rem $font-display;
     cursor: pointer;
+
+    &:focus-visible { outline: 3px solid $euro; outline-offset: 2px; }
   }
 
   @media (min-width: 48rem) { display: none; }
@@ -237,33 +483,78 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
   }
 }
 
-// Obsahové sekce pod hero (Task 10/11).
-// Rytmus mezi sekcemi $s6, dělicí linka 1px --rule; levé zarovnání jako hero ($s3).
+
+// Obsahové sekce pod hero: celá šířka, střídání bílá / --cloud, obsah max. 1080 px na středu.
+// Nadpis a perex na středu; obsah uvnitř bloků zarovnaný vlevo.
 .section {
-  max-width: 34rem;
-  margin-top: $s6;
-  padding: $s5 $s3 0;
-  border-top: 1px solid var(--rule);
+  padding: 56px max(#{$s3}, calc((100% - 1080px) / 2));
+  background: $white;
+
+  &--cloud { background: $cloud; }
 
   > h2 {
-    margin: 0 0 $s3;
-    font-size: 1.375rem;
-    line-height: 1.15;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    text-wrap: balance;
+    max-width: 11em; // = 22ch with Bricolage; em keeps the wrap stable across the font swap
+    margin: 0 auto 28px;
+    font-size: clamp(1.75rem, 6vw, 2.75rem);
+    line-height: 1.08;
+    text-align: center;
+  }
+
+  &__lead {
+    max-width: 36em;
+    margin: -12px auto 28px;
+    color: $muted;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    text-align: center;
+    text-wrap: pretty;
+  }
+
+  @media (min-width: 900px) {
+    padding-block: 88px;
+
+    > h2 { max-width: 14em; margin-bottom: 40px; }
+    &__lead { margin: -24px auto 40px; font-size: 1.125rem; }
   }
 }
 
-// Spojovací motiv ⇄ (stejný jako v AnswerCard) pro React ostrůvky.
+// Seznam s mátovými fajfkami (jako v hero a maketě).
+.check-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    position: relative;
+    padding-left: 34px;
+    line-height: 1.45;
+    text-wrap: pretty;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: $mint url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5 9.4l2.6 2.5L13 6.6' fill='none' stroke='%230F2257' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 22px no-repeat;
+    }
+  }
+}
+
+// Spojovací motiv ⇄ (originál → dvojčata) pro React ostrůvky.
 .pair-rule {
   display: flex;
   align-items: center;
   gap: $s2;
-  height: 1.25rem;
-  margin: $s1 0 0;
-  color: var(--signal);
-  font-family: $font-mono;
+  height: 1.5rem;
+  margin: $s2 0 0;
+  color: $euro-d;
+  font-family: $font-display;
+  font-weight: 800;
   font-size: 1.125rem;
   line-height: 1;
 
@@ -271,11 +562,11 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
   &::after {
     content: '';
     flex: 1;
-    border-top: 1px solid var(--rule);
+    border-top: 1px solid $line;
   }
 }
 
-// Čipy: skutečné radio v <fieldset>; šipky fungují nativně.
+// Čipy: skutečné radio v <fieldset>; šipky fungují nativně. Bílé s linkou, vybraný tmavě modrý.
 .chips {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -283,6 +574,7 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
   margin: 0 0 $s3;
   padding: 0;
   border: 0;
+  min-width: 0;
 
   &--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
@@ -291,6 +583,7 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
     padding: 0;
     margin-bottom: $s2;
     font-size: 0.9375rem;
+    font-weight: 600;
   }
 }
 
@@ -299,12 +592,17 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 44px;
-  padding: $s2;
-  border: 1px solid var(--rule);
-  border-radius: 2px;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1.5px solid $line;
+  border-radius: 16px;
+  background: $white;
+  color: $ink;
   line-height: 1.25;
   cursor: pointer;
+  transition: border-color 120ms ease-out, background-color 120ms ease-out;
+
+  &:hover { border-color: $euro; }
 
   // Visually hidden but focusable and announced.
   input {
@@ -317,84 +615,128 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
   }
 
   &:has(input:checked) {
-    border: 2px solid var(--ink);
-    padding: calc(#{$s2} - 1px);
+    border-color: $night;
+    background: $night;
+    color: $white;
   }
 
   &:has(input:focus-visible) {
-    outline: 2px solid var(--signal);
+    outline: 2px solid $euro-d;
     outline-offset: 2px;
   }
 
   &__tk {
-    font-family: $font-mono;
-    font-weight: 600;
-    font-size: 1rem;
+    color: $euro-d;
+    font-family: $font-display;
+    font-weight: 800;
+    font-size: 1.0625rem;
+    letter-spacing: 0.01em;
   }
 
   &__label {
-    color: var(--muted);
+    color: $muted;
     font-size: 0.8125rem;
   }
 
-  input:checked ~ &__label { color: var(--ink); }
+  input:checked ~ &__tk { color: $gold; }
+  input:checked ~ &__label { color: $on-night-muted; }
 }
 
-.chips--2 .chip__label { font-size: 0.9375rem; color: var(--ink); }
+// Na bílém pozadí (kalkulačka, karta brokera) mají nevybrané čipy výplň --cloud.
+.calc .chip,
+.broker-picker .chip {
+  border-color: $cloud;
+  background: $cloud;
 
-// Karta fondu: originál nahoře (muted), ⇄, pak dvojčata v řádcích.
+  &:hover { border-color: $euro; }
+  &:has(input:checked):hover { border-color: $night; } // vybraný čip zůstává celý tmavý
+}
+
+// Jednořádkové čipy (skupina v kalkulačce, broker) jsou „pilulky“.
+.chips--2 .chip,
+.broker-picker .chip {
+  align-items: center;
+  border-radius: $radius-pill;
+  text-align: center;
+}
+
+.chips--2 .chip__label {
+  color: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.chips--2 input:checked ~ .chip__label { color: $white; }
+
+// Fondy z NYSE: na desktopu čipy vlevo pod sebou, karta vpravo.
+.fund-picker {
+  max-width: 880px;
+  margin: 0 auto;
+
+  @media (min-width: 900px) {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+
+    > .chips { grid-template-columns: minmax(0, 1fr); margin: 0; }
+  }
+}
+
+// Karta fondu: bílá na --cloud, originál nahoře (tlumeně), ⇄, pak dvojčata jako v kartě odpovědi.
 .fund-card {
-  border-top: 2px solid var(--ink);
-  border-bottom: 1px solid var(--rule);
-  padding: $s2 0 $s1;
+  padding: 18px 16px 16px;
+  border-radius: $radius-card;
+  background: $white;
+
+  @media (min-width: 640px) { padding: 24px 24px 20px; }
 
   p { margin: 0; }
 
   &__orig {
-    color: var(--muted);
+    color: $muted;
     font-size: 0.875rem;
     line-height: 1.5;
 
-    a { color: inherit; margin-left: $s1; }
+    a { margin-left: $s1; color: $euro-d; }
   }
 
-  &__tk {
-    font-family: $font-mono;
-    font-weight: 600;
-    font-size: 1rem;
-    letter-spacing: 0.01em;
+  &__orig &__tk {
+    color: $ink;
+    font-family: $font-display;
+    font-weight: 800;
   }
 
-  &__orig &__tk { font-size: 0.875rem; font-weight: 400; }
-
-  &__num {
-    font-family: $font-mono;
-    font-variant-numeric: tabular-nums;
-  }
+  &__num { font-variant-numeric: tabular-nums; }
 
   &__rule {
     margin: $s2 0 0;
     border: 0;
-    border-top: 1px solid var(--rule);
+    border-top: 1px solid $line;
   }
 
   &__note {
     display: grid;
     gap: $s1;
-    padding: $s2 0;
+    margin-top: $s2;
+    padding: 12px 14px;
+    border-radius: $radius-inner;
+    background: $cloud;
     font-size: 0.9375rem;
     line-height: 1.45;
 
-    p:not(.fund-card__missing) { color: var(--muted); }
+    p:not(.fund-card__missing) { color: $muted; }
   }
 
-  &__missing { font-weight: 600; }
+  &__missing { font-weight: 700; }
 
   &__h {
-    margin: $s2 0 0;
+    margin: $s3 0 $s1;
+    color: $muted;
+    font-family: $font-text;
     font-size: 0.8125rem;
-    font-weight: 400;
-    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0;
   }
 
   &__twins {
@@ -402,59 +744,82 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
     padding: 0;
     list-style: none;
 
-    li + li { border-top: 1px solid var(--rule); }
+    li + li { border-top: 1px solid $line; }
   }
 
   &__row {
     display: grid;
-    grid-template-columns: 4.5rem 1fr auto 1rem;
-    align-items: baseline;
-    align-content: center;
-    column-gap: $s2;
-    min-height: 44px;
-    padding: $s1 0;
+    grid-template-columns: 58px minmax(0, 1fr) auto 12px;
+    align-items: center;
+    column-gap: 10px;
+    min-height: 48px;
+    padding: 6px 0;
     cursor: pointer;
     list-style: none;
 
     &::-webkit-details-marker { display: none; }
 
+    // Disclosure marker; turns when the row opens (same as the answer card).
     &::after {
-      content: '▸';
+      content: '';
       justify-self: end;
-      color: var(--muted);
-      font-size: 0.75rem;
+      width: 7px;
+      height: 7px;
+      border-right: 2px solid $muted;
+      border-bottom: 2px solid $muted;
+      transform: rotate(-45deg);
       transition: transform 120ms ease-out;
     }
   }
 
-  .twin[open] > &__row::after { transform: rotate(90deg); }
+  .twin[open] > &__row::after { transform: rotate(45deg); }
+
+  &__row &__tk {
+    display: grid;
+    place-items: center;
+    height: 32px;
+    border-radius: 10px;
+    background: $cloud;
+    color: $euro-d;
+    font-family: $font-display;
+    font-weight: 800;
+    font-size: 0.9375rem;
+    letter-spacing: 0.01em;
+  }
 
   &__index {
+    min-width: 0;
     font-size: 0.875rem;
+    font-weight: 600;
     line-height: 1.3;
   }
 
-  &__other { color: var(--muted); }
+  &__other { color: $muted; font-weight: 400; }
 
   &__ter {
-    font-family: $font-mono;
-    font-variant-numeric: tabular-nums;
+    font-weight: 700;
     font-size: 1rem;
+    font-variant-numeric: tabular-nums;
     text-align: right;
+    white-space: nowrap;
+  }
+
+  .twin[data-lowest] {
+    .fund-card__row .fund-card__tk { background: $gold; color: $night; }
+    .fund-card__ter { color: $mint-text; }
   }
 
   &__more {
-    padding: 0 0 $s2 calc(4.5rem + #{$s2});
+    padding: 0 0 $s2 68px;
     font-size: 0.875rem;
     line-height: 1.4;
   }
 
   &__isin {
-    color: var(--muted);
+    color: $muted;
 
     span {
-      color: var(--ink);
-      font-family: $font-mono;
+      color: $ink;
       font-variant-numeric: tabular-nums;
       user-select: all;
     }
@@ -464,7 +829,7 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
     display: flex;
     gap: $s3;
 
-    a { display: inline-block; padding: $s1 0; }
+    a { display: inline-block; padding: $s1 0; color: $euro-d; font-weight: 600; }
   }
 
   &__foot {
@@ -473,30 +838,23 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
     justify-items: start;
     margin-top: $s2;
     padding-top: $s3;
-    border-top: 1px solid var(--rule);
+    border-top: 1px solid $line;
   }
 
-  &__cta {
-    width: 100%;
-    min-height: 48px;
-    padding: 0 $s3;
-    border: 1px solid var(--ink);
-    border-radius: 2px;
-    background: var(--paper);
-    color: var(--ink);
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-  }
+  &__cta { width: 100%; }
+
+  @media (min-width: 640px) { &__cta { width: auto; } }
 
   &__calc {
     display: inline-block;
     padding: $s2 0;
+    color: $euro-d;
     font-size: 0.9375rem;
+    font-weight: 600;
   }
 
   &__src {
-    color: var(--muted);
+    color: $muted;
     font-size: 0.75rem;
     line-height: 1.4;
 
@@ -504,14 +862,32 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
   }
 }
 
-// Kalkulačka: vstupy nahoře, výsledek jako tabulka (Fond · TER · Na poplatcích).
+// Kalkulačka: mobil pod sebou (vstupy → výsledek → formulář);
+// desktop výsledek jako plovoucí karta na mátovém tvaru vlevo, vstupy a formulář vpravo.
 .calc {
   display: grid;
-  gap: $s4;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+
+  @media (min-width: 900px) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: 1fr auto auto 1fr;
+    grid-template-areas:
+      'visual .'
+      'visual inputs'
+      'visual form'
+      'visual .';
+    column-gap: 64px;
+    row-gap: 0;
+
+    &__visual { grid-area: visual; }
+    &__inputs { grid-area: inputs; }
+    > .lead-form { grid-area: form; margin-top: 28px; }
+  }
 
   &__inputs {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: $s3;
 
     .chips { grid-column: 1 / -1; margin: 0; }
@@ -519,47 +895,76 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
 
   &__field {
     display: grid;
-    gap: $s1;
+    gap: 6px;
+    min-width: 0;
 
-    label { font-size: 0.9375rem; }
+    label { font-size: 0.9375rem; font-weight: 600; }
 
     input {
-      min-height: 48px;
       width: 100%;
-      padding: 0 $s2;
-      border: 1px solid var(--ink);
-      border-radius: 2px;
-      background: var(--paper);
-      color: var(--ink);
-      font-family: $font-mono;
-      font-size: 1rem;
+      min-height: 52px;
+      padding: 0 14px;
+      border: 1px solid $muted;
+      border-radius: $radius-inner;
+      background: $white;
+      color: $ink;
+      font: 700 1.125rem $font-text;
       font-variant-numeric: tabular-nums;
     }
   }
 
   &__hint {
-    color: var(--muted);
+    color: $muted;
     font-size: 0.8125rem;
   }
 
+  // Mátový organický tvar za plovoucí kartou výsledku (1. ze 2 na stránce).
+  &__visual {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 28px 10px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0 -6px;
+      border-radius: $blob-radius;
+      background: $mint-bg;
+    }
+
+    @media (min-width: 900px) {
+      padding: 64px 48px;
+
+      &::before { inset: 0; }
+    }
+  }
+
   &__result {
-    border-top: 2px solid var(--ink);
-    padding-top: $s2;
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    padding: 18px 18px 14px;
+    border-radius: $radius-card;
+    background: $white;
+    box-shadow: $shadow-float-light;
 
     p { margin: 0; }
   }
 
   &__h {
-    margin: 0 0 $s1;
+    margin: 0 0 2px;
+    color: $muted;
+    font-family: $font-text;
     font-size: 0.8125rem;
-    font-weight: 400;
-    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0;
   }
 
-  &__deposited { font-size: 1rem; margin-bottom: $s2 !important; }
+  &__deposited { margin-bottom: $s2 !important; font-size: 0.9375rem; }
 
   &__num {
-    font-family: $font-mono;
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
   }
 
@@ -572,7 +977,7 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
     .calc__col-ter { width: 25%; }
 
     th, td {
-      padding: $s2 0;
+      padding: 9px 0;
       text-align: left;
       vertical-align: baseline;
       font-weight: 400;
@@ -581,103 +986,159 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
     th:not(:first-child), td { text-align: right; }
 
     thead th {
-      padding-top: 0;
-      color: var(--muted);
+      padding-top: 4px;
+      color: $muted;
       font-size: 0.8125rem;
-      border-bottom: 1px solid var(--ink);
+      font-weight: 600;
+      border-bottom: 1px solid $line;
     }
-
-    tbody tr + tr { border-top: 1px solid var(--rule); }
 
     td {
-      font-family: $font-mono;
+      font-size: 0.9375rem;
+      font-weight: 600;
       font-variant-numeric: tabular-nums;
-      font-size: 1rem;
     }
+
+    // Úzký pruh pod řádkem: podíl poplatků vůči fondu s 1,5 % (dekorace, čísla jsou v textu).
+    tbody tr {
+      background: linear-gradient($euro, $euro) left bottom / var(--share, 0%) 5px no-repeat,
+        linear-gradient($cloud, $cloud) left bottom / 100% 5px no-repeat;
+    }
+
+    tbody tr[data-lowest] { background-image: linear-gradient($mint, $mint), linear-gradient($cloud, $cloud); }
   }
 
   &__tk {
-    font-family: $font-mono;
-    font-weight: 600 !important;
+    color: $euro-d;
+    font-family: $font-display;
+    font-weight: 800 !important;
   }
 
   &__diff {
-    padding: $s2 0 $s3;
-    border-top: 1px solid var(--ink);
-    font-size: 1rem;
-    font-weight: 600;
+    padding: 14px 0 12px;
+    font-size: 0.875rem;
+    color: $muted;
+
+    .calc__num {
+      display: block;
+      color: $night;
+      font-family: $font-display;
+      font-size: 2.25rem;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
   }
 
   &__table--cmp {
-    border-top: 1px solid var(--rule);
-    color: var(--muted);
+    border-top: 1px solid $line;
+    color: $muted;
 
     th { font-size: 0.875rem; line-height: 1.35; }
+    td { color: $ink; }
+
+    tbody tr {
+      background-image: linear-gradient($night, $night), linear-gradient($cloud, $cloud);
+    }
   }
 
   &__note {
-    padding-top: $s2;
-    color: var(--muted);
-    font-size: 0.8125rem;
+    padding-top: 10px;
+    color: $muted;
+    font-size: 0.75rem;
     line-height: 1.45;
   }
 
   .lead-form { max-width: none; }
 }
 
-// Děkovací stránka /dekujeme: jeden sloupec, nahoře jediná akce (stažení návodu).
+// Děkovací stránka /dekujeme: tmavý pás s jedinou hlavní akcí (zlaté tlačítko), pod ním karty.
 .thanks {
-  max-width: 34rem;
-  padding: $s3 $s3 $s6;
+  min-height: calc(100vh - 48px);
+  padding-bottom: $s6;
+  background: $cloud;
 
-  > h1 {
-    margin: 0 0 $s3;
-    font-size: 1.625rem;
-    line-height: 1.12;
-    font-weight: 700;
-    letter-spacing: -0.015em;
-    text-wrap: balance;
+  &__top {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    justify-items: center;
+    gap: 14px;
+    padding: 36px $s3 44px;
+    background: $night;
+    color: $white;
+    text-align: center;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -300px;
+      left: 50%;
+      width: 520px;
+      height: 520px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, rgba(47, 91, 255, 0.55), rgba(47, 91, 255, 0) 65%);
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    > * { position: relative; margin: 0; }
+
+    h1 {
+      font-size: clamp(1.875rem, 8vw, 3rem);
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+    }
+
+    @media (min-width: 900px) { padding: 64px $s4 72px; }
   }
-
-  > p { margin: 0 0 $s2; text-wrap: pretty; }
-
-  &__home { color: var(--ink); text-decoration: none; }
-
-  &__muted { color: var(--muted); font-size: 0.9375rem; }
 
   &__pdf {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     width: 100%;
-    min-height: 48px;
-    margin: 0 0 $s2;
-    padding: 0 $s3;
-    border-radius: 2px;
-    background: var(--signal);
-    color: var(--paper);
-    font-weight: 600;
-    text-decoration: none;
+    max-width: 420px;
+    min-height: 60px;
+    font-size: 1.1875rem;
+
+    &:focus-visible { outline-color: $white; }
   }
 
-  &__rule {
-    margin: $s5 0;
-    border: 0;
-    border-top: 1px solid var(--rule);
+  &__muted { color: $on-night-muted; font-size: 0.9375rem; }
+
+  // Karty (výběr brokera, telefon) pod sebou na --cloud.
+  .broker-picker,
+  .phone-offer {
+    max-width: 40rem;
+    margin: $s4 auto 0;
+    padding: 22px 18px;
+    border-radius: $radius-card;
+    background: $white;
+
+    @media (min-width: 640px) { padding: 28px 32px; }
+  }
+
+  .broker-picker { margin-top: -20px; position: relative; box-shadow: $shadow-float-light; }
+
+  @media (max-width: 40.5rem) {
+    .broker-picker,
+    .phone-offer { margin-inline: $s3; }
   }
 
   h2 {
     margin: 0 0 $s3;
     font-size: 1.375rem;
     line-height: 1.15;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    text-wrap: balance;
   }
 }
 
-// BrokerPicker: čipy jako FundPicker, odpověď ve stylu karty fondu.
-.chip__name { font-size: 0.9375rem; }
+// BrokerPicker: čipy jako pilulky, odpověď v tiché vnořené ploše.
+.chip__name { font-size: 0.9375rem; font-weight: 600; }
+
+.broker-picker .chips {
+  display: flex;
+  flex-wrap: wrap;
+
+  .chip { flex: 1 1 auto; padding-inline: 18px; }
+}
 
 // Neviditelné radio přes celý čip: ťuknutí i klik míří přímo na <input>.
 .broker-picker .chip input {
@@ -689,14 +1150,17 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
 }
 
 .broker-answer {
-  border-top: 2px solid var(--ink);
-  padding: $s2 0 0;
+  padding: 12px 14px 4px;
+  border-radius: 16px;
+  background: $cloud;
 
   &__h {
     margin: 0;
+    color: $muted;
+    font-family: $font-text;
     font-size: 0.8125rem;
-    font-weight: 400;
-    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0;
   }
 
   &__rows {
@@ -704,39 +1168,44 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
     padding: 0;
     list-style: none;
 
-    li + li { border-top: 1px solid var(--rule); }
+    li + li { border-top: 1px solid $line; }
   }
 
   &__row {
     display: grid;
     grid-template-columns: 1fr auto;
-    align-items: baseline;
+    align-items: center;
     column-gap: $s2;
-    padding: $s2 0;
+    row-gap: 2px;
+    padding: 10px 0;
   }
 
   &__tk {
-    font-family: $font-mono;
-    font-weight: 600;
-    font-size: 1rem;
+    justify-self: start;
+    padding: 4px 10px;
+    border-radius: 10px;
+    background: $white;
+    color: $euro-d;
+    font-family: $font-display;
+    font-weight: 800;
+    font-size: 0.9375rem;
     letter-spacing: 0.01em;
   }
 
   &__ter {
-    font-family: $font-mono;
-    font-variant-numeric: tabular-nums;
     font-size: 0.9375rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
     text-align: right;
   }
 
   &__isin {
     grid-column: 1 / -1;
-    color: var(--muted);
+    color: $muted;
     font-size: 0.875rem;
 
     span {
-      color: var(--ink);
-      font-family: $font-mono;
+      color: $ink;
       font-variant-numeric: tabular-nums;
       user-select: all;
     }
@@ -744,68 +1213,52 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
 
   &__src {
     margin: 0;
-    padding: $s2 0 $s1;
-    border-top: 1px solid var(--rule);
-    color: var(--muted);
+    padding: $s2 0;
+    border-top: 1px solid $line;
+    color: $muted;
     font-size: 0.75rem;
   }
 
   &__text {
     margin: 0;
-    padding: $s2 0;
-    border-top: 2px solid var(--ink);
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: $cloud;
     font-size: 0.9375rem;
     line-height: 1.45;
   }
 }
 
-// Nepovinný telefon: vizuálně tišší (rámeček --rule), tlačítko bez signální výplně.
+// Nepovinný telefon v bílé kartě; tlačítko sekundární (modré), hlavní akce stránky je PDF.
 .phone-offer {
-  padding: $s3;
-  border: 1px solid var(--rule);
-  border-radius: 2px;
+  > p { margin: 0 0 $s2; font-size: 0.9375rem; line-height: 1.5; }
 
-  h2 { font-size: 1.1875rem; margin-bottom: $s2; }
-
-  > p { margin: 0 0 $s2; font-size: 0.9375rem; line-height: 1.45; }
-
-  &__who { color: var(--muted); }
+  &__who { color: $muted; }
 
   &__form {
     display: grid;
     gap: $s2;
     margin-top: $s3;
 
-    > label { font-size: 0.9375rem; }
+    > label { font-size: 0.9375rem; font-weight: 600; }
 
     input[type='tel'] {
-      min-height: 48px;
-      padding: 0 $s2;
-      border: 1px solid var(--ink);
-      border-radius: 2px;
-      background: var(--paper);
-      color: var(--ink);
-      font-family: $font-mono;
-      font-size: 1rem;
+      min-height: 52px;
+      padding: 0 14px;
+      border: 1px solid $muted;
+      border-radius: $radius-inner;
+      background: $white;
+      color: $ink;
+      font: 600 1.0625rem $font-text;
       font-variant-numeric: tabular-nums;
 
-      &::placeholder { color: var(--muted); }
-      &[aria-invalid='true'] { border-width: 2px; }
+      &::placeholder { color: $muted; font-weight: 400; }
+      &[aria-invalid='true'] { border: 2px solid $alert; }
     }
 
     button[type='submit'] {
-      min-height: 48px;
+      justify-self: start;
       margin-top: $s1;
-      padding: 0 $s3;
-      border: 1px solid var(--ink);
-      border-radius: 2px;
-      background: var(--paper);
-      color: var(--ink);
-      font: inherit;
-      font-weight: 600;
-      cursor: pointer;
-
-      &:disabled { opacity: 0.6; cursor: progress; }
     }
   }
 
@@ -822,11 +1275,27 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
       height: 1.25rem;
       margin: 0.0625rem 0 0;
       flex: none;
-      accent-color: var(--ink);
+      accent-color: $euro-d;
     }
   }
 
-  &__error { margin: 0; font-size: 0.9375rem; font-weight: 600; }
+  &__error {
+    justify-self: start;
+    margin: 0;
+    padding: 2px 12px;
+    border-radius: $radius-pill;
+    background: $alert-bg;
+    color: $alert;
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
 
-  &__done { margin: $s3 0 0; font-weight: 600; }
+  &__done {
+    margin: $s3 0 0;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: $mint-bg;
+    color: $ink;
+    font-weight: 600;
+  }
 }

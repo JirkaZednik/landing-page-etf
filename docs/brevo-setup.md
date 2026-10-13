@@ -156,14 +156,14 @@ Proměnné `PUBLIC_*` a `SITE_URL` se vkládají do HTML/JS při buildu: po jeji
 
 ```bash
 export CHROME_PATH=$(node -e "console.log(require('@playwright/test').chromium.executablePath())")
-for i in 1 2 3; do
+for i in 1 2 3 4 5; do
   npx --yes lighthouse "$BASE_URL/?utm_content=a-4x5" \
     --form-factor=mobile \
     --only-categories=performance,accessibility,best-practices,seo \
     --output=json --output-path=/tmp/lh-$i.json \
     --chrome-flags="--headless=new --no-sandbox" --quiet
 done
-best=$(for i in 1 2 3; do echo "$(jq '.audits["largest-contentful-paint"].numericValue' /tmp/lh-$i.json) $i"; done | sort -n | sed -n 2p | cut -d' ' -f2)
+best=$(for i in 1 2 3 4 5; do echo "$(jq '.audits["largest-contentful-paint"].numericValue' /tmp/lh-$i.json) $i"; done | sort -n | sed -n 3p | cut -d' ' -f2)
 cp /tmp/lh-$best.json docs/lighthouse-mobile.json
 jq '{lighthouseVersion, lcp_ms: .audits["largest-contentful-paint"].numericValue, cls: .audits["cumulative-layout-shift"].numericValue, perf: .categories.performance.score, a11y: .categories.accessibility.score}' docs/lighthouse-mobile.json
 jq -e '.audits["largest-contentful-paint"].numericValue < 1500 and .audits["cumulative-layout-shift"].numericValue < 0.1' docs/lighthouse-mobile.json
@@ -171,7 +171,7 @@ jq -e '.audits["largest-contentful-paint"].numericValue < 1500 and .audits["cumu
 
 Cíl: `lcp_ms` < 1500, `cls` < 0.1. Čísla se neupravují; nesplněný výsledek se uvede v README.
 
-**Aktuální `docs/lighthouse-mobile.json` je z lokálního produkčního buildu, ne z produkce** (2026-10-12, Lighthouse 13.5.0, `.vercel/output/static` servírované lokálním statickým serverem s hlavičkami z `vercel.json` a kompresí brotli, medián ze 3 běhů podle LCP): LCP 1089 ms, CLS 0.0007, výkon 1.00, přístupnost 1.00, best practices 1.00, SEO 1.00. Pozor: simulované LCP bylo v opakovaných bězích bimodální (≈ 1,05–1,09 s nebo ≈ 1,96 s), takže na produkci je nutné měřit znovu podle příkazů výše.
+**Aktuální `docs/lighthouse-mobile.json` je z lokálního produkčního buildu, ne z produkce** (2026-10-13, po opravě písem: preload kritických řezů + metricky sladěné záložní písmo; Lighthouse 13.5.0, `.vercel/output/static` servírované lokálním statickým serverem s hlavičkami z `vercel.json` a kompresí brotli, medián z 5 běhů podle LCP): LCP 2110 ms, CLS 0, výkon 0.99, přístupnost 1.00, best practices 1.00, SEO 1.00. CLS je 0 ve všech 10 bězích (dříve až 0,27). **LCP cíl < 1500 ms lokálně splněn není:** simulované LCP je bimodální – v 10 bězích 1523–1615 ms (4×) nebo 2107–2633 ms (6×), medián ≈ 2,1 s; inline CSS (`build.inlineStylesheets: 'always'`) jsme zkusili a LCP nezlepšilo, proto zůstává vypnuté. Rozhoduje měření na produkci podle příkazů výše.
 
 ### 9.6 [ČLOVĚK] PostHog funnel a dashboard (spec §8.4)
 

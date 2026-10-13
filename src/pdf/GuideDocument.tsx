@@ -1,45 +1,129 @@
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
-import { Document, Font, Link, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
-import type { Broker, Group } from '../lib/types';
+import { Circle, Document, Font, G, Link, Page, Path, Rect, StyleSheet, Svg, Text, View } from '@react-pdf/renderer';
+import type { Broker, Fund, Group } from '../lib/types';
 import { getBrokers, getData, originalsOf, twinsAtBroker, twinsSortedByTer } from '../lib/pairs';
 import { formatDateCz, formatTer } from '../lib/format';
 import { OPERATOR } from '../lib/operator';
-import { loadTokens } from './tokens';
+import { loadPalette, multiply } from '../styles/palette';
+import {
+  CURVE_ORIG, CURVE_TWIN, CURVE_WIDTH, LABEL_SIZE, LOGO_CIRCLES, LOGO_LENS, LOGO_VIEWBOX, PILL_HEIGHT, STARS, STAR_R,
+  TWINS_VIEWBOX, twinsPills,
+} from '../lib/twins-art';
 
+// Site fonts as static TTFs with Czech diacritics (OFL, see public/fonts/pdf/OFL-*.txt).
 const FONT_DIR = fileURLToPath(new URL('../../public/fonts/pdf/', import.meta.url));
+const DISPLAY = 'Bricolage Grotesque';
+const TEXT = 'Figtree';
 Font.register({
-  family: 'IxText',
-  fonts: [{ src: join(FONT_DIR, 'text-regular.ttf') }, { src: join(FONT_DIR, 'text-bold.ttf'), fontWeight: 700 }],
+  family: DISPLAY,
+  fonts: [
+    { src: join(FONT_DIR, 'BricolageGrotesque-SemiBold.ttf'), fontWeight: 600 },
+    { src: join(FONT_DIR, 'BricolageGrotesque-ExtraBold.ttf'), fontWeight: 800 },
+  ],
 });
-Font.register({ family: 'IxMono', src: join(FONT_DIR, 'mono-regular.ttf') });
+Font.register({
+  family: TEXT,
+  fonts: [
+    { src: join(FONT_DIR, 'Figtree-Regular.ttf'), fontWeight: 400 },
+    { src: join(FONT_DIR, 'Figtree-Bold.ttf'), fontWeight: 700 },
+  ],
+});
 Font.registerHyphenationCallback((word) => [word]); // čeština: bez dělení slov
 
-const C = loadTokens();
+const C = loadPalette(); // barvy jen z src/styles/tokens.scss
 const host = (url: string) => new URL(url).hostname.replace(/^www\./, '');
 
 const s = StyleSheet.create({
-  page: { backgroundColor: C.paper, color: C.ink, fontFamily: 'IxText', fontSize: 10, lineHeight: 1.3, padding: 36, paddingBottom: 66 },
-  h1: { fontSize: 24, fontWeight: 700, lineHeight: 1.15, marginBottom: 10 },
-  h2: { fontSize: 14, fontWeight: 700, marginTop: 14, marginBottom: 5, borderBottomWidth: 1, borderBottomColor: C.signal, paddingBottom: 3 },
-  h3: { fontSize: 10.5, fontWeight: 700, marginTop: 7, marginBottom: 2 },
+  page: { backgroundColor: C.white, color: C.ink, fontFamily: TEXT, fontSize: 9.5, lineHeight: 1.35, padding: 36, paddingBottom: 70 },
+  brandRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+  brand: { fontFamily: DISPLAY, fontWeight: 800, fontSize: 13, color: C.night, marginLeft: 6 },
+  cover: { backgroundColor: C.night, borderRadius: 16, paddingTop: 18, paddingBottom: 20, paddingHorizontal: 30, alignItems: 'center', marginBottom: 6 },
+  h1: { fontFamily: DISPLAY, fontWeight: 800, fontSize: 22, lineHeight: 1.08, color: C.white, textAlign: 'center', marginTop: 10, marginBottom: 8 },
+  lead: { color: C['on-night-muted'], fontSize: 10, lineHeight: 1.4, textAlign: 'center' },
+  asOf: { color: C['on-night-muted'], fontSize: 8, marginTop: 8, textAlign: 'center' },
+  h2: { fontFamily: DISPLAY, fontWeight: 800, fontSize: 15, lineHeight: 1.15, color: C.night, marginTop: 18, marginBottom: 6, paddingLeft: 8, borderLeftWidth: 4, borderLeftColor: C.gold },
+  h3: { fontFamily: DISPLAY, fontWeight: 600, fontSize: 10.5, color: C.night, marginTop: 9, marginBottom: 3 },
   p: { marginBottom: 5 },
-  mono: { fontFamily: 'IxMono', fontSize: 9 },
-  signal: { color: C.signal },
-  muted: { color: C.muted, fontSize: 8 },
-  motif: { fontFamily: 'IxMono', fontSize: 28, lineHeight: 1.2, marginTop: 6, marginBottom: 16 },
-  row: { flexDirection: 'row', borderBottomWidth: 0.5, borderBottomColor: C.rule, paddingVertical: 2.5 },
-  cTicker: { width: 62 },
+  ticker: { fontFamily: DISPLAY, fontWeight: 800, fontSize: 8.5, color: C['euro-d'], backgroundColor: C.cloud, borderRadius: 5, paddingTop: 2, paddingBottom: 1.5, paddingHorizontal: 5 },
+  tickerLow: { color: C.night, backgroundColor: C.gold },
+  terLow: { fontWeight: 700, color: C['mint-text'] },
+  tickerOrig: { fontFamily: DISPLAY, fontWeight: 800, fontSize: 8.5, color: C.night, paddingHorizontal: 5 },
+  arrow: { color: C['euro-d'] },
+  muted: { color: C.muted, fontSize: 7.5 },
+  row: { flexDirection: 'row', alignItems: 'center', borderBottomWidth: 0.75, borderBottomColor: C.line, paddingVertical: 3 },
+  cTicker: { width: 72, flexDirection: 'row', alignItems: 'center' },
   cName: { flexGrow: 1, flexShrink: 1, paddingRight: 6 },
-  cIsin: { width: 84 },
-  cTer: { width: 42, textAlign: 'right' },
-  cKind: { width: 62, textAlign: 'right' },
-  li: { flexDirection: 'row', marginBottom: 2 },
-  liNum: { width: 16 },
-  liText: { flexGrow: 1, flexShrink: 1 },
-  footer: { position: 'absolute', left: 36, right: 36, bottom: 18, fontSize: 7, color: C.muted, borderTopWidth: 0.5, borderTopColor: C.rule, paddingTop: 4, paddingRight: 52 },
-  pageNo: { position: 'absolute', right: 36, bottom: 18, fontSize: 7, color: C.muted },
+  cIsin: { width: 86, fontSize: 8.5 },
+  cTer: { width: 44, textAlign: 'right' },
+  cKind: { width: 62, textAlign: 'right', color: C.muted, fontSize: 8.5 },
+  li: { flexDirection: 'row', marginBottom: 3 },
+  liNum: { width: 14, height: 14, borderRadius: 7, backgroundColor: C.mint, marginRight: 6, alignItems: 'center', justifyContent: 'center' },
+  liNumText: { fontFamily: DISPLAY, fontWeight: 800, fontSize: 7.5, color: C.night, lineHeight: 1 },
+  liText: { flexGrow: 1, flexShrink: 1, paddingTop: 1 },
+  verified: { flexDirection: 'row', alignItems: 'center', marginTop: 5 },
+  footer: { position: 'absolute', left: 36, right: 36, bottom: 18, fontSize: 6.8, color: C.muted, borderTopWidth: 0.75, borderTopColor: C.line, paddingTop: 5, paddingRight: 52 },
+  pageNo: { position: 'absolute', right: 0, top: 5, fontSize: 7, color: C.muted },
 });
+
+/** Logo mark (two overlapping circles); the overlap is painted as the multiplied colour, like the site. */
+function LogoMark({ height = 14 }: { height?: number }) {
+  const { left, right } = LOGO_CIRCLES;
+  return (
+    <Svg width={(height * LOGO_VIEWBOX.width) / LOGO_VIEWBOX.height} height={height} viewBox={`0 0 ${LOGO_VIEWBOX.width} ${LOGO_VIEWBOX.height}`}>
+      <Circle cx={left.cx} cy={left.cy} r={left.r} fill={C.euro} />
+      <Circle cx={right.cx} cy={right.cy} r={right.r} fill={C.gold} />
+      <Path d={LOGO_LENS} fill={multiply(C.euro, C.gold)} />
+    </Svg>
+  );
+}
+
+/** The hero illustration: two parallel curves, pills labelled from data, arc of gold dots. */
+function TwinsArt({ width = 190 }: { width?: number }) {
+  const { orig, twin } = twinsPills('sp500');
+  const k = width / TWINS_VIEWBOX.width;
+  const pill = (p: typeof orig, bg: string, op: number, fg: string) => (
+    <View style={{ position: 'absolute', left: p.x * k, top: p.y * k, width: p.width * k, height: PILL_HEIGHT * k, borderRadius: (PILL_HEIGHT * k) / 2, alignItems: 'center', justifyContent: 'center' }}>
+      <Svg style={{ position: 'absolute', left: 0, top: 0 }} width={p.width * k} height={PILL_HEIGHT * k}>
+        <Rect x={0} y={0} width={p.width * k} height={PILL_HEIGHT * k} rx={(PILL_HEIGHT * k) / 2} fill={bg} fillOpacity={op} />
+      </Svg>
+      <Text style={{ fontFamily: DISPLAY, fontWeight: 800, fontSize: LABEL_SIZE * k, lineHeight: 1, color: fg }}>{p.label}</Text>
+    </View>
+  );
+  return (
+    <View style={{ width, height: TWINS_VIEWBOX.height * k }}>
+      <Svg width={width} height={TWINS_VIEWBOX.height * k} viewBox={`0 0 ${TWINS_VIEWBOX.width} ${TWINS_VIEWBOX.height}`}>
+        <Path d={CURVE_ORIG} stroke={C.euro} strokeWidth={CURVE_WIDTH} strokeLinecap="round" fill="none" />
+        <Path d={CURVE_TWIN} stroke={C.gold} strokeWidth={CURVE_WIDTH} strokeLinecap="round" fill="none" />
+        <G>{STARS.map((d, i) => <Circle key={i} cx={d.cx} cy={d.cy} r={STAR_R} fill={C.gold} />)}</G>
+      </Svg>
+      {pill(orig, C.white, 0.14, C.white)}
+      {pill(twin, C.gold, 1, C.night)}
+    </View>
+  );
+}
+
+/** Mint check disc (as in the site's trust row). */
+function Check() {
+  return (
+    <Svg width={10} height={10} viewBox="0 0 18 18" style={{ marginRight: 4 }}>
+      <Circle cx={9} cy={9} r={9} fill={C.mint} />
+      <Path d="M5 9.4l2.6 2.5L13 6.6" stroke={C.night} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </Svg>
+  );
+}
+
+/** Ids of the lowest-TER funds in a list, only when the list actually has a cheaper and a dearer fund. */
+function lowestTer(funds: Fund[]): Set<string> {
+  if (funds.length < 2) return new Set();
+  const min = Math.min(...funds.map((f) => f.ter.value));
+  if (funds.every((f) => f.ter.value === min)) return new Set();
+  return new Set(funds.filter((f) => f.ter.value === min).map((f) => f.id));
+}
+
+function Ticker({ children, low }: { children: string; low?: boolean }) {
+  return <Text style={low ? [s.ticker, s.tickerLow] : s.ticker}>{children}</Text>;
+}
 
 const kindLabel = (d: 'acc' | 'dist') => (d === 'acc' ? 'akumulační' : 'distribuční');
 
@@ -51,13 +135,10 @@ function Source({ url, asOf, label = 'zdroj' }: { url: string; asOf: string; lab
   );
 }
 
-function Arrow({ children = '→', size }: { children?: string; size?: number }) {
-  return <Text style={[s.mono, s.signal, size ? { fontSize: size } : {}]}>{children}</Text>;
-}
-
 function GroupAtBroker({ broker, group }: { broker: Broker; group: Group }) {
   const rows = twinsAtBroker(broker.id, group.id);
   const asOf = formatDateCz(broker.asOf);
+  const low = lowestTer(rows.map((r) => r.fund));
   return (
     <View wrap={false}>
       <Text style={s.h3}>
@@ -70,10 +151,10 @@ function GroupAtBroker({ broker, group }: { broker: Broker; group: Group }) {
       ) : (
         rows.map(({ fund, ticker }) => (
           <View key={fund.id} style={s.row}>
-            <Text style={[s.mono, s.cTicker]}>{ticker}</Text>
+            <View style={s.cTicker}><Ticker low={low.has(fund.id)}>{ticker}</Ticker></View>
             <Text style={s.cName}>{fund.name.value}</Text>
-            <Text style={[s.mono, s.cIsin]}>{fund.isin.value}</Text>
-            <Text style={s.cTer}>{formatTer(fund.ter.value)}</Text>
+            <Text style={s.cIsin}>{fund.isin.value}</Text>
+            <Text style={low.has(fund.id) ? [s.cTer, s.terLow] : s.cTer}>{formatTer(fund.ter.value)}</Text>
             <Text style={s.cKind}>{kindLabel(fund.distribution.value)}</Text>
           </View>
         ))
@@ -104,7 +185,7 @@ function BrokerSection({ broker }: { broker: Broker }) {
           <Text style={s.h3}>Postup krok za krokem</Text>
           {broker.steps.value.map((step, i) => (
             <View key={i} style={s.li} wrap={false}>
-              <Text style={s.liNum}>{i + 1}.</Text>
+              <View style={s.liNum}><Text style={s.liNumText}>{i + 1}</Text></View>
               <Text style={s.liText}>{step}</Text>
             </View>
           ))}
@@ -116,7 +197,10 @@ function BrokerSection({ broker }: { broker: Broker }) {
           <Text style={s.p}>Postup jsme u tohoto brokera zatím neověřili.</Text>
         </View>
       )}
-      <Text style={[s.muted, { marginTop: 4 }]}>Údaje ověřeny na stránkách brokera k {formatDateCz(broker.asOf)}</Text>
+      <View style={s.verified}>
+        <Check />
+        <Text style={s.muted}>Údaje ověřeny na stránkách brokera k {formatDateCz(broker.asOf)}</Text>
+      </View>
     </View>
   );
 }
@@ -126,17 +210,18 @@ function PairsTable() {
   return (
     <View>
       <Text style={s.h2} minPresenceAhead={100}>
-        Všechny páry: originál z NYSE <Arrow size={13} /> evropské dvojče
+        Všechny páry: originál z NYSE <Text style={s.arrow}>→</Text> evropské dvojče
       </Text>
       {data.groups.map((g) => {
         const originals = originalsOf(g.id);
         const twins = twinsSortedByTer(g.id);
+        const low = lowestTer(twins);
         return (
           <View key={g.id} wrap={false} style={{ marginBottom: 4 }}>
             <Text style={s.h3}>{g.label}</Text>
             {originals.map((f) => (
               <View key={f.id} style={s.row}>
-                <Text style={[s.mono, s.cTicker]}>{f.id}</Text>
+                <View style={s.cTicker}><Text style={s.tickerOrig}>{f.id}</Text></View>
                 <Text style={s.cName}>originál</Text>
                 <Text style={s.cIsin}>{f.exchange.value}</Text>
                 <Text style={s.cTer}>{formatTer(f.ter.value)}</Text>
@@ -148,10 +233,13 @@ function PairsTable() {
             ) : (
               twins.map((f) => (
                 <View key={f.id} style={s.row}>
-                  <Text style={[s.mono, s.cTicker]}><Arrow>→ </Arrow>{f.id}</Text>
+                  <View style={s.cTicker}>
+                    <Text style={[s.arrow, { width: 11 }]}>→</Text>
+                    <Ticker low={low.has(f.id)}>{f.id}</Ticker>
+                  </View>
                   <Text style={s.cName}>{f.name.value}</Text>
-                  <Text style={[s.mono, s.cIsin]}>{f.isin.value}</Text>
-                  <Text style={s.cTer}>{formatTer(f.ter.value)}</Text>
+                  <Text style={s.cIsin}>{f.isin.value}</Text>
+                  <Text style={low.has(f.id) ? [s.cTer, s.terLow] : s.cTer}>{formatTer(f.ter.value)}</Text>
                   <Text style={s.cKind}>{f.distribution.value === 'acc' ? 'akum.' : 'dist.'}</Text>
                 </View>
               ))
@@ -198,16 +286,20 @@ export function GuideDocument() {
           <Text>
             Informace mají obecnou povahu a nejsou investičním doporučením ani daňovým poradenstvím. Investování nese riziko ztráty, minulé výnosy nezaručují budoucí. Ochranné známky patří jejich vlastníkům; stránka s vydavateli fondů ani brokery nespolupracuje.
           </Text>
+          <Text style={s.pageNo} render={({ pageNumber, totalPages }) => `strana ${pageNumber}/${totalPages}`} />
         </View>
-        <Text fixed style={s.pageNo} render={({ pageNumber, totalPages }) => `strana ${pageNumber}/${totalPages}`} />
-        <Text style={s.h1}>Jak koupit S&P 500 a další americké indexy u XTB, Trading 212, Fio a Degiro</Text>
-        <Text style={s.motif}>
-          VOO <Arrow size={28}>⇄</Arrow> SPYL
-        </Text>
-        <Text style={s.p}>
-          Americké ETF jako VOO evropský broker drobnému investorovi neprodá, protože k nim neexistuje dokument KID. Na stejné indexy ale existují evropské fondy – tento návod ukazuje, jak je u vašeho brokera najít.
-        </Text>
-        <Text style={[s.p, { color: C.muted }]}>Ověřeno k {formatDateCz(data.asOf)}</Text>
+        <View style={s.brandRow}>
+          <LogoMark />
+          <Text style={s.brand}>ETF Dvojče</Text>
+        </View>
+        <View style={s.cover}>
+          <TwinsArt />
+          <Text style={s.h1}>Jak koupit S&P 500 a další americké indexy u XTB, Trading 212, Fio a Degiro</Text>
+          <Text style={s.lead}>
+            Americké ETF jako VOO evropský broker drobnému investorovi neprodá, protože k nim neexistuje dokument KID. Na stejné indexy ale existují evropské fondy – tento návod ukazuje, jak je u vašeho brokera najít.
+          </Text>
+          <Text style={s.asOf}>Ověřeno k {formatDateCz(data.asOf)}</Text>
+        </View>
 
         {brokers.map((b) => (
           <BrokerSection key={b.id} broker={b} />

@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import LeadForm from './LeadForm';
 import { CALC_GROUP_EVENT, takePendingCalcGroup } from '../lib/calc-group';
 import { clampInputs, computeFees, LIMITS } from '../lib/calc';
@@ -78,6 +79,10 @@ export default function FeeCalculator({ initialGroup }: Props) {
     return () => io.disconnect();
   }, []);
 
+  // Decorative bar under each row: fees as a share of the 1.5 % comparison fund (the largest).
+  const share = (fees: number) =>
+    ({ '--share': `${Math.max(2, Math.min(100, (fees / Math.max(comparison.feesPaid, 1)) * 100)).toFixed(1)}%` }) as CSSProperties;
+
   const mId = `${uid}-monthly`;
   const yId = `${uid}-years`;
 
@@ -125,50 +130,53 @@ export default function FeeCalculator({ initialGroup }: Props) {
         </div>
       </div>
 
-      <div ref={resultRef} className="calc__result" data-testid="calc-result" aria-live="polite">
-        <h3 className="calc__h">Ilustrativní výpočet</h3>
-        <p className="calc__deposited">Celkem vložíte <span className="calc__num">{formatCzk(result.deposited)}</span></p>
+      {/* Visual: the result as a floating card on the mint shape (left column on desktop). */}
+      <div className="calc__visual">
+        <div ref={resultRef} className="calc__result" data-testid="calc-result" aria-live="polite">
+          <h3 className="calc__h">Ilustrativní výpočet</h3>
+          <p className="calc__deposited">Celkem vložíte <span className="calc__num">{formatCzk(result.deposited)}</span></p>
 
-        <table className="calc__table">
-          <Cols />
-          <thead>
-            <tr>
-              <th scope="col">Fond</th>
-              <th scope="col">TER</th>
-              <th scope="col">Na poplatcích</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id} data-testid="calc-row" data-fund={r.id}>
-                <th scope="row" className="calc__tk">{r.id}</th>
-                <td>{formatTer(r.ter)}</td>
-                <td>{formatCzk(r.feesPaid)}</td>
+          <table className="calc__table">
+            <Cols />
+            <thead>
+              <tr>
+                <th scope="col">Fond</th>
+                <th scope="col">TER</th>
+                <th scope="col">Na poplatcích</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id} data-testid="calc-row" data-fund={r.id} data-lowest={r.ter === first?.ter ? '' : undefined} style={share(r.feesPaid)}>
+                  <th scope="row" className="calc__tk">{r.id}</th>
+                  <td>{formatTer(r.ter)}</td>
+                  <td>{formatCzk(r.feesPaid)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-        {first && last && last !== first && (
-          <p className="calc__diff">
-            Rozdíl mezi {first.id} a {last.id}: <span className="calc__num">{formatCzk(last.feesPaid - first.feesPaid)}</span>
+          {first && last && last !== first && (
+            <p className="calc__diff">
+              Rozdíl mezi {first.id} a {last.id}: <span className="calc__num">{formatCzk(last.feesPaid - first.feesPaid)}</span>
+            </p>
+          )}
+
+          {/* Not an option to buy: separated by a rule and set in muted ink. */}
+          <table className="calc__table calc__table--cmp">
+            <Cols />
+            <tbody>
+              <tr style={share(comparison.feesPaid)}>
+                <th scope="row" colSpan={2}>Fond s poplatkem 1,5 % p.a. (příklad)</th>
+                <td>{formatCzk(comparison.feesPaid)}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p className="calc__note">
+            Model je ilustrativní, ne příslib: počítá se zhodnocením 7 % ročně před náklady a vklady na konci měsíce. Nezahrnuje poplatky brokera, kurzové konverze, spready, daně ani tracking difference.
           </p>
-        )}
-
-        {/* Not an option to buy: separated by a rule and set in muted ink. */}
-        <table className="calc__table calc__table--cmp">
-          <Cols />
-          <tbody>
-            <tr>
-              <th scope="row" colSpan={2}>Fond s poplatkem 1,5 % p.a. (příklad)</th>
-              <td>{formatCzk(comparison.feesPaid)}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <p className="calc__note">
-          Model je ilustrativní, ne příslib: počítá se zhodnocením 7 % ročně před náklady a vklady na konci měsíce. Nezahrnuje poplatky brokera, kurzové konverze, spready, daně ani tracking difference.
-        </p>
+        </div>
       </div>
 
       <LeadForm placement="calc" pair={group} calc={{ deposit: monthly, horizon: years }} />

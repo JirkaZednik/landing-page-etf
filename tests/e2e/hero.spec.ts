@@ -150,6 +150,135 @@ test.describe('with consent decided', () => {
   });
 });
 
+// Final review Critical 1: with the woff2 files blocked (slow 4G, font request failed) the hero laid
+// out in the size-adjusted fallback must match the web-font layout, so the swap cannot shift it.
+test.describe('web fonts blocked (metric-matched fallback)', () => {
+  test.beforeEach(({ page }) => presetConsent(page));
+
+  const buttonBottom = async (page: Page, url: string) => {
+    await page.goto(url);
+    await page.waitForLoadState('networkidle');
+    await page.evaluate(() => document.fonts.ready);
+    const box = await page.locator('#form button[type=submit]').boundingBox();
+    return box!.y + box!.height;
+  };
+
+  for (const [label, url] of [['bez UTM', '/'], ['a', '/?utm_content=a'], ['b', '/?utm_content=b']] as const) {
+    test(`hero button stays put without web fonts – ${label}`, async ({ page, context }) => {
+      // Blocked run first, in a page that has never loaded the fonts (no memory-cache hits).
+      // .woff too: @fontsource lists it as the second src, so blocking only woff2 would just swap later.
+      let aborted = 0;
+      await page.route(/\.woff2?(\?.*)?$/, (r) => { aborted++; return r.abort(); });
+      const without = await buttonBottom(page, url);
+      expect(aborted).toBeGreaterThan(0);
+      expect(await page.evaluate(() => [...document.fonts].some(
+        (f) => f.family.replace(/"/g, '') === 'Bricolage Grotesque' && f.status === 'loaded'))).toBe(false);
+
+      const withFonts = await context.newPage();
+      await presetConsent(withFonts);
+      const loaded = await buttonBottom(withFonts, url);
+      expect(await withFonts.evaluate(() => [...document.fonts].some(
+        (f) => f.family.replace(/"/g, '') === 'Bricolage Grotesque' && f.status === 'loaded'))).toBe(true);
+
+      expect(without).toBeLessThanOrEqual(660);
+      expect(Math.abs(without - loaded), `loaded ${loaded} px vs fallback ${without} px`).toBeLessThanOrEqual(4);
+    });
+  }
+});
+
+test.describe('redesign (EU blue and gold)', () => {
+  test.beforeEach(({ page }) => presetConsent(page));
+
+  test('hero trust row has exactly the three approved texts', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('[data-section="hero"] [data-trust] li')).toHaveText([
+      'Data přímo od vydavatelů',
+      'Návod pro XTB, Trading 212, Fio a Degiro',
+      'Bez registrace',
+    ]);
+  });
+
+  test('display font Bricolage Grotesque 800 is loaded', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await page.evaluate(() => document.fonts.ready);
+    // check() alone is also true when no face matches, so require a loaded 800 face as well.
+    expect(await page.evaluate(() => document.fonts.check('800 20px "Bricolage Grotesque"'))).toBe(true);
+    expect(await page.evaluate(() => [...document.fonts].some(
+      (f) => f.family.replace(/"/g, '') === 'Bricolage Grotesque' && f.weight === '800' && f.status === 'loaded',
+    ))).toBe(true);
+    await expect(page.locator('h1:visible')).toHaveCSS('font-family', /Bricolage Grotesque/);
+  });
+
+  test('header shows the logo (two circles) and the brand name', async ({ page }) => {
+    await page.goto('/');
+    const header = page.locator('header.masthead');
+    await expect(header.locator('svg[aria-hidden="true"] circle')).toHaveCount(2);
+    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#0F2257');
+  });
+
+  test('hero illustration labels come from data and are hidden from AT', async ({ page }) => {
+    await page.goto('/');
+    const ill = page.locator('[data-section="hero"] [data-twins-illustration]');
+    await expect(ill).toHaveAttribute('aria-hidden', 'true');
+    await expect(ill.locator('text')).toHaveText(['VOO', 'SPYL']);
+  });
+
+  test('answer card: lowest TER row is marked, badge stays factually qualified', async ({ page }) => {
+    await page.goto('/');
+    const card = page.locator('[data-answer-card]');
+    await expect(card.locator('[data-twin][data-lowest]')).toHaveCount(1);
+    await expect(card.locator('[data-twin][data-lowest]')).toHaveAttribute('data-twin', 'SPYL');
+    await expect(card.locator('[data-badge]')).toHaveText('u brokerů v EU pro drobné investory nedostupné');
+  });
+
+  test('keyboard focus is visible on the hero e-mail field and gold button', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    const outline = (sel: string) => page.locator(sel).evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { style: s.outlineStyle, width: parseFloat(s.outlineWidth), color: s.outlineColor };
+    });
+    await page.locator('#form input[name="email"]').focus();
+    const field = await outline('#form input[name="email"]');
+    expect(field.style).not.toBe('none');
+    expect(field.width).toBeGreaterThanOrEqual(2);
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#form button[type=submit]')).toBeFocused();
+    const btn = await outline('#form button[type=submit]');
+    expect(btn.style).not.toBe('none');
+    expect(btn.width).toBeGreaterThanOrEqual(2);
+  });
+
+  test.describe('desktop 1440×900', () => {
+    test.use({ viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false });
+
+    for (const v of ['a', 'b'] as const) {
+      test(`variant ${v}: H1 ≤ 3 lines and the trust row ends above the fold`, async ({ page }) => {
+        await page.goto(`/?utm_content=${v}`);
+        await page.waitForLoadState('networkidle');
+        await page.evaluate(() => document.fonts.ready);
+        const lines = await page.locator('h1:visible').evaluate((el) =>
+          Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)));
+        expect(lines).toBeLessThanOrEqual(3);
+        const trust = (await page.locator('[data-section="hero"] [data-trust]').boundingBox())!;
+        expect(trust.y + trust.height).toBeLessThanOrEqual(900);
+      });
+    }
+  });
+
+  test.describe('360 px wide', () => {
+    test.use({ viewport: { width: 360, height: 780 } });
+
+    test('no horizontal scroll on /', async ({ page }) => {
+      await page.goto('/');
+      await page.waitForLoadState('networkidle');
+      const { sw, iw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth }));
+      expect(sw).toBeLessThanOrEqual(iw);
+    });
+  });
+});
+
 test.describe('consent banner open (first visit)', () => {
   test('hero button is above the banner and not covered by it', async ({ page }) => {
     await page.goto('/');

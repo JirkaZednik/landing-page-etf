@@ -1,22 +1,24 @@
 ---
 // Proč americké ETF u evropského brokera nekoupíte (spec §4). Jen tyto dva zdroje.
 ---
-<section id="proc-ne" data-section="proc-ne" class="section why">
+<section id="proc-ne" data-section="proc-ne" class="section section--cloud why">
   <h2>Proč VOO u evropského brokera nekoupíte</h2>
-  <p>
-    Od roku 2018 platí v EU nařízení PRIIPs: investiční produkt nabízený drobným investorům musí mít sdělení
-    klíčových informací (KID). Američtí vydavatelé pro své ETF obchodované v USA KID nevydávají. Evropský broker
-    vám je proto jako drobnému investorovi neprodá a nabídne evropské (UCITS) fondy na stejný index.
-  </p>
-  <p>
-    Pokud americké ETF už držíte, můžete je dál držet i prodat. Nové nákupy jsou možné jen pro klienty, které
-    broker vede jako profesionální.
-  </p>
-  <p class="why__src">
-    Zdroje:
-    <a href="https://www.justetf.com/en/news/etf/us-domiciled-etfs.html" target="_blank" rel="noopener" data-source-link="priips">justETF</a>,
-    <a href="https://eur-lex.europa.eu/eli/reg/2014/1286/oj" target="_blank" rel="noopener" data-source-link="priips">Nařízení (EU) č. 1286/2014 (PRIIPs)</a>
-  </p>
+  <div class="why__card">
+    <p>
+      Od roku 2018 platí v EU nařízení PRIIPs: investiční produkt nabízený drobným investorům musí mít sdělení
+      klíčových informací (KID). Američtí vydavatelé pro své ETF obchodované v USA KID nevydávají. Evropský broker
+      vám je proto jako drobnému investorovi neprodá a nabídne evropské (UCITS) fondy na stejný index.
+    </p>
+    <p>
+      Pokud americké ETF už držíte, můžete je dál držet i prodat. Nové nákupy jsou možné jen pro klienty, které
+      broker vede jako profesionální.
+    </p>
+    <p class="why__src">
+      Zdroje:
+      <a href="https://www.justetf.com/en/news/etf/us-domiciled-etfs.html" target="_blank" rel="noopener" data-source-link="priips">justETF</a>,
+      <a href="https://eur-lex.europa.eu/eli/reg/2014/1286/oj" target="_blank" rel="noopener" data-source-link="priips">Nařízení (EU) č. 1286/2014 (PRIIPs)</a>
+    </p>
+  </div>
 </section>
 
 <script>
@@ -27,20 +29,34 @@
 <style lang="scss">
   @use '../styles/tokens' as *;
 
-  .why {
+  // Text v bílé kartě na --cloud, odstavce zarovnané vlevo.
+  .why__card {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 22px 18px;
+    border-radius: $radius-card;
+    background: $white;
+
+    @media (min-width: 640px) { padding: 32px 40px; }
+
     p {
-      max-width: 62ch;
       margin: 0 0 $s3;
+      line-height: 1.6;
       text-wrap: pretty;
     }
+
+    // Úvodní odstavec nese pointu: o stupeň výraznější.
+    @media (min-width: 640px) { p:first-child { font-size: 1.125rem; } }
   }
 
   .why__src {
     margin-bottom: 0 !important;
-    color: var(--muted);
+    padding-top: $s3;
+    border-top: 1px solid $line;
+    color: $muted;
     font-size: 0.8125rem;
     line-height: 1.6;
 
-    a { color: inherit; padding: $s1 0; }
+    a { color: $euro-d; padding: $s1 0; }
   }
 </style>

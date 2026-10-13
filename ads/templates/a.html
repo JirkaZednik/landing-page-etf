@@ -4,19 +4,21 @@
 <link rel="stylesheet" href="ads.css">
 <script>document.documentElement.className = 'ad-a size-' + (new URLSearchParams(location.search).get('size') || '4x5');</script>
 </head><body><main class="frame">
-  <p class="brand">ETF Dvojče</p>
-  <div class="swap">
+  <div class="logo">
+    <svg class="logo__mark" viewBox="0 0 34 22" aria-hidden="true"><circle class="logo__l" cx="11" cy="11" r="10"/><circle class="logo__r" cx="23" cy="11" r="10"/></svg>
+    <p class="brand">ETF Dvojče</p>
+  </div>
+  <div class="art">{{twins}}</div>
+  <p class="claim">Stejný index S&amp;P&nbsp;500. Evropský fond, který koupíte.</p>
+  <div class="card swap">
     <div class="orig">
       <p class="voo ticker"><s>VOO</s></p>
       <p class="note">u evropského brokera nedostupné</p>
     </div>
-    <div class="alt">
-      <p class="swap-mark" aria-hidden="true"><span>⇄</span></p>
-      <ul class="rows">{{sp500.rows}}</ul>
-    </div>
+    <ul class="rows">{{sp500.rows}}</ul>
   </div>
   <div class="foot">
-    <p class="claim">Stejný index S&amp;P 500. Evropský fond, který koupíte.</p>
+    <p class="cta">{{cta.a}}</p>
     <p class="source">TER ročně. Zdroj: vydavatelé fondů, k&nbsp;{{asOf}}. Nejde o&nbsp;investiční doporučení.</p>
   </div>
 </main></body></html>

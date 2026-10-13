@@ -7,67 +7,71 @@ import { CONSENT_VERSION } from '../lib/consent';
   <main class="legal">
     <h1>Cookies a měření</h1>
 
-    <h2>Kdo za web odpovídá</h2>
-    <p>
-      {OPERATOR.name}, e-mail
-      <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a>. {OPERATOR.note}
-    </p>
+    <article class="legal__card">
+      <h2>Kdo za web odpovídá</h2>
+      <p>
+        {OPERATOR.name}, e-mail
+        <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a>. {OPERATOR.note}
+      </p>
 
-    <h2>K čemu cookies a měření používáme</h2>
-    <table>
-      <thead>
-        <tr><th>Účel</th><th>Nástroj</th><th>Právní základ</th><th>Doba uložení</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Uložení vaší volby o cookies (nezbytné)</td>
-          <td><code>localStorage</code>, klíč <code>ix_consent</code></td>
-          <td>Oprávněný zájem (prokázání a respektování vaší volby)</td>
-          <td>Do změny volby</td>
-        </tr>
-        <tr>
-          <td>Anonymní měření bez cookies: kolik lidí stránku navštívilo a odeslalo formulář</td>
-          <td>PostHog (režim bez cookies, bez trvalého identifikátoru)</td>
-          <td>Oprávněný zájem (základní statistika návštěvnosti)</td>
-          <td>Bez uložení do prohlížeče</td>
-        </tr>
-        <tr>
-          <td>Analytika</td>
-          <td>PostHog, cookie <code>ph_*</code></td>
-          <td>Souhlas</td>
-          <td>365 dní (dokumentace PostHog, ověřeno 12. 10. 2026)</td>
-        </tr>
-        <tr>
-          <td>Sdílení s Meta pro měření reklam</td>
-          <td>Meta Pixel, cookie <code>_fbp</code>, a Conversions API (hash e-mailu, IP adresa, prohlížeč; jen se souhlasem)</td>
-          <td>Souhlas</td>
-          <td>3 měsíce (Meta, ověřeno 12. 10. 2026)</td>
-        </tr>
-        <tr>
-          <td>Google Analytics 4</td>
-          <td>Cookies <code>_ga</code>, <code>_ga_*</code></td>
-          <td>Souhlas</td>
-          <td>2 roky (Google, ověřeno 12. 10. 2026)</td>
-        </tr>
-      </tbody>
-    </table>
+      <h2>K čemu cookies a měření používáme</h2>
+      <div class="legal__table">
+        <table>
+          <thead>
+            <tr><th scope="col">Účel</th><th scope="col">Nástroj</th><th scope="col">Právní základ</th><th scope="col">Doba uložení</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="Účel">Uložení vaší volby o cookies (nezbytné)</td>
+              <td data-label="Nástroj"><code>localStorage</code>, klíč <code>ix_consent</code></td>
+              <td data-label="Právní základ">Oprávněný zájem (prokázání a respektování vaší volby)</td>
+              <td data-label="Doba uložení">Do změny volby</td>
+            </tr>
+            <tr>
+              <td data-label="Účel">Anonymní měření bez cookies: kolik lidí stránku navštívilo a odeslalo formulář</td>
+              <td data-label="Nástroj">PostHog (režim bez cookies, bez trvalého identifikátoru)</td>
+              <td data-label="Právní základ">Oprávněný zájem (základní statistika návštěvnosti)</td>
+              <td data-label="Doba uložení">Bez uložení do prohlížeče</td>
+            </tr>
+            <tr>
+              <td data-label="Účel">Analytika</td>
+              <td data-label="Nástroj">PostHog, cookie <code>ph_*</code></td>
+              <td data-label="Právní základ">Souhlas</td>
+              <td data-label="Doba uložení">365 dní (dokumentace PostHog, ověřeno 12. 10. 2026)</td>
+            </tr>
+            <tr>
+              <td data-label="Účel">Sdílení s Meta pro měření reklam</td>
+              <td data-label="Nástroj">Meta Pixel, cookie <code>_fbp</code>, a Conversions API (hash e-mailu, IP adresa, prohlížeč; jen se souhlasem)</td>
+              <td data-label="Právní základ">Souhlas</td>
+              <td data-label="Doba uložení">3 měsíce (Meta, ověřeno 12. 10. 2026)</td>
+            </tr>
+            <tr>
+              <td data-label="Účel">Google Analytics 4</td>
+              <td data-label="Nástroj">Cookies <code>_ga</code>, <code>_ga_*</code></td>
+              <td data-label="Právní základ">Souhlas</td>
+              <td data-label="Doba uložení">2 roky (Google, ověřeno 12. 10. 2026)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <h2>Komu data předáváme</h2>
-    <ul>
-      <li>PostHog Inc. (EU cloud, Frankfurt): analytika.</li>
-      <li>Meta Platforms Ireland Ltd.: měření reklam, jen se souhlasem.</li>
-      <li>Google Ireland Ltd.: Google Analytics 4, jen se souhlasem.</li>
-      <li>Brevo (Sendinblue SAS): jen pro odeslání formuláře.</li>
-      <li>Upstash: krátkodobě IP adresa pro ochranu před zneužitím.</li>
-    </ul>
+      <h2>Komu data předáváme</h2>
+      <ul>
+        <li>PostHog Inc. (EU cloud, Frankfurt): analytika.</li>
+        <li>Meta Platforms Ireland Ltd.: měření reklam, jen se souhlasem.</li>
+        <li>Google Ireland Ltd.: Google Analytics 4, jen se souhlasem.</li>
+        <li>Brevo (Sendinblue SAS): jen pro odeslání formuláře.</li>
+        <li>Upstash: krátkodobě IP adresa pro ochranu před zneužitím.</li>
+      </ul>
 
-    <h2>Změna nebo odvolání souhlasu</h2>
-    <p>
-      Souhlas můžete kdykoli změnit nebo odvolat:
-      <button type="button" data-consent-open>Změnit nastavení cookies</button>
-    </p>
-    <p>Více o zpracování osobních údajů najdete v <a href="/zasady-ochrany-osobnich-udaju">zásadách ochrany osobních údajů</a>.</p>
+      <h2>Změna nebo odvolání souhlasu</h2>
+      <p>
+        Souhlas můžete kdykoli změnit nebo odvolat:
+        <button type="button" data-consent-open>Změnit nastavení cookies</button>
+      </p>
+      <p>Více o zpracování osobních údajů najdete v <a href="/zasady-ochrany-osobnich-udaju">zásadách ochrany osobních údajů</a>.</p>
 
-    <p class="legal__version">Verze textu: {CONSENT_VERSION}</p>
+      <p class="legal__version">Verze textu: {CONSENT_VERSION}</p>
+    </article>
   </main>
 </Base>
