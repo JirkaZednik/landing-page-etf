@@ -6,7 +6,7 @@ import { AID, startRealPosthog } from './helpers/posthog-real';
 it('events on /dekujeme?aid=… without consent contain the aid nowhere ($current_url, $referrer, any property)', async () => {
   const { t, seen } = await startRealPosthog(
     `/dekujeme?aid=${AID}&utm_source=meta`,
-    `https://indexak.cz/?utm_source=meta&aid=${AID}`,
+    `https://etf-dvojce.cz/?utm_source=meta&aid=${AID}`,
   );
   t.track('thankyou_viewed');
   t.track('broker_selected', { broker: 'xtb' });
@@ -19,5 +19,5 @@ it('events on /dekujeme?aid=… without consent contain the aid nowhere ($curren
   // the rest of the URLs survives
   expect(seen[0].properties.$current_url).toBe('http://localhost:3000/dekujeme?utm_source=meta');
   expect(seen[0].properties.$pathname).toBe('/dekujeme');
-  expect(seen[0].properties.$referrer).toBe('https://indexak.cz/?utm_source=meta');
+  expect(seen[0].properties.$referrer).toBe('https://etf-dvojce.cz/?utm_source=meta');
 });

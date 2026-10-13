@@ -2,7 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { isSameOrigin } from '../../src/server/origin';
 
-const SITE = 'https://indexak.vercel.app';
+const SITE = 'https://etf-dvojce.vercel.app';
 const req = (headers: Record<string, string>) => new Request(SITE + '/api/x', { method: 'POST', headers });
 
 beforeEach(() => { vi.unstubAllEnvs(); vi.stubEnv('SITE_URL', SITE); });

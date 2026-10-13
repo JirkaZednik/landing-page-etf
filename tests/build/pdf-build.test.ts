@@ -41,8 +41,12 @@ describe('build-pdf', () => {
     expect(text).toContain('Ověřeno k ' + formatDateCz(getData().asOf));
   });
 
-  it('has the operator footer', () => {
-    expect(text).toMatch(/IČO\s*\d{8}/);
+  it('has the operator footer (neutral demo operator, no company data)', () => {
+    const flat = text.replace(/\s+/g, ' ');
+    expect(flat).toContain('ETF Dvojče – ukázkový projekt');
+    expect(flat).toContain('etf-dvojce@seznam.cz');
+    expect(flat).toContain('Nejde o nabídku investičních služeb.');
+    expect(flat).not.toMatch(/IČO/);
   });
 
   it('omits funds a broker does not offer (real data)', () => {

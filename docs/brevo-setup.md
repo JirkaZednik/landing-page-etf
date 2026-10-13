@@ -12,7 +12,7 @@ SMTP & API → API keys → nový klíč → hodnota do `BREVO_API_KEY`. Pokud j
 
 ## 3. Seznam
 
-Contacts → Lists → nový seznam „Indexák – návod" → jeho ID do `BREVO_LIST_ID`.
+Contacts → Lists → nový seznam „ETF Dvojče – návod" → jeho ID do `BREVO_LIST_ID`.
 
 ## 4. Atributy kontaktu
 
@@ -81,9 +81,9 @@ Kontrola: `/api/profile` **nesmí** přidávat kontakt do seznamu (jinak by náv
 | Služba | Co udělat | Předá |
 |---|---|---|
 | **Brevo** | vše podle bodů 1–7 | `BREVO_API_KEY`, `BREVO_LIST_ID`, `BREVO_DOI_TEMPLATE_ID` |
-| **Upstash** | console.upstash.com → Redis → **+ Create Database**, název `indexak-ratelimit`, primární region Frankfurt (`eu-central-1`), free plán; v detailu databáze sekce REST API zkopírovat URL a token. Zdroj: https://upstash.com/docs/redis/overall/getstarted | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` |
-| **PostHog** | registrace na **EU cloud** (eu.posthog.com), projekt „Indexák"; Settings → Project → **zapnout cookieless mode** („Cookieless mode must also be enabled in your PostHog project settings, otherwise cookieless events are ignored" – https://posthog.com/docs/libraries/js/config); podepsat DPA; zkopírovat Project API key | `PUBLIC_POSTHOG_KEY`, `PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com` |
-| **Meta** | Business Manager → Events Manager → Connect data sources → Web → nový Pixel „Indexák"; v nastavení Pixelu vygenerovat token pro Conversions API; v záložce Test events zkopírovat test code; ověřit doménu (po nasazení) | `META_PIXEL_ID` **a stejnou hodnotu jako `PUBLIC_META_PIXEL_ID`**, `META_CAPI_TOKEN`, `META_TEST_EVENT_CODE` (jen pro test, před spuštěním kampaně smazat) |
+| **Upstash** | console.upstash.com → Redis → **+ Create Database**, název `etf-dvojce-ratelimit`, primární region Frankfurt (`eu-central-1`), free plán; v detailu databáze sekce REST API zkopírovat URL a token. Zdroj: https://upstash.com/docs/redis/overall/getstarted | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` |
+| **PostHog** | registrace na **EU cloud** (eu.posthog.com), projekt „ETF Dvojče"; Settings → Project → **zapnout cookieless mode** („Cookieless mode must also be enabled in your PostHog project settings, otherwise cookieless events are ignored" – https://posthog.com/docs/libraries/js/config); podepsat DPA; zkopírovat Project API key | `PUBLIC_POSTHOG_KEY`, `PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com` |
+| **Meta** | Business Manager → Events Manager → Connect data sources → Web → nový Pixel „ETF Dvojče"; v nastavení Pixelu vygenerovat token pro Conversions API; v záložce Test events zkopírovat test code; ověřit doménu (po nasazení) | `META_PIXEL_ID` **a stejnou hodnotu jako `PUBLIC_META_PIXEL_ID`**, `META_CAPI_TOKEN`, `META_TEST_EVENT_CODE` (jen pro test, před spuštěním kampaně smazat) |
 | **GA4** | analytics.google.com → nová služba → webový datový stream na produkční URL | `PUBLIC_GA4_ID` (`G-…`) |
 
 ### 9.2 Proměnné prostředí (Vercel → Settings → Environment Variables, Production i Preview)
@@ -164,7 +164,7 @@ V PostHog EU (https://posthog.com/docs/product-analytics/funnels): Product Analy
 1. **„Konverze podle varianty"** – kroky `page_view` → `form_viewed` → `form_started` → `form_submitted`, pořadí Sequential, okno 1 den, **breakdown** `hero_variant` (druhá kopie s breakdown `utm_content`). Uložit.
 2. **„Konverze podle umístění"** – Trends: `form_submitted`, breakdown `placement`; a funnel `form_viewed` → `form_submitted` s breakdown `placement` (hero vs. níže).
 3. **„Po odeslání"** – funnel `form_submitted` → `thankyou_viewed` → `broker_selected` → `phone_submitted` (měřitelné napříč stránkami jen u návštěvníků se souhlasem; bez souhlasu porovnávat agregované počty). Trends `doi_confirmed`, `pdf_downloaded` (počet potvrzení brát z Brevo, `doi_confirmed` může být nadhodnocené skenery pošty – spec §8.1).
-4. Vše přidat na dashboard **„Indexák – konverze"**. Hlavní KPI = `form_submitted` / unikátní návštěvníci (`page_view`, unikátní) podle `hero_variant`.
+4. Vše přidat na dashboard **„ETF Dvojče – konverze"**. Hlavní KPI = `form_submitted` / unikátní návštěvníci (`page_view`, unikátní) podle `hero_variant`.
 
 ### 9.7 [ČLOVĚK] Kontrola před spuštěním kampaně
 
@@ -182,6 +182,6 @@ V PostHog EU (https://posthog.com/docs/product-analytics/funnels): Product Analy
 ### 9.8 Záznam výsledků (vyplní člověk)
 
 - Produkční URL: _doplní se po nasazení_
-- PostHog dashboard „Indexák – konverze": _odkaz se doplní po vytvoření_
+- PostHog dashboard „ETF Dvojče – konverze": _odkaz se doplní po vytvoření_
 - Lighthouse mobile na produkci (datum, `lcp_ms`, `cls`, výkon, přístupnost): _doplní se po měření podle 9.5_
 - Výsledek ručního testu double opt-in (bod 8): _doplní se po testu_

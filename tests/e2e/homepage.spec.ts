@@ -25,6 +25,13 @@ const events = (page: Page, name: string) =>
 test.describe('homepage', () => {
   test.beforeEach(({ page }) => setup(page));
 
+  test('brand ETF Dvojče in title, OG and masthead', async ({ page }) => {
+    await page.goto('/');
+    await expect(page).toHaveTitle('Evropská dvojčata amerických ETF | ETF Dvojče');
+    await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute('content', 'ETF Dvojče');
+    await expect(page.locator('.masthead__brand')).toHaveText('ETF Dvojče');
+  });
+
   test('sections in spec §4 order', async ({ page }) => {
     await page.goto('/');
     const order = await page.locator('[data-section]').evaluateAll(els => els.map(e => e.getAttribute('data-section')));
@@ -67,8 +74,10 @@ test.describe('homepage', () => {
     await expect(faq).toHaveCount(5);
     const q = faq.filter({ hasText: 'Kdo za tím stojí a co se stane s mými údaji?' });
     await q.locator('summary').click();
-    await expect(q).toContainText('Clientelo Czech s.r.o.');
-    await expect(q).toContainText('22193456');
+    await expect(q).toContainText('ETF Dvojče – ukázkový projekt');
+    await expect(q).toContainText('Ukázkový projekt vytvořený jako zadání pro přijímací řízení.');
+    await expect(q).toContainText('etf-dvojce@seznam.cz');
+    await expect(q).toContainText('vaše údaje žádným partnerům nepředáváme');
     await expect.poll(() => events(page, 'faq_opened')).toEqual([{ question: 5 }]);
   });
 
@@ -84,7 +93,8 @@ test.describe('homepage', () => {
   test('footer: operator, disclaimers, sources, cookie settings', async ({ page }) => {
     await page.goto('/');
     const f = page.locator('[data-section="paticka"]');
-    for (const t of ['Clientelo Czech s.r.o.', 'IČO 22193456', 'Platnéřská 90/13', 'fundraising@clientelo.cz',
+    await expect(f).not.toContainText('IČO');
+    for (const t of ['Provozovatel: ETF Dvojče – ukázkový projekt', 'etf-dvojce@seznam.cz', 'Nejde o nabídku investičních služeb.',
       'nejsou investičním doporučením', 'nemusí se vám vrátit celá vložená částka', 'nejsou příslibem budoucího výnosu',
       'Ochranné známky patří jejich vlastníkům; stránka s vydavateli fondů nespolupracuje.']) await expect(f).toContainText(t);
     await expect(f.getByRole('link', { name: 'Zásady zpracování osobních údajů' })).toHaveAttribute('href', '/zasady-ochrany-osobnich-udaju');

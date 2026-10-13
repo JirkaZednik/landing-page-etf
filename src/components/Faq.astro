@@ -48,10 +48,10 @@ import { OPERATOR } from '../lib/operator';
     <summary>Kdo za tím stojí a co se stane s mými údaji?</summary>
     <div class="faq__a">
       <p>
-        Stránku Indexák provozuje {OPERATOR.name}, IČO {OPERATOR.ico}, {OPERATOR.address}. Váš e-mail použijeme
-        k zaslání návodu a občasných tipů k investování do ETF. Partnerům vaše údaje předáme jen tehdy, když nám k tomu
-        po odeslání formuláře dáte samostatný souhlas. Seznam partnerů a všechny podrobnosti najdete
-        v <a href="/zasady-ochrany-osobnich-udaju">zásadách zpracování osobních údajů</a>.
+        Stránku provozuje {OPERATOR.name}. {OPERATOR.note} Kontakt:
+        <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a>. Váš e-mail použijeme k zaslání návodu a občasných
+        tipů k investování do ETF. V tomto ukázkovém projektu vaše údaje žádným partnerům nepředáváme. Všechny
+        podrobnosti najdete v <a href="/zasady-ochrany-osobnich-udaju">zásadách zpracování osobních údajů</a>.
       </p>
     </div>
   </details>

@@ -193,7 +193,7 @@ export function GuideDocument() {
       <Page size="A4" style={s.page}>
         <View fixed style={s.footer}>
           <Text>
-            {OPERATOR.name}, IČO {OPERATOR.ico}, {OPERATOR.address} · {OPERATOR.email} · {OPERATOR.web}
+            {OPERATOR.name} · {OPERATOR.email} · {OPERATOR.note}
           </Text>
           <Text>
             Informace mají obecnou povahu a nejsou investičním doporučením ani daňovým poradenstvím. Investování nese riziko ztráty, minulé výnosy nezaručují budoucí. Ochranné známky patří jejich vlastníkům; stránka s vydavateli fondů ani brokery nespolupracuje.

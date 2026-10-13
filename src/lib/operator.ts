@@ -1,9 +1,7 @@
-// Převzato z patičky clientelo.cz; k odsouhlasení Clienteliem (spec §16). Jediné místo s údaji provozovatele.
+// Jediné místo s údaji provozovatele (správce údajů). Demo běží pod neutrálním ukázkovým provozovatelem;
+// pro ostré spuštění se nahradí tento soubor (+ seznam partnerů v zásadách), viz README „Před ostrým spuštěním u klienta".
 export const OPERATOR = {
-  name: 'Clientelo Czech s.r.o.',
-  ico: '22193456',
-  address: 'Platnéřská 90/13, Staré Město, 110 00 Praha 1',
-  email: 'fundraising@clientelo.cz',
-  phone: '+420 725 345 102',
-  web: 'https://clientelo.cz',
-} as const satisfies { name: string; ico: string; address: string; email: string; phone: string; web: string };
+  name: 'ETF Dvojče – ukázkový projekt',
+  email: 'etf-dvojce@seznam.cz',
+  note: 'Ukázkový projekt vytvořený jako zadání pro přijímací řízení. Nejde o nabídku investičních služeb.',
+} as const satisfies { name: string; email: string; web?: string; note: string };

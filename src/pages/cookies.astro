@@ -3,14 +3,14 @@ import Base from '../layouts/Base.astro';
 import { OPERATOR } from '../lib/operator';
 import { CONSENT_VERSION } from '../lib/consent';
 ---
-<Base title="Cookies a měření · Indexák" description="Jak na webu Indexák měříme návštěvnost, co ukládáme do prohlížeče a jak souhlas změnit.">
+<Base title="Cookies a měření · ETF Dvojče" description="Jak na webu ETF Dvojče měříme návštěvnost, co ukládáme do prohlížeče a jak souhlas změnit.">
   <main class="legal">
     <h1>Cookies a měření</h1>
 
     <h2>Kdo za web odpovídá</h2>
     <p>
-      {OPERATOR.name}, IČO {OPERATOR.ico}, {OPERATOR.address}, e-mail
-      <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a>.
+      {OPERATOR.name}, e-mail
+      <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a>. {OPERATOR.note}
     </p>
 
     <h2>K čemu cookies a měření používáme</h2>

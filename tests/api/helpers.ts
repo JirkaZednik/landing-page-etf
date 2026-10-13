@@ -1,5 +1,5 @@
 import type { APIContext } from 'astro';
-export const SITE = 'https://indexak.vercel.app';
+export const SITE = 'https://etf-dvojce.vercel.app';
 export const AID = '11111111-1111-4111-8111-111111111111';
 export const EVENT_ID = '22222222-2222-4222-8222-222222222222';
 export const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;

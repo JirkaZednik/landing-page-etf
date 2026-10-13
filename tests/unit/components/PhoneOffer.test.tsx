@@ -71,7 +71,7 @@ describe('PhoneOffer', () => {
   });
 
   it.each([
-    ['phone_taken', 'Toto číslo už u nás má jiný kontakt. Napište nám na fundraising@clientelo.cz.'],
+    ['phone_taken', 'Toto číslo už u nás má jiný kontakt. Napište nám na etf-dvojce@seznam.cz.'],
     ['rate_limited', 'Něco se nepovedlo, zkuste to znovu.'],
     ['server', 'Něco se nepovedlo, zkuste to znovu.'],
   ])('API error %s shows message and keeps value', async (error, msg) => {

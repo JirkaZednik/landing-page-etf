@@ -30,7 +30,7 @@ export const HERO_COPY: Record<HeroVariant, { h1: string; sub: string }> = {
 export const PHONE_COPY = {
   heading: 'Chcete pomoct s prvním nákupem?',
   lead: 'Zavoláme vám a projdeme postup u vašeho brokera, bez doporučování konkrétních fondů.',
-  who: `Volat vám bude ${OPERATOR.name} z čísla ${OPERATOR.phone}.`,
+  who: `Volat vám bude ${OPERATOR.name}.`,
   label: 'Telefon',
   placeholder: '777 123 456',
   consentCall: `Souhlasím, aby mě ${OPERATOR.name} telefonicky kontaktoval kvůli pomoci s nákupem u mého brokera.`,

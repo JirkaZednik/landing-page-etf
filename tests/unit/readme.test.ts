@@ -59,7 +59,20 @@ describe('README', () => {
   it('marks conversion as an estimate and has launch status', () => {
     expect(md).toMatch(/odhad/i);
     expect(md).toContain('1 000 návštěv');
-    expect(md).toMatch(/Stav: připraveno, blokuje:/);
+    expect(md).toMatch(/^\*\*Demo: připraveno\.\*\*/m);
+    expect(md).toMatch(/^\*\*Před ostrým spuštěním u klienta:\*\*/m);
+  });
+
+  it('uses the ETF Dvojče brand and the neutral demo operator; client only as context', () => {
+    expect(md.split('\n')[0]).toMatch(/^# ETF Dvojče/);
+    expect(md).toContain('ETF Dvojče – ukázkový projekt');
+    expect(md).toContain('etf-dvojce@seznam.cz');
+    // absence of the legacy brand/operator in README is checked in no-legacy-brand.test.ts
+    const live = md.split('\n').find((l) => l.startsWith('**Před ostrým spuštěním u klienta:**'))!;
+    expect(live).toContain('`src/lib/operator.ts`');
+    expect(live).toMatch(/seznam(u)? partnerů/);
+    expect(live).toMatch(/souhlas klienta/);
+    expect(live).toMatch(/právník/);
   });
 
   it('does not mention funds that are not in the data', () => {
@@ -71,7 +84,7 @@ describe('README', () => {
     expect(md).toMatch(/^\| Fio banka \| \*\*žádné zatím neověřené\*\*/m);
     expect(md).toContain('U tohoto brokera jsme dostupnost zatím neověřili.');
     expect(md).toMatch(/^- \[ \] .*\*\*Trading 212 a Fio zatím nemají žádný ověřený fond\*\*/m);
-    expect(md).toMatch(/blokuje:.*ověření (dat )?brokerů Trading 212 a Fio/);
+    expect(md).toMatch(/Před ostrým spuštěním u klienta:\*\*.*ověření (dat )?brokerů Trading 212 a Fio/);
     // never claimed as verified
     expect(md).not.toMatch(/Trading 212 (a Fio )?(jsou|je) ověřen/);
   });
@@ -92,7 +105,7 @@ describe('README', () => {
   });
 
   it('paid tiers are only Vercel and Brevo; PostHog, Meta and Upstash are accounts to set up', () => {
-    const status = md.split('\n').find((l) => l.startsWith('**Stav: připraveno, blokuje:**'))!;
+    const status = md.split('\n').find((l) => l.startsWith('**Před ostrým spuštěním u klienta:**'))!;
     const paid = status.match(/placené tarify \(([^)]*)\)/)![1];
     expect(paid).toMatch(/Vercel/);
     expect(paid).toMatch(/Brevo/);

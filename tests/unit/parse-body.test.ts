@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { parseBody } from '../../src/server/parse-body';
 
 const req = (body: BodyInit, type: string) =>
-  new Request('https://indexak.vercel.app/api/subscribe', { method: 'POST', headers: { 'content-type': type }, body });
+  new Request('https://etf-dvojce.vercel.app/api/subscribe', { method: 'POST', headers: { 'content-type': type }, body });
 
 describe('parseBody', () => {
   it('parses JSON and stringifies scalar values', async () => {

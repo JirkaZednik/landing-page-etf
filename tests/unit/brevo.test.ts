@@ -9,7 +9,7 @@ let fetchMock: ReturnType<typeof vi.fn>;
 beforeEach(() => {
   fetchMock = vi.fn(); vi.stubGlobal('fetch', fetchMock);
   vi.stubEnv('BREVO_API_KEY', 'test-key'); vi.stubEnv('BREVO_LIST_ID', '7');
-  vi.stubEnv('BREVO_DOI_TEMPLATE_ID', '12'); vi.stubEnv('SITE_URL', 'https://indexak.vercel.app');
+  vi.stubEnv('BREVO_DOI_TEMPLATE_ID', '12'); vi.stubEnv('SITE_URL', 'https://etf-dvojce.vercel.app');
   vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 

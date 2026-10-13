@@ -28,7 +28,7 @@ describe('copy', () => {
   it('PHONE_COPY texts', () => {
     expect(PHONE_COPY.heading).toBe('Chcete pomoct s prvním nákupem?');
     expect(PHONE_COPY.lead).toBe('Zavoláme vám a projdeme postup u vašeho brokera, bez doporučování konkrétních fondů.');
-    expect(PHONE_COPY.who).toBe(`Volat vám bude ${OPERATOR.name} z čísla ${OPERATOR.phone}.`);
+    expect(PHONE_COPY.who).toBe(`Volat vám bude ${OPERATOR.name}.`);
     expect(PHONE_COPY.label).toBe('Telefon');
     expect(PHONE_COPY.placeholder).toBe('777 123 456');
     expect(PHONE_COPY.consentCall).toBe(`Souhlasím, aby mě ${OPERATOR.name} telefonicky kontaktoval kvůli pomoci s nákupem u mého brokera.`);

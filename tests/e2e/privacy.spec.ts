@@ -8,7 +8,10 @@ test('privacy page content', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Zásady zpracování osobních údajů');
   for (const h of ['Správce', 'Účely a právní základ', 'Seznam partnerů', 'Zpracovatelé', 'Doba uložení', 'Vaše práva'])
     await expect(page.getByRole('heading', { level: 2, name: h })).toBeVisible();
-  await expect(page.locator('main')).toContainText('Clientelo Czech s.r.o., IČO 22193456');
+  await expect(page.locator('main')).toContainText('ETF Dvojče – ukázkový projekt, e-mail etf-dvojce@seznam.cz');
+  await expect(page.locator('main')).toContainText('Ukázkový projekt vytvořený jako zadání pro přijímací řízení. Nejde o nabídku investičních služeb.');
+  await expect(page.locator('main')).not.toContainText('IČO');
+  await expect(page.locator('main')).toContainText('vaše údaje v něm nepředáváme nikomu');
   for (const p of ['Brevo', 'PostHog', 'Vercel', 'Upstash', 'Meta Platforms Ireland', 'Google Ireland Ltd.']) await expect(page.locator('main')).toContainText(p);
   // Meta Conversions API data (src/server/meta-capi.ts), same wording as /cookies.
   await expect(page.locator('main')).toContainText('hash e-mailu, IP adresa, prohlížeč (Conversions API, jen se souhlasem)');

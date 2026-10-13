@@ -26,6 +26,10 @@ describe('ads templates', () => {
     expect(filled).toContain('Dostupnost fondů se u brokerů liší.');
   });
 
+  it('both templates carry the ETF Dvojče brand', () => {
+    for (const v of ['a', 'b'] as const) expect(tpl(v)).toContain('<p class="brand">ETF Dvojče</p>');
+  });
+
   it('template A has no hardcoded TER or ISIN', () => {
     const raw = tpl('a');
     expect(raw).not.toMatch(/\d,\d{2}\s?%/);

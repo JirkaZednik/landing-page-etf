@@ -1,14 +1,14 @@
-# Indexák – „Najdi evropské dvojče"
+# ETF Dvojče – „Najdi evropské dvojče"
 
 ## Výklad zadání
 
 Srovnáváme ETF obchodované na NYSE (Arca). Protože je český drobný investor u evropského brokera kvůli nařízení PRIIPs koupit nemůže, ke každému ukazujeme dostupný evropský ekvivalent. Bez toho by srovnání nemělo použitelný výstup. Originály z NYSE jsou na stránce vždy vidět vedle dvojčat (TER, burza, zdroj).
 
-Stránka běží pod fiktivní spotřebitelskou značkou Indexák; provozovatelem a správcem údajů je navržen Clientelo Czech s.r.o. (údaje převzaté z clientelo.cz, k odsouhlasení – viz checklist).
+Zadání B od Clientela (clientelo.cz) pro přijímací řízení. Stránka běží pod fiktivní spotřebitelskou značkou ETF Dvojče; jako demo ji provozuje neutrální provozovatel „ETF Dvojče – ukázkový projekt" (kontakt etf-dvojce@seznam.cz, bez IČO a sídla), který údaje nikomu nepředává. Pro ostré spuštění u klienta se mění jediný soubor `src/lib/operator.ts` a seznam partnerů v zásadách – viz checklist.
 
 Výstupy: landing page (Astro 5 + React ostrůvky, TypeScript, SCSS), PDF návod jako lead magnet, 2 verze reklamy ve formátech 4:5 a 9:16, měření celé cesty a tento README.
 
-**Mohli bychom zítra spustit reklamu?** Po stránce kódu ano: stránka, formuláře, PDF, kreativy, měřicí kód a testy jsou hotové a lokálně otestované. Web ale zatím nikde neběží, takže se na produkci zatím nic neměřilo – Pixel, CAPI, PostHog ani double opt-in nejsou ověřené v ostrém provozu. Ostrý provoz blokují kroky mimo kód – souhlas Clientela jako provozovatele, schválení právníkem, produkční účty a placené tarify, ověření dat brokerů Trading 212 a Fio a ověření měření na produkci. Přesný stav je v [checklistu před spuštěním reklamy](#checklist-před-spuštěním-reklamy).
+**Mohli bychom zítra spustit reklamu?** Po stránce kódu ano: stránka, formuláře, PDF, kreativy, měřicí kód a testy jsou hotové a lokálně otestované. Web ale zatím nikde neběží, takže se na produkci zatím nic neměřilo – Pixel, CAPI, PostHog ani double opt-in nejsou ověřené v ostrém provozu. Ostrý provoz blokují kroky mimo kód – výměna ukázkového provozovatele a souhlas klienta, schválení právníkem, produkční účty a placené tarify, ověření dat brokerů Trading 212 a Fio a ověření měření na produkci. Přesný stav je v [checklistu před spuštěním reklamy](#checklist-před-spuštěním-reklamy).
 
 ## Cílová skupina
 
@@ -110,7 +110,7 @@ Personalizovaný výběr fondů („jaký jste investor") se blíží investičn
 
 ### Telefon až po e-mailu, dva oddělené souhlasy
 
-E-mail je jediné pole formuláře (nejnižší tření). Nepovinný telefon nabízíme až na `/dekujeme` a `/potvrzeno`, s uvedením, kdo volá. Dva samostatné nezaškrtnuté souhlasy: (a) telefonický kontakt provozovatelem, (b) předání údajů jmenovitě uvedeným partnerům; odeslat lze s (a) bez (b). Telefonát vede Clientelo podle písemného skriptu bez osobních investičních doporučení (jen postup v aplikaci brokera a obecné informace).
+E-mail je jediné pole formuláře (nejnižší tření). Nepovinný telefon nabízíme až na `/dekujeme` a `/potvrzeno`, s uvedením, kdo volá. Dva samostatné nezaškrtnuté souhlasy: (a) telefonický kontakt provozovatelem, (b) předání údajů jmenovitě uvedeným partnerům; odeslat lze s (a) bez (b). Telefonát vede provozovatel podle písemného skriptu bez osobních investičních doporučení (jen postup v aplikaci brokera a obecné informace).
 
 ### Měření bez souhlasu a se souhlasem
 
@@ -130,7 +130,7 @@ Formát [9:16](ads/a-9x16.png).
 - **Titulek:** VOO u evropského brokera nekoupíte. Tady je náhrada.
 - **Tlačítko:** Více informací
 - **Hero A:** „U evropského brokera VOO jako drobný investor nekoupíte. Jeho evropské dvojče ano." / „Níže vidíte, které fondy sledují stejný index a kolik stojí. Návod, jak je koupit u vašeho brokera, vám pošleme zdarma."
-- **URL:** `{SITE_URL}/?utm_source=meta&utm_medium=paid_social&utm_campaign=indexak_launch&utm_content=a-4x5` (resp. `a-9x16`)
+- **URL:** `{SITE_URL}/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=a-4x5` (resp. `a-9x16`)
 
 ### Verze B – „Praktický návod"
 
@@ -142,7 +142,7 @@ Formát [9:16](ads/b-9x16.png).
 - **Titulek:** S&P 500 u vašeho brokera: přesný ISIN a postup
 - **Tlačítko:** Získat návod
 - **Hero B:** „S&P 500 u vašeho brokera: který fond vybrat a jak ho najít." / „Tři evropské fondy na S&P 500 a jejich poplatky vidíte hned. Postup pro XTB, Trading 212, Fio a Degiro vám pošleme e-mailem."
-- **URL:** `{SITE_URL}/?utm_source=meta&utm_medium=paid_social&utm_campaign=indexak_launch&utm_content=b-4x5` (resp. `b-9x16`)
+- **URL:** `{SITE_URL}/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=b-4x5` (resp. `b-9x16`)
 
 Čísla a ISIN na kreativách generuje `npm run ads` z `src/data/etf-pairs.json` (stejný skript vyrenderuje `public/og.png`). Oproti návrhu ve spec §9 používají kreativy motiv `⇄` a pořadí dvojčat z dat; u verze B je řádek brokerů označen „Postup pro: …" a zdrojová řádka dodává „Dostupnost fondů se u brokerů liší.", aby kreativa netvrdila, že každý broker nabízí SPYL.
 
@@ -211,7 +211,7 @@ Cookie lišta má stejně výrazná tlačítka „Odmítnout" a „Přijmout" a 
 
 Pozor při čtení: `doi_confirmed` se počítá při každém načtení `/potvrzeno` a mohou ho spustit i bezpečnostní skenery pošty – potvrzení proto bereme z Brevo. Bez souhlasu nelze cestu po odeslání propojit na úrovni osoby, porovnávají se agregované počty.
 
-**PostHog dashboard** „Indexák – konverze": ČEKÁ na vytvoření po nasazení, postup v [docs/brevo-setup.md](docs/brevo-setup.md) § 9.6.
+**PostHog dashboard** „ETF Dvojče – konverze": ČEKÁ na vytvoření po nasazení, postup v [docs/brevo-setup.md](docs/brevo-setup.md) § 9.6.
 
 **Výkon (cíl LCP < 1,5 s, CLS < 0,1):** [docs/lighthouse-mobile.json](docs/lighthouse-mobile.json) je z **lokálního** produkčního buildu (12. 10. 2026, Lighthouse 13.5.0, mobil, simulované 4G), ne z produkce:
 
@@ -271,14 +271,18 @@ U Trading 212 a Fio stránka i PDF poctivě píší „U tohoto brokera jsme dos
 
 ## Checklist před spuštěním reklamy
 
-**Stav: připraveno, blokuje:** souhlas Clientela jako provozovatele, schválení právníkem, seznam partnerů, skript telefonátu, placené tarify (Vercel Pro/Enterprise, Brevo s vyšším denním limitem a ověřenou doménou), produkční účty k založení (PostHog, Meta, Upstash), ověření dat brokerů Trading 212 a Fio, Lighthouse a E2E na produkci.
+### Stav
 
-Kód, testy, data fondů, PDF a kreativy jsou hotové. Žádný z bodů níže zatím splněný není:
+**Demo: připraveno.** Kód, testy, data fondů, PDF a kreativy jsou hotové. Stránka, PDF i reklamy běží pod značkou ETF Dvojče s ukázkovým provozovatelem „ETF Dvojče – ukázkový projekt" (etf-dvojce@seznam.cz); v demu se údaje žádným partnerům nepředávají.
 
-- [ ] Clientelo souhlasí s uvedením jako provozovatel / správce (firma, IČO, sídlo, kontakt na stránce, v e-mailech i v zásadách). Údaje v `src/lib/operator.ts` (`OPERATOR`) jsou převzaté z patičky clientelo.cz a čekají na odsouhlasení. Nikdy vymyšlený subjekt.
-- [ ] Právník Clientela schválí: text souhlasu ve formuláři, dva souhlasy u telefonu, seznam partnerů (zatím prázdný – stránka uvádí, že údaje partnerům nepředáváme), zásady, cookie lištu, režim analytiky bez souhlasu, formulace o PRIIPs (včetně justETF jako sekundárního zdroje) a daních. Dále doby uchování (nastavení Brevo a PostHog, kód je nevynucuje), region Upstash v EU, právní základ „doložení souhlasu", přenos dat do USA u GA4 a datum „Platné od" v zásadách.
+**Před ostrým spuštěním u klienta:** výměna `src/lib/operator.ts` (skutečný provozovatel a správce) a doplnění seznamu partnerů v zásadách, souhlas klienta s uvedením jako provozovatel, schválení právníkem, skript telefonátu, placené tarify (Vercel Pro/Enterprise, Brevo s vyšším denním limitem a ověřenou doménou), produkční účty k založení (PostHog, Meta, Upstash), ověření dat brokerů Trading 212 a Fio, Lighthouse a E2E na produkci.
+
+Žádný z bodů níže zatím splněný není:
+
+- [ ] Klient (Clientelo) souhlasí s uvedením jako provozovatel / správce; jeho údaje (firma, IČO, sídlo, kontakt) nahradí ukázkového provozovatele v `src/lib/operator.ts` (`OPERATOR`) – jediné místo, odkud je berou patička, FAQ, zásady, cookies a PDF. Spolu s tím doplnit seznam partnerů v zásadách. Nikdy vymyšlený subjekt.
+- [ ] Právník klienta schválí: text souhlasu ve formuláři, dva souhlasy u telefonu, seznam partnerů (zatím prázdný – stránka uvádí, že údaje partnerům nepředáváme), zásady, cookie lištu, režim analytiky bez souhlasu, formulace o PRIIPs (včetně justETF jako sekundárního zdroje) a daních. Dále doby uchování (nastavení Brevo a PostHog, kód je nevynucuje), region Upstash v EU, právní základ „doložení souhlasu", přenos dat do USA u GA4 a datum „Platné od" v zásadách.
 - [ ] Skript telefonátu bez osobních investičních doporučení.
-- [ ] Vercel: tarif/účet Clientela pro komerční provoz (Hobby je jen pro nekomerční použití – [vercel.com/docs/limits/fair-use-guidelines](https://vercel.com/docs/limits/fair-use-guidelines)); ideálně vlastní doména.
+- [ ] Vercel: tarif/účet klienta pro komerční provoz (Hobby je jen pro nekomerční použití – [vercel.com/docs/limits/fair-use-guidelines](https://vercel.com/docs/limits/fair-use-guidelines)); ideálně vlastní doména.
 - [ ] Brevo: tarif s dostatečným denním limitem (bezplatný má 300 e-mailů/den), ověřená odesílací doména (SPF/DKIM), atributy, šablona DOI, seznam, automatizace s PDF otestované.
 - [ ] Data fondů ověřena u vydavatelů ke dni spuštění; data brokerů ověřena na jejich stránkách – **Trading 212 a Fio zatím nemají žádný ověřený fond**, u Trading 212 ověřit i zdroj poplatku.
 - [ ] Meta: Pixel + CAPI ověřené v Events Manageru, kategorie Financial products and services, kontrola Core Setup; `META_TEST_EVENT_CODE` před kampaní smazat.
@@ -291,7 +295,7 @@ Kód, testy, data fondů, PDF a kreativy jsou hotové. Žádný z bodů níže z
 **Nasazení zatím neproběhlo** – je to ruční krok vlastníka účtů. Web je připravený k nasazení na Vercel. Po nasazení doplňte sem a do [docs/brevo-setup.md](docs/brevo-setup.md) § 9.8:
 
 - **Produkční URL:** _ČEKÁ – doplní se po nasazení_
-- **PostHog dashboard „Indexák – konverze":** _ČEKÁ – doplní se po vytvoření (§ 9.6)_
+- **PostHog dashboard „ETF Dvojče – konverze":** _ČEKÁ – doplní se po vytvoření (§ 9.6)_
 - **Lighthouse mobile na produkci:** _ČEKÁ – doplní se po měření (§ 9.5), včetně nesplněných hodnot_
 
 **Postup** (podrobně v [docs/brevo-setup.md](docs/brevo-setup.md) § 9.3):

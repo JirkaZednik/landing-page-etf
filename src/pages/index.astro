@@ -10,7 +10,7 @@ import Faq from '../components/Faq.astro';
 import Footer from '../components/Footer.astro';
 ---
 <Base
-  title="Evropská dvojčata amerických ETF | Indexák"
+  title="Evropská dvojčata amerických ETF | ETF Dvojče"
   description="VOO, SPY a IVV u evropského brokera nekoupíte. Ukážeme vám jejich evropská dvojčata, poplatky a pošleme návod ke koupi u XTB, Trading 212, Fio a Degiro."
 >
   <script is:inline slot="head">
@@ -21,7 +21,7 @@ import Footer from '../components/Footer.astro';
       document.documentElement.dataset.variant = c.charAt(0) === 'b' ? 'b' : 'a';
     })();
   </script>
-  <header class="masthead"><span class="masthead__brand">Indexák</span></header>
+  <header class="masthead"><span class="masthead__brand">ETF Dvojče</span></header>
   <main>
     <Hero variant="a" />
     <section id="fondy" data-section="fondy" class="section"><h2>Další fondy z NYSE</h2><FundPicker client:visible /></section>
