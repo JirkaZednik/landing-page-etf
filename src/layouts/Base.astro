@@ -5,6 +5,12 @@ import '@fontsource/bricolage-grotesque/latin-ext-600.css';
 import '@fontsource/bricolage-grotesque/latin-800.css';
 import '@fontsource/bricolage-grotesque/latin-ext-800.css';
 import '@fontsource-variable/figtree/wght.css';
+// Preload the faces the hero needs first (H1/tickers: Bricolage 800 latin + latin-ext for č/ř/ž;
+// text: Figtree latin). `?url` resolves to the same content-hashed /_astro/ file the @font-face
+// rules above point at, so the preload is reused instead of fetched twice (tests/build/font-preload).
+import bricolage800Latin from '@fontsource/bricolage-grotesque/files/bricolage-grotesque-latin-800-normal.woff2?url';
+import bricolage800LatinExt from '@fontsource/bricolage-grotesque/files/bricolage-grotesque-latin-ext-800-normal.woff2?url';
+import figtreeLatin from '@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2?url';
 import '../styles/global.scss';
 import ConsentBanner from '../components/ConsentBanner';
 import Logo from '../components/Logo.astro';
@@ -28,6 +34,9 @@ const og = new URL(ogImage ?? '/og.png', Astro.site);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {[bricolage800Latin, bricolage800LatinExt, figtreeLatin].map((href) => (
+      <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />
+    ))}
     <title>{title}</title>
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}

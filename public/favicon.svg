@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-  <rect width="32" height="32" fill="#0B5D3B"/>
-  <text x="16" y="23" font-family="monospace" font-size="20" fill="#FFFFFF" text-anchor="middle">⇄</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="1 -5 32 32">
+  <!-- Logo mark (src/lib/twins-art.ts LOGO_CIRCLES/LOGO_LENS, palette from tokens.scss): EU blue + gold, multiplied overlap. -->
+  <circle cx="11" cy="11" r="10" fill="#2F5BFF"/>
+  <circle cx="23" cy="11" r="10" fill="#FFC93C"/>
+  <path d="M17 3 A10 10 0 0 1 17 19 A10 10 0 0 1 17 3 Z" fill="#2F483C"/>
 </svg>

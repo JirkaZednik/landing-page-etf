@@ -18,8 +18,9 @@ $line: #E6EBFA;           // vlasové linky v kartách
 $alert: #B4233A;          // štítek „nedostupné“ v kartě odpovědi
 $alert-bg: #FFE7EB;
 
-$font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-$font-text: 'Figtree Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+// '… Fallback' = size-adjusted local Arial (src/styles/_fallback-fonts.scss) against the font-swap shift.
+$font-display: 'Bricolage Grotesque', 'Bricolage Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+$font-text: 'Figtree Variable', 'Figtree Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
 $radius-card: 24px;
 $radius-inner: 12px;

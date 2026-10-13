@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
+import { LOGO_CIRCLES, LOGO_LENS } from '../../src/lib/twins-art';
+import { loadPalette, multiply } from '../../src/styles/palette';
 
 // Redesign 2026-10-13 ("EU modrá a zlatá"): exact palette from the plan's Global Constraints,
 // and WCAG 2.x contrast for every text/background pair the page uses.
@@ -48,6 +50,42 @@ describe('design tokens', () => {
     expect(src).not.toMatch(/Newsreader|IBM Plex|\$paper|\$signal/);
     expect(src).toMatch(/\$font-display:\s*'Bricolage Grotesque'/);
     expect(src).toMatch(/\$font-text:\s*'Figtree Variable'/);
+  });
+
+  // Font-swap CLS guard (final review Critical 1): each web font is followed by a size-adjusted
+  // local fallback, so text set before the woff2 arrives wraps (almost) the same way.
+  it('font stacks put a metric-matched fallback right after each web font', () => {
+    expect(src).toMatch(/\$font-display:\s*'Bricolage Grotesque',\s*'Bricolage Fallback',/);
+    expect(src).toMatch(/\$font-text:\s*'Figtree Variable',\s*'Figtree Fallback',/);
+  });
+
+  it('fallback faces use a local Arial-metric font with all four metric overrides', () => {
+    const css = readFileSync(new URL('../../src/styles/_fallback-fonts.scss', import.meta.url), 'utf8');
+    const faces = [...css.matchAll(/@font-face\s*\{([^}]*)\}/g)].map((m) => m[1]);
+    for (const family of ['Bricolage Fallback', 'Figtree Fallback']) {
+      const mine = faces.filter((f) => f.includes(`font-family: '${family}'`));
+      expect(mine.length, family).toBeGreaterThanOrEqual(2); // regular-ish and bold weights
+      for (const f of mine) {
+        expect(f).toMatch(/src:\s*local\('Arial/);
+        expect(f).toMatch(/local\('Liberation Sans/); // metric-compatible Arial clone on Linux
+        for (const prop of ['size-adjust', 'ascent-override', 'descent-override', 'line-gap-override'])
+          expect(f, `${family}: ${prop}`).toMatch(new RegExp(`${prop}:\\s*[\\d.]+%`));
+      }
+    }
+    const global = readFileSync(new URL('../../src/styles/global.scss', import.meta.url), 'utf8');
+    expect(global).toMatch(/@use 'fallback-fonts'/);
+  });
+
+  it('favicon is the two-circle logo (shared geometry and palette), not the old broadsheet mark', () => {
+    const svg = readFileSync(new URL('../../public/favicon.svg', import.meta.url), 'utf8');
+    const p = loadPalette();
+    expect(svg).not.toMatch(/#0B5D3B|monospace|<text|⇄/i);
+    const vb = svg.match(/viewBox="([-\d.]+) ([-\d.]+) ([\d.]+) ([\d.]+)"/);
+    expect(vb, 'square viewBox').not.toBeNull();
+    expect(vb![3]).toBe(vb![4]);
+    for (const [c, fill] of [[LOGO_CIRCLES.left, p.euro], [LOGO_CIRCLES.right, p.gold]] as const)
+      expect(svg).toContain(`<circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" fill="${fill}"/>`);
+    expect(svg).toContain(`<path d="${LOGO_LENS}" fill="${multiply(p.euro, p.gold)}"/>`);
   });
 
   it('transitional aliases and mono fonts are gone from all styles', () => {

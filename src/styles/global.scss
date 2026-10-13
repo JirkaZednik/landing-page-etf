@@ -1,4 +1,5 @@
 @use 'tokens' as *;
+@use 'fallback-fonts';
 
 :root {
   --night: #{$night};
@@ -160,7 +161,7 @@ a {
   background: $cloud;
 
   > h1 {
-    max-width: 20ch;
+    max-width: 10em; // = 20ch with Bricolage; em keeps the wrap stable across the font swap
     margin: 0 auto $s4;
     font-size: clamp(1.75rem, 6vw, 2.5rem);
     line-height: 1.08;
@@ -492,7 +493,7 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
   &--cloud { background: $cloud; }
 
   > h2 {
-    max-width: 22ch;
+    max-width: 11em; // = 22ch with Bricolage; em keeps the wrap stable across the font swap
     margin: 0 auto 28px;
     font-size: clamp(1.75rem, 6vw, 2.75rem);
     line-height: 1.08;
@@ -512,7 +513,7 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
   @media (min-width: 900px) {
     padding-block: 88px;
 
-    > h2 { max-width: 28ch; margin-bottom: 40px; }
+    > h2 { max-width: 14em; margin-bottom: 40px; }
     &__lead { margin: -24px auto 40px; font-size: 1.125rem; }
   }
 }
@@ -648,6 +649,7 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
   background: $cloud;
 
   &:hover { border-color: $euro; }
+  &:has(input:checked):hover { border-color: $night; } // vybraný čip zůstává celý tmavý
 }
 
 // Jednořádkové čipy (skupina v kalkulačce, broker) jsou „pilulky“.

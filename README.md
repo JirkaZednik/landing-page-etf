@@ -231,15 +231,15 @@ Pozor při čtení: `pdf_downloaded` se počítá při každém kliknutí na tla
 
 **PostHog dashboard** „ETF Dvojče – konverze": ČEKÁ na vytvoření po nasazení, postup v [docs/brevo-setup.md](docs/brevo-setup.md) § 9.6.
 
-**Výkon (cíl LCP < 1,5 s, CLS < 0,1):** [docs/lighthouse-mobile.json](docs/lighthouse-mobile.json) je z **lokálního** produkčního buildu (12. 10. 2026, Lighthouse 13.5.0, mobil, simulované 4G), ne z produkce:
+**Výkon (cíl LCP < 1,5 s, CLS < 0,1):** [docs/lighthouse-mobile.json](docs/lighthouse-mobile.json) je z **lokálního** produkčního buildu (13. 10. 2026, Lighthouse 13.5.0, mobil, simulované 4G, statický server s hlavičkami z `vercel.json` a brotli; uložen medián z 5 běhů podle LCP), ne z produkce:
 
 | Metrika | Lokální build | Cíl |
 |---|---|---|
-| LCP | 1 089 ms v uloženém běhu; v opakovaných bězích bimodální, cca 1,06 s nebo cca 1,96 s (4 z 8 běhů nad cílem) | < 1 500 ms |
-| CLS | 0,0007 | < 0,1 |
-| Výkon / přístupnost / best practices / SEO | 1,00 / 1,00 / 1,00 / 1,00 | – |
+| LCP | 2 110 ms v uloženém (mediánovém) běhu; v 10 bězích bimodální, 1,52–1,62 s (4×) nebo 2,11–2,63 s (6×), medián ≈ 2,1 s | < 1 500 ms |
+| CLS | 0 ve všech 10 bězích (kritická písma se přednačítají, záložní písmo má sladěné metriky) | < 0,1 |
+| Výkon / přístupnost / best practices / SEO | 0,99 / 1,00 / 1,00 / 1,00 | – |
 
-LCP tedy zatím **nepovažujeme za splněné**; rozhodne měření na produkční URL podle [docs/brevo-setup.md](docs/brevo-setup.md) § 9.5.
+LCP tedy lokálně **splněné není**; rozhodne měření na produkční URL podle [docs/brevo-setup.md](docs/brevo-setup.md) § 9.5.
 
 ## Zdroje dat
 

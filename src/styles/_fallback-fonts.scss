@@ -1,0 +1,59 @@
+// Metric-matched fallbacks (final review Critical 1): until Bricolage Grotesque / Figtree arrive
+// (or if they never do), text is set in a local Arial-metric font scaled to the web font's widths
+// and vertical metrics, so lines wrap the same way and the swap does not shift the hero.
+//
+// size-adjust = web-font width / Arial width, measured in Chromium on the rendered text (hero copy
+// first: H1 A/B, perex, form microtext, button; then /, /dekujeme overall). ascent/descent =
+// web-font hhea metrics (UPM 1000, line gap 0: Bricolage 930/270, Figtree 950/250) / size-adjust. Liberation Sans is metric-identical
+// to Arial (Linux); without either the stack falls through to system-ui as before.
+// Re-measure if the fonts or the hero copy change (tests/e2e/hero.spec.ts › web fonts blocked).
+
+@font-face {
+  font-family: 'Bricolage Fallback';
+  font-weight: 800;
+  src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('LiberationSans-Bold');
+  size-adjust: 102%;
+  ascent-override: 91.18%;
+  descent-override: 26.47%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Bricolage Fallback';
+  font-weight: 600;
+  src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('LiberationSans-Bold');
+  size-adjust: 102%;
+  ascent-override: 91.18%;
+  descent-override: 26.47%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Figtree Fallback';
+  font-weight: 300 550;
+  src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('LiberationSans');
+  size-adjust: 100%;
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Figtree Fallback';
+  font-weight: 551 650;
+  src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('LiberationSans-Bold');
+  size-adjust: 99%;
+  ascent-override: 95.96%;
+  descent-override: 25.25%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Figtree Fallback';
+  font-weight: 651 900;
+  src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('LiberationSans-Bold');
+  size-adjust: 96%;
+  ascent-override: 98.96%;
+  descent-override: 26.04%;
+  line-gap-override: 0%;
+}

@@ -150,6 +150,42 @@ test.describe('with consent decided', () => {
   });
 });
 
+// Final review Critical 1: with the woff2 files blocked (slow 4G, font request failed) the hero laid
+// out in the size-adjusted fallback must match the web-font layout, so the swap cannot shift it.
+test.describe('web fonts blocked (metric-matched fallback)', () => {
+  test.beforeEach(({ page }) => presetConsent(page));
+
+  const buttonBottom = async (page: Page, url: string) => {
+    await page.goto(url);
+    await page.waitForLoadState('networkidle');
+    await page.evaluate(() => document.fonts.ready);
+    const box = await page.locator('#form button[type=submit]').boundingBox();
+    return box!.y + box!.height;
+  };
+
+  for (const [label, url] of [['bez UTM', '/'], ['a', '/?utm_content=a'], ['b', '/?utm_content=b']] as const) {
+    test(`hero button stays put without web fonts – ${label}`, async ({ page, context }) => {
+      // Blocked run first, in a page that has never loaded the fonts (no memory-cache hits).
+      // .woff too: @fontsource lists it as the second src, so blocking only woff2 would just swap later.
+      let aborted = 0;
+      await page.route(/\.woff2?(\?.*)?$/, (r) => { aborted++; return r.abort(); });
+      const without = await buttonBottom(page, url);
+      expect(aborted).toBeGreaterThan(0);
+      expect(await page.evaluate(() => [...document.fonts].some(
+        (f) => f.family.replace(/"/g, '') === 'Bricolage Grotesque' && f.status === 'loaded'))).toBe(false);
+
+      const withFonts = await context.newPage();
+      await presetConsent(withFonts);
+      const loaded = await buttonBottom(withFonts, url);
+      expect(await withFonts.evaluate(() => [...document.fonts].some(
+        (f) => f.family.replace(/"/g, '') === 'Bricolage Grotesque' && f.status === 'loaded'))).toBe(true);
+
+      expect(without).toBeLessThanOrEqual(660);
+      expect(Math.abs(without - loaded), `loaded ${loaded} px vs fallback ${without} px`).toBeLessThanOrEqual(4);
+    });
+  }
+});
+
 test.describe('redesign (EU blue and gold)', () => {
   test.beforeEach(({ page }) => presetConsent(page));
 

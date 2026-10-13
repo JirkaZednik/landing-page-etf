@@ -80,7 +80,9 @@ const { variant } = Astro.props;
     margin-top: -4px;
 
     h1 {
-      max-width: 20ch;
+      // em, not ch: ch follows the fallback font's "0" while the web font loads and re-wraps the H1 on swap
+      // (final review Critical 1). 1ch = 0.5em with Bricolage in Chromium, so the layout is unchanged.
+      max-width: 10em;
       margin: 0 auto;
       font-family: $font-display;
       font-weight: 800;
@@ -89,7 +91,7 @@ const { variant } = Astro.props;
       letter-spacing: -0.025em;
       text-wrap: balance;
 
-      @media (max-width: 899.98px) { max-width: 22ch; }
+      @media (max-width: 899.98px) { max-width: 11em; }
 
       // Desktop: wider measure, calmer size – variant A wraps to 3 lines (mock proportions).
       @media (min-width: 900px) {
