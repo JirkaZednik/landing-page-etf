@@ -26,7 +26,7 @@ export const HERO_COPY: Record<HeroVariant, { h1: string; sub: string }> = {
   },
 };
 
-/** Phone offer on /dekujeme and /potvrzeno. API code `rate_limited` maps to `errors.server` in PhoneOffer. */
+/** Phone offer on /dekujeme. API code `rate_limited` maps to `errors.server` in PhoneOffer. */
 export const PHONE_COPY = {
   heading: 'Chcete pomoct s prvním nákupem?',
   lead: 'Zavoláme vám a projdeme postup u vašeho brokera, bez doporučování konkrétních fondů.',
@@ -37,7 +37,6 @@ export const PHONE_COPY = {
   consentPartners: 'Souhlasím s předáním svého e-mailu a telefonu partnerům uvedeným v zásadách zpracování osobních údajů (nepovinné).',
   button: 'Zavolejte mi',
   success: 'Děkujeme, číslo máme. Ozveme se vám.',
-  alreadyGiven: 'Pokud jste telefon už zadali, nemusíte nic dělat.',
   errors: {
     invalid_phone: 'Zadejte české číslo, např. 777 123 456 nebo +420 777 123 456.',
     consent_required: 'Bez souhlasu s telefonickým kontaktem vám zavolat nemůžeme.',

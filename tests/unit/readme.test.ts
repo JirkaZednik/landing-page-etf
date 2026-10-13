@@ -116,7 +116,28 @@ describe('README', () => {
   it('rounds the minimum detectable effect and words the H3 row precisely', () => {
     expect(md).not.toContain('6,85 %');
     expect(md).toContain('4 → ≈ 6,8 %');
-    expect(md).toMatch(/^\| 3 \|.*\| z 60 % na 66 % odeslání \|/m);
+  });
+
+  it('single opt-in: DOI only in the one sentence explaining why it was not chosen', () => {
+    const sentences = md.split(/(?<=[.!?])\s+|\n/).filter((x) => /double opt-in|\bDOI\b/i.test(x));
+    expect(sentences).toHaveLength(1);
+    expect(sentences[0]).toMatch(/^Single opt-in jsme zvolili místo double opt-in \(DOI\), protože/);
+    expect(md).not.toContain('/potvrzeno');
+    expect(md).not.toContain('doi_confirmed');
+    expect(md).not.toContain('BREVO_DOI_TEMPLATE_ID');
+    expect(md).toContain('| Lead → stažení PDF na `/dekujeme` | **60–80 %** (odhad) |');
+  });
+
+  it('H3 is the phone-offer position test with a computed sample size', () => {
+    const ab = md.slice(md.indexOf('\n## A/B hypotézy\n'), md.indexOf('\n## Měření\n'));
+    const h3 = ab.split('\n').find((l) => l.startsWith('| 3 |'))!;
+    expect(h3).toMatch(/nabídka telefonu nad tlačítkem „Stáhnout návod \(PDF\)" vs\. pod ním/);
+    expect(h3).toContain('míra telefonů z leadů');
+    expect(h3).toContain('+40 % relativně (5 → 7 % leadů)');
+    expect(h3).toContain('≈ 2 213 leadů ≈ 55 300 návštěv (při konverzi 4 %)');
+    // same formula as H1/H2: z = 1,960 and 0,842, p₁ = 5 %, p₂ = 7 %
+    expect(md).toContain('(1,960 · √(2 · 0,06 · 0,94) + 0,842 · √(0,05 · 0,95 + 0,07 · 0,93))² / 0,02²');
+    expect(md).toContain('2 213 / 0,04 ≈ 55 300');
   });
 });
 

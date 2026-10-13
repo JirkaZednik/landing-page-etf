@@ -58,16 +58,16 @@ describe('PhoneOffer', () => {
   });
 
   it('sends consent_partners true when (b) checked', async () => {
-    render(<PhoneOffer page="potvrzeno" />);
+    render(<PhoneOffer page="dekujeme" />);
     await fill('777 123 456', true, true);
     expect(JSON.parse(fetch.mock.calls[0][1].body).consent_partners).toBe(true);
-    expect(track).toHaveBeenCalledWith('phone_submitted', { page: 'potvrzeno', consent_partners: true });
+    expect(track).toHaveBeenCalledWith('phone_submitted', { page: 'dekujeme', consent_partners: true });
   });
 
-  it('both consents start unchecked; potvrzeno shows alreadyGiven', () => {
-    render(<PhoneOffer page="potvrzeno" />);
+  it('both consents start unchecked; no second-visit note (only one thank-you page)', () => {
+    render(<PhoneOffer page="dekujeme" />);
     screen.getAllByRole('checkbox').forEach((c) => expect(c).not.toBeChecked());
-    expect(screen.getByText('Pokud jste telefon už zadali, nemusíte nic dělat.')).toBeInTheDocument();
+    expect(screen.queryByText('Pokud jste telefon už zadali, nemusíte nic dělat.')).not.toBeInTheDocument();
   });
 
   it.each([

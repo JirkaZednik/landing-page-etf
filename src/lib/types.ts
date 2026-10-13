@@ -30,7 +30,7 @@ export type HeroVariant = 'a' | 'b';
 export type Placement = 'hero' | 'card' | 'calc' | 'preview';
 export type EventName =
   | 'page_view' | 'form_viewed' | 'form_started' | 'form_submitted' | 'form_error'
-  | 'thankyou_viewed' | 'broker_selected' | 'phone_submitted' | 'doi_confirmed'
+  | 'thankyou_viewed' | 'broker_selected' | 'phone_submitted'
   | 'pdf_downloaded' | 'pair_selected' | 'card_cta_clicked' | 'calc_used'
   | 'calc_result_viewed' | 'sticky_cta_clicked' | 'faq_opened'
   | 'source_link_clicked' | 'scroll_depth';

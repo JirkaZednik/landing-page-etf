@@ -62,10 +62,11 @@ test.describe('homepage', () => {
     expect(await events(page, 'source_link_clicked')).toEqual([{ fund: 'priips' }]);
   });
 
-  test('guide copy mentions the e-mail confirmation (double opt-in)', async ({ page }) => {
+  test('guide copy promises the PDF right after sign-up (single opt-in), no e-mail confirmation', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('[data-section="navod"]')).toContainText('Pošleme ho na váš e-mail po jeho potvrzení.');
-    await expect(page.locator('[data-section="faq"] details').first()).toContainText('po potvrzení e-mailu');
+    await expect(page.locator('[data-section="navod"]')).toContainText('Stáhnete si ho hned po odeslání a pošleme ho i na váš e-mail.');
+    await expect(page.locator('[data-section="faq"] details').first()).toContainText('Návod si stáhnete hned po odeslání e-mailu');
+    await expect(page.locator('main')).not.toContainText(/potvrz/i);
   });
 
   test('faq: 5 questions, operator question', async ({ page }) => {
@@ -96,7 +97,8 @@ test.describe('homepage', () => {
     await expect(f).not.toContainText('IČO');
     for (const t of ['Provozovatel: ETF Dvojče – ukázkový projekt', 'etf-dvojce@seznam.cz', 'Nejde o nabídku investičních služeb.',
       'nejsou investičním doporučením', 'nemusí se vám vrátit celá vložená částka', 'nejsou příslibem budoucího výnosu',
-      'Ochranné známky patří jejich vlastníkům; stránka s vydavateli fondů nespolupracuje.']) await expect(f).toContainText(t);
+      'Ochranné známky patří jejich vlastníkům; stránka s vydavateli fondů nespolupracuje.',
+      'Kontaktní údaje předáváme partnerům jen na základě vašeho samostatného souhlasu. V ukázkovém projektu nepředáváme nikomu.']) await expect(f).toContainText(t);
     await expect(f.getByRole('link', { name: 'Zásady zpracování osobních údajů' })).toHaveAttribute('href', '/zasady-ochrany-osobnich-udaju');
     await expect(f.getByRole('link', { name: 'Cookies' })).toHaveAttribute('href', '/cookies');
     await expect(page.locator('#zdroje')).toContainText(`k ${AS_OF_CZ}`);

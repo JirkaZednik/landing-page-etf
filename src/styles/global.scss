@@ -625,7 +625,7 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
   .lead-form { max-width: none; }
 }
 
-// Děkovací stránky (/dekujeme, /potvrzeno): jeden sloupec, nahoře jediná akce.
+// Děkovací stránka /dekujeme: jeden sloupec, nahoře jediná akce (stažení návodu).
 .thanks {
   max-width: 34rem;
   padding: $s3 $s3 $s6;
@@ -644,29 +644,6 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
   &__home { color: var(--ink); text-decoration: none; }
 
   &__muted { color: var(--muted); font-size: 0.9375rem; }
-
-  // Dvě stejně výrazná textová tlačítka, bez log.
-  &__mail {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: $s2;
-    margin-top: $s3;
-
-    a {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 48px;
-      padding: 0 $s2;
-      border: 1px solid var(--ink);
-      border-radius: 2px;
-      color: var(--ink);
-      font-weight: 600;
-      text-align: center;
-      text-decoration: none;
-      line-height: 1.2;
-    }
-  }
 
   &__pdf {
     display: flex;
@@ -792,7 +769,7 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
 
   > p { margin: 0 0 $s2; font-size: 0.9375rem; line-height: 1.45; }
 
-  &__who, &__note { color: var(--muted); }
+  &__who { color: var(--muted); }
 
   &__form {
     display: grid;

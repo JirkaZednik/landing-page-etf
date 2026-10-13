@@ -35,7 +35,7 @@ describe('copy', () => {
     expect(PHONE_COPY.consentPartners).toBe('Souhlasím s předáním svého e-mailu a telefonu partnerům uvedeným v zásadách zpracování osobních údajů (nepovinné).');
     expect(PHONE_COPY.button).toBe('Zavolejte mi');
     expect(PHONE_COPY.success).toBe('Děkujeme, číslo máme. Ozveme se vám.');
-    expect(PHONE_COPY.alreadyGiven).toBe('Pokud jste telefon už zadali, nemusíte nic dělat.');
+    expect(PHONE_COPY).not.toHaveProperty('alreadyGiven');
     expect(PHONE_COPY.errors).toEqual({
       invalid_phone: 'Zadejte české číslo, např. 777 123 456 nebo +420 777 123 456.',
       consent_required: 'Bez souhlasu s telefonickým kontaktem vám zavolat nemůžeme.',

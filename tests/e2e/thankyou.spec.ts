@@ -30,14 +30,34 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test('/dekujeme flow: broker → phone with (a) without (b)', async ({ page }) => {
+test('/dekujeme flow: guide PDF at once → broker → phone with (a) without (b)', async ({ page }) => {
   await page.goto(`/dekujeme?aid=${AID}`);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Ještě jeden klik: potvrďte e-mail');
-  await expect(page.getByRole('link', { name: 'Otevřít Gmail' })).toHaveAttribute('href', 'https://mail.google.com/');
-  await expect(page.getByRole('link', { name: 'Otevřít Seznam Email' })).toHaveAttribute('href', 'https://email.seznam.cz/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Hotovo. Návod je váš.');
+  const pdf = page.getByRole('link', { name: 'Stáhnout návod (PDF)' });
+  await expect(pdf).toHaveAttribute('href', '/navod-etf.pdf');
+  await expect(pdf).toHaveAttribute('download', /.*/);
+  await expect(page.getByText('Stejný návod jsme vám poslali i e-mailem.')).toBeVisible();
   await expect(page.locator('.sticky-cta')).toHaveCount(0);
   await expect.poll(() => events(page, 'thankyou_viewed')).toHaveLength(1);
+
+  // single opt-in: nothing to confirm, no mailbox shortcuts
+  const main = page.locator('main');
+  await expect(main).not.toContainText(/potvr/i);
+  await expect(page.getByRole('link', { name: /Gmail|Seznam Email/ })).toHaveCount(0);
+
+  // order: heading → PDF button → broker picker → phone offer
+  const order = await page.evaluate(() => {
+    const els = ['h1', 'a[href="/navod-etf.pdf"]', '.broker-picker', '.phone-offer'].map((s) => document.querySelector(s));
+    return els.slice(1).map((el, i) =>
+      !!el && !!els[i] && (els[i]!.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0);
+  });
+  expect(order).toEqual([true, true, true]);
+
+  // the click must be tracked; keep the browser on the page
+  await page.evaluate(() => document.addEventListener('click', (e) => e.preventDefault(), { once: true }));
+  await pdf.click();
+  await expect.poll(() => events(page, 'pdf_downloaded')).toHaveLength(1);
 
   await hydrated(page, '.broker-picker');
   await page.getByRole('radio', { name: 'XTB' }).check();
@@ -46,6 +66,7 @@ test('/dekujeme flow: broker → phone with (a) without (b)', async ({ page }) =
 
   await page.locator('.phone-offer').scrollIntoViewIfNeeded();
   await hydrated(page, '.phone-offer'); // client:visible
+  await expect(page.getByText('Pokud jste telefon už zadali, nemusíte nic dělat.')).toHaveCount(0);
   await page.getByLabel('Telefon', { exact: true }).fill('777 123 456');
   await page.getByLabel(/telefonicky kontaktoval/).check();
   await page.getByRole('button', { name: 'Zavolejte mi' }).click();
@@ -53,18 +74,26 @@ test('/dekujeme flow: broker → phone with (a) without (b)', async ({ page }) =
   expect(bodies[1]).toEqual({ aid: AID, phone: '+420777123456', consent_call: true, consent_partners: false, consent_text_version: '2026-10-11' });
 });
 
-test('/potvrzeno: PDF link, phone offer note, noindex', async ({ page }) => {
-  await page.goto(`/potvrzeno?aid=${AID}`);
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
-  await expect(page.getByRole('link', { name: 'Stáhnout návod (PDF)' })).toHaveAttribute('href', '/navod-etf.pdf');
-  await expect(page.getByText('Pokud jste telefon už zadali, nemusíte nic dělat.')).toBeVisible();
-  await expect(page.locator('.sticky-cta')).toHaveCount(0);
-  await expect.poll(() => events(page, 'doi_confirmed')).toHaveLength(1);
-
-  // the PDF exists only after Task 13: stop the navigation, check only the event
-  await page.evaluate(() => document.addEventListener('click', (e) => e.preventDefault()));
-  await page.getByRole('link', { name: 'Stáhnout návod (PDF)' }).click();
+// Review Focus 2: opened from history / bookmark without ?aid=
+test('/dekujeme without aid: PDF download works, no errors', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/dekujeme');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Hotovo. Návod je váš.');
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('link', { name: 'Stáhnout návod (PDF)' }).click(),
+  ]);
+  expect(download.suggestedFilename()).toBe('navod-etf.pdf');
   await expect.poll(() => events(page, 'pdf_downloaded')).toHaveLength(1);
+  await hydrated(page, '.broker-picker');
+  expect(errors).toEqual([]);
+});
+
+// Review Focus 3: /potvrzeno is gone (on Vercel: 301 → /dekujeme via vercel.json, see production.spec.ts)
+test('/potvrzeno no longer exists in the app', async ({ request }) => {
+  const r = await request.get(`/potvrzeno?aid=${AID}`, { maxRedirects: 0 });
+  expect(r.status()).toBe(404);
 });
 
 test('hero form → /dekujeme with aid → broker choice', async ({ page }) => {

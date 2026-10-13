@@ -38,13 +38,16 @@ async function brevoPost(path: string, body: unknown): Promise<Raw> {
   }
 }
 
-export async function createDoiContact(i: { email: string; aid: string; attributes: Attributes }):
+// Single opt-in: one call creates (201) or updates (204) the contact and adds it to the list;
+// the Brevo automation "Contact added to list" then sends the guide. ext_id = aid is the same
+// identifier upsertProfile (/api/profile) uses, so broker and phone land on this contact.
+export async function createLeadContact(i: { email: string; aid: string; attributes: Attributes }):
   Promise<{ ok: true } | { ok: false; error: 'brevo' }> {
-  const r = await brevoPost('/contacts/doubleOptinConfirmation', {
+  const r = await brevoPost('/contacts', {
     email: i.email,
-    includeListIds: [Number(env('BREVO_LIST_ID'))],
-    templateId: Number(env('BREVO_DOI_TEMPLATE_ID')),
-    redirectionUrl: `${env('SITE_URL')}/potvrzeno?aid=${i.aid}`,
+    ext_id: i.aid,
+    listIds: [Number(env('BREVO_LIST_ID'))],
+    updateEnabled: true,
     attributes: i.attributes,
   });
   if (r.ok || (r.status === 400 && r.code === 'duplicate_parameter')) return { ok: true };

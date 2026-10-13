@@ -28,16 +28,18 @@ beforeEach(() => {
 describe('POST /api/subscribe', () => {
   it('is not prerendered', () => expect(prerender).toBe(false));
 
-  it('JSON success → 200 with redirect and full Brevo DOI payload', async () => {
+  it('JSON success → 200 with redirect and one single opt-in Brevo call', async () => {
     const r = await run(jsonReq(P, full));
     expect(r.status).toBe(200);
     expect(await r.json()).toEqual({ ok: true, redirect: `/dekujeme?aid=${AID}` });
-    const [call] = calls(fetchMock, 'api.brevo.com');
-    expect(call[0]).toBe('https://api.brevo.com/v3/contacts/doubleOptinConfirmation');
+    const brevoCalls = calls(fetchMock, 'api.brevo.com');
+    expect(brevoCalls).toHaveLength(1);
+    const [call] = brevoCalls;
+    expect(call[0]).toBe('https://api.brevo.com/v3/contacts');
+    expect(fetchMock.mock.calls.some(([u]) => String(u).includes('doubleOptinConfirmation'))).toBe(false);
     expect((call[1] as RequestInit).headers).toMatchObject({ 'api-key': 'test-key' });
     expect(bodyOf(call)).toEqual({
-      email: 'jan.novak@seznam.cz', includeListIds: [7], templateId: 12,
-      redirectionUrl: `${SITE}/potvrzeno?aid=${AID}`,
+      email: 'jan.novak@seznam.cz', ext_id: AID, listIds: [7], updateEnabled: true,
       attributes: {
         AID, PAIR: 'sp500', CALC_DEPOSIT: 3000, CALC_HORIZON: 20, PLACEMENT: 'calc',
         UTM_SOURCE: 'meta', UTM_MEDIUM: 'paid', UTM_CAMPAIGN: 'launch', UTM_CONTENT: 'b',
@@ -64,7 +66,8 @@ describe('POST /api/subscribe', () => {
     expect(newAid).toMatch(UUID);
     const body = bodyOf(calls(fetchMock, 'api.brevo.com')[0]);
     expect(body.attributes.AID).toBe(newAid);
-    expect(body.redirectionUrl).toBe(`${SITE}/potvrzeno?aid=${newAid}`);
+    expect(body.ext_id).toBe(newAid);
+    expect(body).not.toHaveProperty('redirectionUrl');
   });
   it('form-encoded invalid email → 303 /?error=invalid_email#form, no Brevo', async () => {
     const r = await run(formReq(P, { ...full, email: 'jan@seznam' }));
@@ -86,6 +89,14 @@ describe('POST /api/subscribe', () => {
   });
 
   // Review Focus 2
+  it('existing contact updated (204) → success', async () => {
+    brevo = () => new Response(null, { status: 204 });
+    const r = await run(jsonReq(P, full));
+    expect(await r.json()).toEqual({ ok: true, redirect: `/dekujeme?aid=${AID}` });
+    const f = await run(formReq(P, full));
+    expect(f.status).toBe(303);
+    expect(f.headers.get('location')).toBe(`/dekujeme?aid=${AID}`);
+  });
   it('duplicate contact (400 duplicate_parameter) → success', async () => {
     brevo = () => new Response(JSON.stringify({ code: 'duplicate_parameter', message: 'Contact already exist' }), { status: 400 });
     const r = await run(jsonReq(P, full));

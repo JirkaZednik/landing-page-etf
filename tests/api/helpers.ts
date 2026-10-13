@@ -11,7 +11,7 @@ export const formReq = (path: string, fields: Record<string, string>, headers: R
 export const ctx = (request: Request) => ({ request, clientAddress: '203.0.113.7' }) as unknown as APIContext;
 export function stubServerEnv(vi: typeof import('vitest').vi) {
   for (const [k, v] of Object.entries({
-    BREVO_API_KEY: 'test-key', BREVO_LIST_ID: '7', BREVO_DOI_TEMPLATE_ID: '12', SITE_URL: SITE,
+    BREVO_API_KEY: 'test-key', BREVO_LIST_ID: '7', SITE_URL: SITE,
     META_PIXEL_ID: '1234567890', META_CAPI_TOKEN: 'capi-token', META_TEST_EVENT_CODE: 'TEST123',
     UPSTASH_REDIS_REST_URL: '', UPSTASH_REDIS_REST_TOKEN: '',
   })) vi.stubEnv(k, v);

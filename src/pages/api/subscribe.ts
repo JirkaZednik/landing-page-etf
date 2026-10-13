@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { waitUntil } from '@vercel/functions';
 import type { Placement } from '../../lib/types';
 import { isUuid, isValidEmail } from '../../lib/validate';
-import { createDoiContact } from '../../server/brevo';
+import { createLeadContact } from '../../server/brevo';
 import { env } from '../../server/env';
 import { sendLeadEvent } from '../../server/meta-capi';
 import { isSameOrigin } from '../../server/origin';
@@ -56,7 +56,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   if (deposit) attributes.CALC_DEPOSIT = deposit;
   if (horizon) attributes.CALC_HORIZON = horizon;
 
-  const r = await createDoiContact({ email, aid, attributes });
+  const r = await createLeadContact({ email, aid, attributes });
   if (!r.ok) return fail('server', 502, isForm);
 
   // CAPI only with marketing consent (see /cookies) and never for no-JS form posts.

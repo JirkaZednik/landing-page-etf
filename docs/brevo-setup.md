@@ -1,4 +1,4 @@
-# Nastavení Brevo (double opt-in, návod e-mailem) a produkční prostředí
+# Nastavení Brevo (single opt-in, návod e-mailem) a produkční prostředí
 
 Body 1–8 popisují ruční kroky v účtu Brevo. Bod 9 „Produkční prostředí" obsahuje ostatní ruční kroky (Upstash, PostHog, Meta, GA4, Vercel, ověření na produkci, Lighthouse, PostHog dashboard) a kontrolní seznam před spuštěním kampaně. Kroky označené **[ČLOVĚK]** vyžadují přístup k účtům a nedají se udělat z repozitáře.
 
@@ -41,37 +41,53 @@ Platí názvy v kódu (`src/pages/api/subscribe.ts`, `src/server/brevo.ts`). Kon
 grep -ohE "attributes\.[A-Z_]+ =|\['[A-Z_]+',|[{,] [A-Z_]{3,}: |^ +[A-Z_]{3,}: " src/server/brevo.ts src/pages/api/*.ts | grep -oE "[A-Z_]{3,}" | sort -u
 ```
 
-## 5. Šablona double opt-in
+## 5. Šablona e-mailu s návodem
 
-Marketing → Templates → Create Template → Email. Předmět „Potvrďte a návod je váš", odesílatel z bodu 1. Obsah: krátký text, text souhlasu ve stejném znění jako pod formulářem (verze `CONSENT_TEXT_VERSION`, viz `src/lib/copy.ts`), **jedno tlačítko s odkazem `{{ params.DOIurl }}`**, patička s provozovatelem (`OPERATOR`, `src/lib/operator.ts`). Bez reklamy a bez personalizace atributy. Šablonu aktivovat; její ID do `BREVO_DOI_TEMPLATE_ID`.
+Kontakt vzniká hned po odeslání formuláře (single opt-in): `/api/subscribe` volá jednou `POST /v3/contacts` s `email`, `ext_id` (= `aid`), `listIds: [BREVO_LIST_ID]`, `updateEnabled: true` a atributy z bodu 4. Brevo vrátí 201 (nový kontakt) nebo 204 (existující kontakt aktualizován). Zdroj: https://developers.brevo.com/reference/createcontact
 
-Zdroje: API `POST /v3/contacts/doubleOptinConfirmation` vyžaduje `email`, `includeListIds`, `templateId`, `redirectionUrl`; šablona musí obsahovat `{{ params.DOIurl }}` (https://developers.brevo.com/reference/createdoicontact); postup šablony: https://help.brevo.com/hc/en-us/articles/360019540880-Create-a-double-opt-in-DOI-confirmation-template-for-Brevo-form
+Marketing → Templates → Create Template → Email. Odesílatel z bodu 1, **předmět „Váš návod: jak koupit S&P 500 u vašeho brokera"**, jedno tlačítko „Stáhnout návod (PDF)" s odkazem na `{SITE_URL}/navod-etf.pdf` (absolutní URL produkce, např. `https://<doména>/navod-etf.pdf`). Bez reklamy a bez personalizace atributy. Šablonu aktivovat.
 
-## 6. E-mail s návodem
+## 6. Text e-mailu
 
-Šablona „Váš návod: S&P 500 u vašeho brokera" s tlačítkem na `{SITE_URL}/navod-etf.pdf`, patička s provozovatelem a odkazem na odhlášení.
+> **Předmět:** Váš návod: jak koupit S&P 500 u vašeho brokera
+>
+> Dobrý den,
+>
+> posíláme návod, o který jste si řekli na stránce ETF Dvojče. Najdete v něm páry amerických ETF a jejich evropských dvojčat s TER a ISIN a postup koupě u brokerů, u kterých jsme dostupnost ověřili.
+>
+> **[Stáhnout návod (PDF)]** → `{SITE_URL}/navod-etf.pdf`
+>
+> Údaje v návodu platí k datu uvedenému v PDF. Návod není investičním doporučením.
+>
+> ETF Dvojče
+>
+> ---
+> Provozovatel: ETF Dvojče – ukázkový projekt, etf-dvojce@seznam.cz. Ukázkový projekt vytvořený jako zadání pro přijímací řízení. Nejde o nabídku investičních služeb.
+> Tento e-mail jste dostali, protože jste si návod vyžádali na `{SITE_URL}`. Odhlásit se můžete zde: `{{ unsubscribe }}`
+
+Patička přebírá hodnoty z `OPERATOR` (`src/lib/operator.ts`); při výměně provozovatele pro ostrý provoz upravit i ji. Odkaz na odhlášení je v Brevu povinný u marketingových e-mailů; placeholder `{{ unsubscribe }}` (zdroj: https://help.brevo.com/hc/en-us/articles/209553645).
 
 ## 7. Automatizace
 
-Automations → nová → spouštěč **„Contact added to list"** (seznam z bodu 3) → akce **„Send an email"** (šablona z bodu 6) → aktivovat. Zdroj: https://help.brevo.com/hc/en-us/articles/15445989568402
+Automations → nová → spouštěč **„Contact added to list"** (seznam z bodu 3) → akce **„Send an email"** (šablona z bodu 5) → aktivovat. Zdroj: https://help.brevo.com/hc/en-us/articles/15445989568402
 
-Kontrola: `/api/profile` **nesmí** přidávat kontakt do seznamu (jinak by návod dostal i nepotvrzený kontakt). `grep -n "listIds\|includeListIds" src/server/brevo.ts` ukáže seznam jen u `createDoiContact`.
+Kontrola: `/api/profile` **nesmí** přidávat kontakt do seznamu (automatizace by poslala návod i kontaktu bez e-mailu nebo podruhé). `grep -n "listIds" src/server/brevo.ts` ukáže seznam jen u `createLeadContact`.
 
-## 8. Ruční test double opt-in (Gmail a Seznam)
+## 8. Ruční test registrace a e-mailu s návodem (Gmail a Seznam)
 
 **[ČLOVĚK]** na produkční URL, na reálném iOS Safari a Android Chrome. Ke každému řádku zapsat datum a výsledek.
 
-- [ ] Mobil, `{SITE_URL}/?utm_content=a-4x5`, odeslat e-mail `…@gmail.com` → `/dekujeme?aid=…` do 2 s.
-- [ ] Tlačítko „Otevřít Gmail" otevře Gmail.
-- [ ] Potvrzovací e-mail dorazí do 5 min; složka (Primární / Promo akce / Spam) zapsána; předmět „Potvrďte a návod je váš".
-- [ ] Tlačítko v e-mailu → `/potvrzeno?aid=<stejné aid>`, PDF se stáhne a otevře.
-- [ ] E-mail s návodem z automatizace dorazí; odkaz na PDF funguje.
-- [ ] Brevo: kontakt v seznamu, atributy `AID`, `PLACEMENT`, `UTM_CONTENT`, `CONSENT_TEXT_VERSION`, `CONSENT_AT` vyplněné.
-- [ ] Totéž pro `…@seznam.cz` (tlačítko „Otevřít Seznam Email", složky Hlavní / Hromadné / Spam).
-- [ ] Druhé odeslání stejného e-mailu → úspěch, žádná chyba (duplicita).
-- [ ] `/dekujeme`: výběr brokera + telefon se souhlasem (a) bez (b) → v Brevu `BROKER`, `SMS`, `CONSENT_CALL=true`, `CONSENT_PARTNERS=false`, `CONSENT_CALL_AT` vyplněné.
-- [ ] Odeslání formuláře s vypnutým JavaScriptem (nativní POST) → `/dekujeme?aid=…`, potvrzovací e-mail dorazí.
-- [ ] PostHog: události `form_submitted`, `thankyou_viewed`, `doi_confirmed`, `pdf_downloaded`; se souhlasem i `aid`.
+- [ ] Mobil, `{SITE_URL}/?utm_content=a-4x5`, odeslat e-mail `…@gmail.com` → `/dekujeme?aid=…` do 2 s, nadpis „Hotovo. Návod je váš.".
+- [ ] Tlačítko „Stáhnout návod (PDF)" na `/dekujeme` stáhne a otevře PDF.
+- [ ] E-mail s návodem z automatizace dorazí do 5 min; složka (Primární / Promo akce / Spam) zapsána; předmět „Váš návod: jak koupit S&P 500 u vašeho brokera"; odkaz na PDF i odhlášení fungují.
+- [ ] Brevo: kontakt v seznamu, `ext_id` = `aid` z adresy `/dekujeme`, atributy `AID`, `PLACEMENT`, `UTM_CONTENT`, `CONSENT_TEXT_VERSION`, `CONSENT_AT` vyplněné.
+- [ ] Totéž pro `…@seznam.cz` (složky Hlavní / Hromadné / Spam).
+- [ ] Druhé odeslání stejného e-mailu → úspěch, žádná chyba (duplicita); zapsat, zda přišel druhý e-mail s návodem (závisí na nastavení opakovaného vstupu do automatizace).
+- [ ] `/dekujeme`: výběr brokera + telefon se souhlasem (a) bez (b) → v Brevu **u téhož kontaktu** (ne v novém kontaktu bez e-mailu) `BROKER`, `SMS`, `CONSENT_CALL=true`, `CONSENT_PARTNERS=false`, `CONSENT_CALL_AT` vyplněné.
+- [ ] Druhé odeslání stejného e-mailu z jiného prohlížeče (nové `aid`) → potom výběr brokera na `/dekujeme`; zapsat, zda se `BROKER` uložil k původnímu kontaktu, nebo vznikl nový kontakt bez e-mailu (chování Brevo při změně `ext_id` u existujícího e-mailu není v dokumentaci API popsané).
+- [ ] Odeslání formuláře s vypnutým JavaScriptem (nativní POST) → `/dekujeme?aid=…`, e-mail s návodem dorazí.
+- [ ] Starý odkaz `{SITE_URL}/potvrzeno?aid=…` → 301 na `/dekujeme?aid=…`.
+- [ ] PostHog: události `form_submitted`, `thankyou_viewed`, `pdf_downloaded`; se souhlasem i `aid`.
 - [ ] Meta Events Manager → Test events (s `META_TEST_EVENT_CODE`): `Lead` z Pixelu i ze serveru, deduplikovaný přes `event_id`.
 
 ## 9. Produkční prostředí
@@ -80,7 +96,7 @@ Kontrola: `/api/profile` **nesmí** přidávat kontakt do seznamu (jinak by náv
 
 | Služba | Co udělat | Předá |
 |---|---|---|
-| **Brevo** | vše podle bodů 1–7 | `BREVO_API_KEY`, `BREVO_LIST_ID`, `BREVO_DOI_TEMPLATE_ID` |
+| **Brevo** | vše podle bodů 1–7 | `BREVO_API_KEY`, `BREVO_LIST_ID` |
 | **Upstash** | console.upstash.com → Redis → **+ Create Database**, název `etf-dvojce-ratelimit`, primární region Frankfurt (`eu-central-1`), free plán; v detailu databáze sekce REST API zkopírovat URL a token. Zdroj: https://upstash.com/docs/redis/overall/getstarted | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` |
 | **PostHog** | registrace na **EU cloud** (eu.posthog.com), projekt „ETF Dvojče"; Settings → Project → **zapnout cookieless mode** („Cookieless mode must also be enabled in your PostHog project settings, otherwise cookieless events are ignored" – https://posthog.com/docs/libraries/js/config); podepsat DPA; zkopírovat Project API key | `PUBLIC_POSTHOG_KEY`, `PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com` |
 | **Meta** | Business Manager → Events Manager → Connect data sources → Web → nový Pixel „ETF Dvojče"; v nastavení Pixelu vygenerovat token pro Conversions API; v záložce Test events zkopírovat test code; ověřit doménu (po nasazení) | `META_PIXEL_ID` **a stejnou hodnotu jako `PUBLIC_META_PIXEL_ID`**, `META_CAPI_TOKEN`, `META_TEST_EVENT_CODE` (jen pro test, před spuštěním kampaně smazat) |
@@ -93,8 +109,7 @@ Kontrola: `/api/profile` **nesmí** přidávat kontakt do seznamu (jinak by náv
 | Proměnná | Typ | Čte | Když chybí |
 |---|---|---|---|
 | `BREVO_API_KEY` | Secret | server (`src/server/brevo.ts`) | každé odeslání formuláře skončí chybou `server` (502) |
-| `BREVO_LIST_ID` | text | server | odesílá se seznam `0` – DOI požadavek selže nebo kontakt nebude v seznamu (automatizace z bodu 7 se nespustí) |
-| `BREVO_DOI_TEMPLATE_ID` | text | server | odesílá se šablona `0` – DOI požadavek selže (chyba `server`) |
+| `BREVO_LIST_ID` | text | server | odesílá se seznam `0` – vytvoření kontaktu selže nebo kontakt nebude v seznamu (automatizace z bodu 7 se nespustí, e-mail s návodem nepřijde) |
 | `META_PIXEL_ID` | text | server (Conversions API) | serverový `Lead` se tiše neposílá |
 | `META_CAPI_TOKEN` | Secret | server | serverový `Lead` se tiše neposílá |
 | `META_TEST_EVENT_CODE` | text | server | nic (jen test; **před kampaní smazat**, jinak události končí v Test events) |
@@ -102,7 +117,7 @@ Kontrola: `/api/profile` **nesmí** přidávat kontakt do seznamu (jinak by náv
 | `PUBLIC_POSTHOG_KEY` | text, **build** | klient | PostHog vypnutý, žádné události |
 | `PUBLIC_POSTHOG_HOST` | text, **build** | klient | výchozí `https://eu.i.posthog.com` |
 | `PUBLIC_GA4_ID` | text, **build** | klient | GA4 se nenačte |
-| `SITE_URL` | text, **build i server** | `astro.config.mjs` (canonical, OG), kontrola `Origin` v API, `redirectionUrl` DOI | API odmítne každý požadavek (403 / `?error=server`) |
+| `SITE_URL` | text, **build i server** | `astro.config.mjs` (canonical, OG), kontrola `Origin` v API | API odmítne každý požadavek (403 / `?error=server`) |
 | `UPSTASH_REDIS_REST_URL` | text | server (`src/server/ratelimit.ts`) | **rate limit se tiše vypne** (jen `console.warn`) |
 | `UPSTASH_REDIS_REST_TOKEN` | Secret | server | **rate limit se tiše vypne** |
 
@@ -134,7 +149,7 @@ Proměnné `PUBLIC_*` a `SITE_URL` se vkládají do HTML/JS při buildu: po jeji
    BASE_URL=$BASE_URL npm run test:e2e
    ```
    Očekáváno: vše zelené, mj. `production smoke › no CSP violations with all consents accepted`. Při porušení CSP doplnit chybějící doménu do příslušné direktivy (u PostHogu `https://*.posthog.com`), znovu nasadit a opakovat. E2E nevolá ostré Brevo (jen neplatný e-mail a honeypot).
-3. Ruční test DOI podle bodu 8.
+3. Ruční test registrace a e-mailu s návodem podle bodu 8.
 
 ### 9.5 Lighthouse mobile
 
@@ -163,7 +178,7 @@ V PostHog EU (https://posthog.com/docs/product-analytics/funnels): Product Analy
 
 1. **„Konverze podle varianty"** – kroky `page_view` → `form_viewed` → `form_started` → `form_submitted`, pořadí Sequential, okno 1 den, **breakdown** `hero_variant` (druhá kopie s breakdown `utm_content`). Uložit.
 2. **„Konverze podle umístění"** – Trends: `form_submitted`, breakdown `placement`; a funnel `form_viewed` → `form_submitted` s breakdown `placement` (hero vs. níže).
-3. **„Po odeslání"** – funnel `form_submitted` → `thankyou_viewed` → `broker_selected` → `phone_submitted` (měřitelné napříč stránkami jen u návštěvníků se souhlasem; bez souhlasu porovnávat agregované počty). Trends `doi_confirmed`, `pdf_downloaded` (počet potvrzení brát z Brevo, `doi_confirmed` může být nadhodnocené skenery pošty – spec §8.1).
+3. **„Po odeslání"** – funnel `form_submitted` → `thankyou_viewed` → `broker_selected` → `phone_submitted` (měřitelné napříč stránkami jen u návštěvníků se souhlasem; bez souhlasu porovnávat agregované počty). Trends `pdf_downloaded` / `form_submitted` (stažení PDF na `/dekujeme`; stažení z e-mailu PostHog nevidí, počet kontaktů a odrazů brát z Brevo).
 4. Vše přidat na dashboard **„ETF Dvojče – konverze"**. Hlavní KPI = `form_submitted` / unikátní návštěvníci (`page_view`, unikátní) podle `hero_variant`.
 
 ### 9.7 [ČLOVĚK] Kontrola před spuštěním kampaně
@@ -174,7 +189,7 @@ V PostHog EU (https://posthog.com/docs/product-analytics/funnels): Product Analy
 - [ ] **`SITE_URL` přesně odpovídá originu, na který vedou odkazy z reklam** (schéma + doména, bez lomítka na konci). API přijímá jen požadavky s `Origin`/`Referer` z tohoto originu (`src/server/origin.ts`); při neshodě selže **100 % odeslání** s obecnou chybou. Zkontrolovat: `www.` vs. doména bez `www` (druhá varianta musí na první přesměrovat, ne ji zobrazovat), alias `*.vercel.app` vedle vlastní domény (reklamy nesmí vést na alias), náhledová nasazení (Preview mají jinou doménu, formulář na nich s produkčním `SITE_URL` neprojde – testovat jen se `SITE_URL` nastaveným pro Preview). Ověření: `BASE_URL=<přesně URL z reklamy bez UTM> npm run test:e2e` a ruční odeslání formuláře z odkazu v reklamě (žádné `?error=server`).
 - [ ] **Rate limit (5 odeslání z jedné IP za 10 min) sledovat první dny kampaně.** Čeští mobilní operátoři sdílejí IPv4 adresy mezi mnoha zákazníky (CGNAT), takže limit může zastavit i skutečné návštěvníky; rozpočet spotřebují i neplatné e-maily a honeypot. Sledovat Vercel → Logs (`/api/subscribe` se stavem 429) a v PostHogu `form_error` s `error_type = rate_limited`. Pokud se objevují, limit zvýšit – je to parametr `checkRateLimit` (výchozí `{ limit: 5, window: '10 m' }` v `src/server/ratelimit.ts`, volání v `src/pages/api/subscribe.ts`), změna v kódu + nové nasazení – případně omezovat podle IP + e-mailu.
 - [ ] Hlavičky a E2E podle 9.4 zelené na finální doméně.
-- [ ] Ruční test DOI (bod 8) vyplněný.
+- [ ] Ruční test registrace a e-mailu s návodem (bod 8) vyplněný.
 - [ ] Vercel tarif Pro/Enterprise (komerční provoz).
 - [ ] Brevo: ověřená doména odesílatele, limit 300 e-mailů denně odpovídá rozpočtu kampaně (jinak vyšší tarif).
 - [ ] Právní kontrola: doby uchování (nastavení Brevo a PostHog, kód je nevynucuje), region Upstash v EU, právní základ „doložení souhlasu", přenos dat Google (GA4) do USA, datum „Platné od" v zásadách ochrany osobních údajů.
@@ -184,4 +199,4 @@ V PostHog EU (https://posthog.com/docs/product-analytics/funnels): Product Analy
 - Produkční URL: _doplní se po nasazení_
 - PostHog dashboard „ETF Dvojče – konverze": _odkaz se doplní po vytvoření_
 - Lighthouse mobile na produkci (datum, `lcp_ms`, `cls`, výkon, přístupnost): _doplní se po měření podle 9.5_
-- Výsledek ručního testu double opt-in (bod 8): _doplní se po testu_
+- Výsledek ručního testu registrace a e-mailu s návodem (bod 8): _doplní se po testu_

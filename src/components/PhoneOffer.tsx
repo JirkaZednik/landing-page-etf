@@ -4,7 +4,7 @@ import { CONSENT_TEXT_VERSION, PHONE_COPY } from '../lib/copy';
 import { getAid, track } from '../lib/track';
 import { normalizeCzPhone } from '../lib/validate';
 
-type Props = { page: 'dekujeme' | 'potvrzeno' };
+type Props = { page: 'dekujeme' };
 type ErrorCode = keyof typeof PHONE_COPY.errors;
 type FieldError = { code: ErrorCode; field: 'phone' | 'consent' | 'form' };
 
@@ -79,7 +79,6 @@ export default function PhoneOffer({ page }: Props) {
       <h2 id={ids.heading}>{PHONE_COPY.heading}</h2>
       <p>{PHONE_COPY.lead}</p>
       <p className="phone-offer__who">{PHONE_COPY.who}</p>
-      {page === 'potvrzeno' && <p className="phone-offer__note">{PHONE_COPY.alreadyGiven}</p>}
 
       {done ? (
         <p role="status" className="phone-offer__done">{PHONE_COPY.success}</p>

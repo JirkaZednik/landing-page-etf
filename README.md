@@ -8,7 +8,7 @@ Zadání B od Clientela (clientelo.cz) pro přijímací řízení. Stránka bě�
 
 Výstupy: landing page (Astro 5 + React ostrůvky, TypeScript, SCSS), PDF návod jako lead magnet, 2 verze reklamy ve formátech 4:5 a 9:16, měření celé cesty a tento README.
 
-**Mohli bychom zítra spustit reklamu?** Po stránce kódu ano: stránka, formuláře, PDF, kreativy, měřicí kód a testy jsou hotové a lokálně otestované. Web ale zatím nikde neběží, takže se na produkci zatím nic neměřilo – Pixel, CAPI, PostHog ani double opt-in nejsou ověřené v ostrém provozu. Ostrý provoz blokují kroky mimo kód – výměna ukázkového provozovatele a souhlas klienta, schválení právníkem, produkční účty a placené tarify, ověření dat brokerů Trading 212 a Fio a ověření měření na produkci. Přesný stav je v [checklistu před spuštěním reklamy](#checklist-před-spuštěním-reklamy).
+**Mohli bychom zítra spustit reklamu?** Po stránce kódu ano: stránka, formuláře, PDF, kreativy, měřicí kód a testy jsou hotové a lokálně otestované. Web ale zatím nikde neběží, takže se na produkci zatím nic neměřilo – Pixel, CAPI, PostHog ani doručení e-mailu s návodem z Brevo nejsou ověřené v ostrém provozu. Ostrý provoz blokují kroky mimo kód – výměna ukázkového provozovatele a souhlas klienta, schválení právníkem, produkční účty a placené tarify, ověření dat brokerů Trading 212 a Fio a ověření měření na produkci. Přesný stav je v [checklistu před spuštěním reklamy](#checklist-před-spuštěním-reklamy).
 
 ## Cílová skupina
 
@@ -43,10 +43,9 @@ Výstupy: landing page (Astro 5 + React ostrůvky, TypeScript, SCSS), PDF návod
 **Hlavní moment žádosti:** na první obrazovce, přímo pod kartou odpovědi. K odeslání nevede žádná interakce navíc. Další místa: odkaz „Poslat návod pro tento fond" v kartách dalších fondů, formulář pod výsledkem kalkulačky, formulář u náhledu návodu a sticky lišta.
 
 **Po odeslání:**
-1. `/dekujeme` – „potvrďte e-mail" s tlačítky Gmail / Seznam Email, výběr brokera (hned ukáže dvojčata u něj) a nepovinný telefon.
-2. Potvrzovací e-mail z Brevo (double opt-in).
-3. `/potvrzeno` – stažení PDF a znovu nabídka telefonu (potvrzení často probíhá na jiném zařízení).
-4. E-mail s návodem z automatizace Brevo.
+1. Server vytvoří kontakt v Brevo jedním voláním (`POST /v3/contacts` se seznamem, single opt-in) a přesměruje na `/dekujeme?aid=…`.
+2. `/dekujeme` – „Hotovo. Návod je váš.", hned pod nadpisem tlačítko „Stáhnout návod (PDF)", pak výběr brokera (hned ukáže dvojčata u něj) a nepovinný telefon.
+3. Automatizace Brevo „kontakt přidán do seznamu" pošle stejný návod e-mailem (text v [docs/brevo-setup.md](docs/brevo-setup.md) § 6).
 
 ## Pořadí sekcí a proč
 
@@ -108,13 +107,17 @@ Rozdíl mezi dvojčaty S&P 500 (SPYL vs. VUAA) je při 3 000 Kč měsíčně a 2
 
 Personalizovaný výběr fondů („jaký jste investor") se blíží investičnímu doporučení. Stránka proto jen ukazuje fakta o fondech na stejný index a postup koupě.
 
+### Single opt-in: návod hned po odeslání
+
+Slíbenou hodnotu návštěvník dostane hned: PDF ke stažení na `/dekujeme` a stejný návod e-mailem, nic dalšího nepotvrzuje. Single opt-in jsme zvolili místo double opt-in (DOI), protože DOI není v ČR právně nutný pro zaslání návodu, o který si člověk sám řekl, každý krok navíc by část leadů ztratil a kvalitu leadu ověřuje validace e-mailu (v prohlížeči i na serveru, s honeypotem a rate limitem) a telefonát. Cena: v seznamu skončí víc neplatných nebo cizích adres; hlídáme proto míru tvrdých odrazů e-mailu s návodem v Brevo. Souhlas s obchodními sděleními zůstává jako text pod tlačítkem formuláře. Telefon a broker se ke kontaktu přiřazují přes `aid` (v Brevo `ext_id`), takže fungují bez jakéhokoli potvrzení.
+
 ### Telefon až po e-mailu, dva oddělené souhlasy
 
-E-mail je jediné pole formuláře (nejnižší tření). Nepovinný telefon nabízíme až na `/dekujeme` a `/potvrzeno`, s uvedením, kdo volá. Dva samostatné nezaškrtnuté souhlasy: (a) telefonický kontakt provozovatelem, (b) předání údajů jmenovitě uvedeným partnerům; odeslat lze s (a) bez (b). Telefonát vede provozovatel podle písemného skriptu bez osobních investičních doporučení (jen postup v aplikaci brokera a obecné informace).
+E-mail je jediné pole formuláře (nejnižší tření). Nepovinný telefon nabízíme až na `/dekujeme`, pod tlačítkem pro stažení návodu, s uvedením, kdo volá. Dva samostatné nezaškrtnuté souhlasy: (a) telefonický kontakt provozovatelem, (b) předání údajů jmenovitě uvedeným partnerům; odeslat lze s (a) bez (b). Telefonát vede provozovatel podle písemného skriptu bez osobních investičních doporučení (jen postup v aplikaci brokera a obecné informace).
 
 ### Měření bez souhlasu a se souhlasem
 
-Bez souhlasu běží jen PostHog v `cookieless_mode` (anonymní agregované události bez trvalého ID); Meta Pixel, CAPI a GA4 nikdy. `aid` se bez souhlasu do PostHogu neposílá ani v adresách: `before_send` ho odstraní z `$current_url`, `$referrer` a všech ostatních hodnot i klíčů vlastností události; heatmapy jsou navíc vypnuté (`capture_heatmaps: false`), protože jejich data jsou klíčovaná adresou stránky (ověřeno testem s reálnou knihovnou posthog-js na `/dekujeme?aid=…`). Když návštěvník souhlas s analytikou udělí, PostHog se přepne na trvalé úložiště bez znovunačtení stránky (žádný druhý `page_view` ani Meta `PageView`, rozepsaný e-mail zůstane) a `identify(aid)` propojí celou cestu včetně `/dekujeme` a `/potvrzeno`; z adres se `aid` odstraňuje i se souhlasem. Stránka se znovu načte jen při odvolání souhlasu. Zdrojem pravdy pro počet kontaktů a potvrzení je Brevo.
+Bez souhlasu běží jen PostHog v `cookieless_mode` (anonymní agregované události bez trvalého ID); Meta Pixel, CAPI a GA4 nikdy. `aid` se bez souhlasu do PostHogu neposílá ani v adresách: `before_send` ho odstraní z `$current_url`, `$referrer` a všech ostatních hodnot i klíčů vlastností události; heatmapy jsou navíc vypnuté (`capture_heatmaps: false`), protože jejich data jsou klíčovaná adresou stránky (ověřeno testem s reálnou knihovnou posthog-js na `/dekujeme?aid=…`). Když návštěvník souhlas s analytikou udělí, PostHog se přepne na trvalé úložiště bez znovunačtení stránky (žádný druhý `page_view` ani Meta `PageView`, rozepsaný e-mail zůstane) a `identify(aid)` propojí celou cestu včetně `/dekujeme`; z adres se `aid` odstraňuje i se souhlasem. Stránka se znovu načte jen při odvolání souhlasu. Zdrojem pravdy pro počet kontaktů je Brevo.
 
 ## Reklamy A/B
 
@@ -153,8 +156,8 @@ Jde o **odhad** týmu, ne benchmark se zdrojem; ověří se daty.
 | Metrika | Odhad | Zdůvodnění |
 |---|---|---|
 | Návštěvník → odeslaný e-mail | **3–6 %** | studený mobilní provoz z Meta ve financích; zvyšuje: formulář na první obrazovce, jediné pole, praktický lead magnet; snižuje: finance, pár sekund pozornosti |
-| Odeslání → potvrzení DOI | **50–65 %** | potvrzení často na jiném zařízení, Seznam |
-| Lead → telefon | **3–8 %** | nepovinné, nabídnuto dvakrát |
+| Lead → stažení PDF na `/dekujeme` | **60–80 %** (odhad) | tlačítko je první prvek pod nadpisem; část lidí počká na e-mail nebo stránku zavře |
+| Lead → telefon | **3–8 %** | nepovinné, nabídnuto jednou na `/dekujeme` |
 
 První vyhodnocení má smysl po cca 1 000 návštěv na variantu – jako kontrola, že trychtýř funguje a odhad není mimo. Na rozhodnutí A/B testu je potřeba víc (viz další sekce).
 
@@ -174,10 +177,10 @@ Při ~1 000 návštěvách na variantu je nejmenší spolehlivě zjistitelný ef
 | # | Hypotéza | Varianty | Hlavní metrika | Očekávaný efekt | Vzorek na variantu |
 |---|---|---|---|---|---|
 | 1 | Nabídka je největší páka konverze | „Návod ke koupi u vašeho brokera" vs. „Tahák všech dvojčat" | konverze; sekundárně míra telefonů | +50 % relativně (4 → 6 %) | ≈ 1 863 návštěv |
-| 2 | Formulář na první obrazovce zvyšuje konverzi bez ztráty kvality | formulář pod odpovědí v hero vs. až pod kalkulačkou | konverze; hlídací metrika míra potvrzení DOI | +30 % relativně (4 → 5,2 %) | ≈ 4 784 návštěv |
-| 3 | Okamžité PDF zvýší telefony, ale může snížit potvrzení | PDF hned na `/dekujeme` vs. až po potvrzení | podíl použitelných kontaktů (potvrzené nebo s telefonem) z odeslaných | z 60 % na 66 % odeslání | ≈ 1 016 odeslání ≈ 25 400 návštěv (při konverzi 4 %) |
+| 2 | Formulář na první obrazovce zvyšuje konverzi bez ztráty kvality | formulář pod odpovědí v hero vs. až pod kalkulačkou | konverze; hlídací metrika míra tvrdých odrazů e-mailu s návodem (Brevo) | +30 % relativně (4 → 5,2 %) | ≈ 4 784 návštěv |
+| 3 | Nabídka telefonu nad tlačítkem PDF zvýší podíl telefonů, protože ji uvidí každý lead | na `/dekujeme` nabídka telefonu nad tlačítkem „Stáhnout návod (PDF)" vs. pod ním (dnešní stav) | míra telefonů z leadů (`phone_submitted` / leady); hlídací metrika `pdf_downloaded` / leady | +40 % relativně (5 → 7 % leadů) | ≈ 2 213 leadů ≈ 55 300 návštěv (při konverzi 4 %) |
 
-H3 vyžaduje souhlas právníka s jiným nastavením souhlasů. Test reklam A vs. B běží paralelně na úrovni kreativ v Meta (metrika: konverze podle `hero_variant` / `utm_content`). Efekty jsou předpoklady pro plánování vzorku, ne slib.
+Vzorek H3 je v leadech, protože se randomizuje až na `/dekujeme`: p₁ = 5 % (střed odhadu „lead → telefon"), p₂ = 7 % (+40 % relativně), p̄ = 6 %: (1,960 · √(2 · 0,06 · 0,94) + 0,842 · √(0,05 · 0,95 + 0,07 · 0,93))² / 0,02² = (0,6583 + 0,2825)² / 0,0004 ≈ **2 213 leadů na variantu**; při konverzi 4 % to je 2 213 / 0,04 ≈ 55 300 návštěv na variantu. Test reklam A vs. B běží paralelně na úrovni kreativ v Meta (metrika: konverze podle `hero_variant` / `utm_content`). Efekty jsou předpoklady pro plánování vzorku, ne slib.
 
 ## Měření
 
@@ -185,7 +188,7 @@ H3 vyžaduje souhlas právníka s jiným nastavením souhlasů. Test reklam A vs
 - **PostHog EU cloud** (`eu.i.posthog.com`, `person_profiles: 'identified_only'`) – bez souhlasu `cookieless_mode`, se souhlasem `identify(aid)`; `aid` z adres v událostech vždy odstraňuje `before_send`.
 - **Meta Pixel + Conversions API** – jen se souhlasem; `Lead` se sdíleným `event_id` pro deduplikaci, e-mail hashovaný SHA-256.
 - **GA4 (Consent Mode v2)** – jen se souhlasem.
-- **Brevo** – zdroj pravdy pro počet kontaktů a potvrzení double opt-in.
+- **Brevo** – zdroj pravdy pro počet kontaktů a doručitelnost e-mailu s návodem (tvrdé odrazy).
 
 Cookie lišta má stejně výrazná tlačítka „Odmítnout" a „Přijmout" a nastavení po účelech (analytika / Meta / GA4).
 
@@ -200,16 +203,15 @@ Cookie lišta má stejně výrazná tlačítka „Odmítnout" a „Přijmout" a 
 | 5 | `thankyou_viewed` | |
 | 6 | `broker_selected` | broker |
 | 7 | `phone_submitted` | page, consent_partners |
-| 8 | `doi_confirmed` | |
-| 9 | `pdf_downloaded` | |
+| 8 | `pdf_downloaded` | |
 | – | `pair_selected`, `card_cta_clicked`, `calc_used`, `calc_result_viewed`, `sticky_cta_clicked`, `faq_opened`, `source_link_clicked`, `scroll_depth` | |
 
 **Metriky podle varianty reklamy:**
 - **Konverze** = `form_submitted` / unikátní návštěvníci (hlavní KPI), rozpad podle `placement`.
-- Míra potvrzení double opt-in (z Brevo), míra telefonů z leadů, podíl leadů s vybraným brokerem.
+- Míra stažení PDF z leadů (`pdf_downloaded` / leady), míra telefonů z leadů, podíl leadů s vybraným brokerem, míra tvrdých odrazů e-mailu s návodem (z Brevo).
 - Odpad mezi kroky; kolik konverzí přišlo z hero vs. níže.
 
-Pozor při čtení: `doi_confirmed` se počítá při každém načtení `/potvrzeno` a mohou ho spustit i bezpečnostní skenery pošty – potvrzení proto bereme z Brevo. Bez souhlasu nelze cestu po odeslání propojit na úrovni osoby, porovnávají se agregované počty.
+Pozor při čtení: `pdf_downloaded` se počítá při každém kliknutí na tlačítko na `/dekujeme` (i opakovaném) a nevidí stažení z odkazu v e-mailu. Bez souhlasu nelze cestu po odeslání propojit na úrovni osoby, porovnávají se agregované počty.
 
 **PostHog dashboard** „ETF Dvojče – konverze": ČEKÁ na vytvoření po nasazení, postup v [docs/brevo-setup.md](docs/brevo-setup.md) § 9.6.
 
@@ -283,12 +285,12 @@ U Trading 212 a Fio stránka i PDF poctivě píší „U tohoto brokera jsme dos
 - [ ] Právník klienta schválí: text souhlasu ve formuláři, dva souhlasy u telefonu, seznam partnerů (zatím prázdný – stránka uvádí, že údaje partnerům nepředáváme), zásady, cookie lištu, režim analytiky bez souhlasu, formulace o PRIIPs (včetně justETF jako sekundárního zdroje) a daních. Dále doby uchování (nastavení Brevo a PostHog, kód je nevynucuje), region Upstash v EU, právní základ „doložení souhlasu", přenos dat do USA u GA4 a datum „Platné od" v zásadách.
 - [ ] Skript telefonátu bez osobních investičních doporučení.
 - [ ] Vercel: tarif/účet klienta pro komerční provoz (Hobby je jen pro nekomerční použití – [vercel.com/docs/limits/fair-use-guidelines](https://vercel.com/docs/limits/fair-use-guidelines)); ideálně vlastní doména.
-- [ ] Brevo: tarif s dostatečným denním limitem (bezplatný má 300 e-mailů/den), ověřená odesílací doména (SPF/DKIM), atributy, šablona DOI, seznam, automatizace s PDF otestované.
+- [ ] Brevo: tarif s dostatečným denním limitem (bezplatný má 300 e-mailů/den), ověřená odesílací doména (SPF/DKIM), atributy, seznam, šablona a automatizace e-mailu s návodem otestované.
 - [ ] Data fondů ověřena u vydavatelů ke dni spuštění; data brokerů ověřena na jejich stránkách – **Trading 212 a Fio zatím nemají žádný ověřený fond**, u Trading 212 ověřit i zdroj poplatku.
 - [ ] Meta: Pixel + CAPI ověřené v Events Manageru, kategorie Financial products and services, kontrola Core Setup; `META_TEST_EVENT_CODE` před kampaní smazat.
 - [ ] Lighthouse mobile splňuje LCP < 1,5 s a CLS < 0,1; E2E testy zelené na produkční URL (`BASE_URL=… npm run test:e2e`).
 
-Úplný ruční postup a kontrolní seznam: [docs/brevo-setup.md](docs/brevo-setup.md) § 8 (test double opt-in) a § 9 (produkční prostředí, § 9.7 kontrola před kampaní).
+Úplný ruční postup a kontrolní seznam: [docs/brevo-setup.md](docs/brevo-setup.md) § 8 (test registrace a e-mailu s návodem) a § 9 (produkční prostředí, § 9.7 kontrola před kampaní).
 
 ## Produkční nasazení
 
@@ -303,13 +305,13 @@ U Trading 212 a Fio stránka i PDF poctivě píší „U tohoto brokera jsme dos
 2. Framework Astro, Build Command `npm run build` (spustí i `prebuild` = PDF).
 3. Nastavit proměnné prostředí (níže), secrets jako typ Secret.
 4. Deploy; pokud se produkční URL liší od `SITE_URL`, opravit a **Redeploy** (proměnné `PUBLIC_*` a `SITE_URL` se vkládají při buildu).
-5. Ověřit hlavičky a CSP, spustit E2E proti produkci a ruční test double opt-in (§ 9.4, § 8).
+5. Ověřit hlavičky a CSP, spustit E2E proti produkci a ruční test registrace a e-mailu s návodem (§ 9.4, § 8).
 
 **Proměnné prostředí** (`.env.example`):
 
 | Proměnná | Odkud |
 |---|---|
-| `BREVO_API_KEY`, `BREVO_LIST_ID`, `BREVO_DOI_TEMPLATE_ID` | účet Brevo: API klíč, ID seznamu, ID šablony double opt-in |
+| `BREVO_API_KEY`, `BREVO_LIST_ID` | účet Brevo: API klíč, ID seznamu (na něm visí automatizace s e-mailem s návodem) |
 | `META_PIXEL_ID`, `PUBLIC_META_PIXEL_ID` | Meta Events Manager, ID Pixelu (obě proměnné stejná hodnota) |
 | `META_CAPI_TOKEN` | Meta Events Manager, token pro Conversions API |
 | `META_TEST_EVENT_CODE` | Meta Test events, jen pro test – před kampaní smazat |
