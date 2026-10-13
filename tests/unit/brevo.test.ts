@@ -38,9 +38,8 @@ describe('createLeadContact', () => {
     expect(b.updateEnabled).toBe(true);
   });
   it.each([
-    [res(201, {}), { ok: true }],
-    [res(204), { ok: true }],
-    [res(400, { code: 'duplicate_parameter', message: 'Contact already exist' }), { ok: true }],
+    [res(201, {}), { ok: true, aid: AID }],
+    [res(204), { ok: true, aid: AID }],
     [res(400, { code: 'invalid_parameter', message: 'Invalid email address' }), { ok: false, error: 'brevo' }],
     [res(401, { code: 'unauthorized', message: 'Key not found' }), { ok: false, error: 'brevo' }],
     [res(500), { ok: false, error: 'brevo' }],
@@ -51,6 +50,43 @@ describe('createLeadContact', () => {
   it('network error → brevo', async () => {
     fetchMock.mockRejectedValue(new TypeError('fetch failed'));
     expect(await lead()).toEqual({ ok: false, error: 'brevo' });
+  });
+
+  const conflict = () => res(400, { code: 'duplicate_parameter', message: 'Contact already exist' });
+  const bodies = () => fetchMock.mock.calls.map(([, i]) => JSON.parse((i as RequestInit).body as string));
+  const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+
+  it('identifier conflict → one retry with a fresh aid as ext_id and AID; returns that aid', async () => {
+    fetchMock.mockResolvedValueOnce(conflict()).mockResolvedValueOnce(res(201, { id: 22 }));
+    const r = await lead();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const [, retry] = bodies();
+    expect(retry.ext_id).toMatch(UUID);
+    expect(retry.ext_id).not.toBe(AID);
+    expect(retry).toEqual({
+      email: 'jan.novak@seznam.cz', ext_id: retry.ext_id, listIds: [7], updateEnabled: true,
+      attributes: { AID: retry.ext_id, PLACEMENT: 'hero' },
+    });
+    expect(r).toEqual({ ok: true, aid: retry.ext_id });
+  });
+  it('second conflict → final retry without ext_id keeps listIds and attributes; logs the fallback', async () => {
+    fetchMock.mockResolvedValueOnce(conflict()).mockResolvedValueOnce(conflict()).mockResolvedValueOnce(res(204));
+    const r = await lead();
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    const [, , last] = bodies();
+    expect(last).toEqual({ email: 'jan.novak@seznam.cz', listIds: [7], updateEnabled: true, attributes: { AID, PLACEMENT: 'hero' } });
+    expect(r).toEqual({ ok: true, aid: AID });
+    expect(console.error).toHaveBeenCalledWith('[brevo] ext_id conflict twice, contact saved without ext_id');
+  });
+  it('final retry failing → brevo', async () => {
+    fetchMock.mockResolvedValueOnce(conflict()).mockResolvedValueOnce(conflict()).mockResolvedValueOnce(conflict());
+    expect(await lead()).toEqual({ ok: false, error: 'brevo' });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+  it('non-conflict error → brevo without retry', async () => {
+    fetchMock.mockResolvedValueOnce(res(400, { code: 'invalid_parameter', message: 'x' }));
+    expect(await lead()).toEqual({ ok: false, error: 'brevo' });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
   it('missing BREVO_API_KEY → brevo without fetch', async () => {
     vi.stubEnv('BREVO_API_KEY', '');

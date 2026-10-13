@@ -97,11 +97,38 @@ describe('POST /api/subscribe', () => {
     expect(f.status).toBe(303);
     expect(f.headers.get('location')).toBe(`/dekujeme?aid=${AID}`);
   });
-  it('duplicate contact (400 duplicate_parameter) → success', async () => {
-    brevo = () => new Response(JSON.stringify({ code: 'duplicate_parameter', message: 'Contact already exist' }), { status: 400 });
+  // identifier conflict (aid already on another contact) → retried with a fresh aid
+  const conflictOnce = () => {
+    let n = 0;
+    brevo = () => (n++ === 0
+      ? new Response(JSON.stringify({ code: 'duplicate_parameter', message: 'Contact already exist' }), { status: 400 })
+      : new Response(null, { status: 204 }));
+  };
+  it('ext_id conflict → retry with new aid; JSON redirect uses the new aid', async () => {
+    conflictOnce();
     const r = await run(jsonReq(P, full));
     expect(r.status).toBe(200);
-    expect(await r.json()).toEqual({ ok: true, redirect: `/dekujeme?aid=${AID}` });
+    const { redirect } = await r.json();
+    const [first, retry] = calls(fetchMock, 'api.brevo.com').map(bodyOf);
+    expect(first.ext_id).toBe(AID);
+    expect(retry.ext_id).toMatch(UUID);
+    expect(retry.ext_id).not.toBe(AID);
+    expect(retry.attributes.AID).toBe(retry.ext_id);
+    expect(redirect).toBe(`/dekujeme?aid=${retry.ext_id}`);
+  });
+  it('ext_id conflict → retry with new aid; form-encoded 303 uses the new aid', async () => {
+    conflictOnce();
+    const r = await run(formReq(P, full));
+    expect(r.status).toBe(303);
+    const retry = bodyOf(calls(fetchMock, 'api.brevo.com')[1]);
+    expect(r.headers.get('location')).toBe(`/dekujeme?aid=${retry.ext_id}`);
+  });
+  it('conflict on every attempt → error (nothing was stored)', async () => {
+    brevo = () => new Response(JSON.stringify({ code: 'duplicate_parameter', message: 'x' }), { status: 400 });
+    const r = await run(jsonReq(P, full));
+    expect(r.status).toBe(502);
+    expect(await r.json()).toEqual({ ok: false, error: 'server' });
+    expect(calls(fetchMock, 'api.brevo.com')).toHaveLength(3);
   });
   it('other Brevo error → 502 server', async () => {
     brevo = () => new Response(JSON.stringify({ code: 'invalid_parameter', message: 'x' }), { status: 400 });

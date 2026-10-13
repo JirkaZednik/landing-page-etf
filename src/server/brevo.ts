@@ -41,17 +41,31 @@ async function brevoPost(path: string, body: unknown): Promise<Raw> {
 // Single opt-in: one call creates (201) or updates (204) the contact and adds it to the list;
 // the Brevo automation "Contact added to list" then sends the guide. ext_id = aid is the same
 // identifier upsertProfile (/api/profile) uses, so broker and phone land on this contact.
+// With updateEnabled a known e-mail is updated, so a 400 duplicate_parameter means an identifier
+// conflict (this aid / the e-mail already belongs to another contact, Brevo wrote nothing).
+// Then: one retry with a fresh aid; if that conflicts too, save without ext_id so the e-mail
+// still reaches the list (broker/phone pairing is lost for this lead). The returned aid is the
+// one the visitor must carry to /dekujeme.
 export async function createLeadContact(i: { email: string; aid: string; attributes: Attributes }):
-  Promise<{ ok: true } | { ok: false; error: 'brevo' }> {
-  const r = await brevoPost('/contacts', {
-    email: i.email,
-    ext_id: i.aid,
-    listIds: [Number(env('BREVO_LIST_ID'))],
-    updateEnabled: true,
-    attributes: i.attributes,
+  Promise<{ ok: true; aid: string } | { ok: false; error: 'brevo' }> {
+  const listIds = [Number(env('BREVO_LIST_ID'))];
+  const conflict = (r: Raw) => !r.ok && r.status === 400 && r.code === 'duplicate_parameter';
+  const save = (aid: string) => brevoPost('/contacts', {
+    email: i.email, ext_id: aid, listIds, updateEnabled: true, attributes: { ...i.attributes, AID: aid },
   });
-  if (r.ok || (r.status === 400 && r.code === 'duplicate_parameter')) return { ok: true };
-  return { ok: false, error: 'brevo' };
+
+  const first = await save(i.aid);
+  if (first.ok) return { ok: true, aid: i.aid };
+  if (!conflict(first)) return { ok: false, error: 'brevo' };
+
+  const fresh = crypto.randomUUID();
+  const retry = await save(fresh);
+  if (retry.ok) return { ok: true, aid: fresh };
+  if (!conflict(retry)) return { ok: false, error: 'brevo' };
+
+  console.error('[brevo] ext_id conflict twice, contact saved without ext_id');
+  const last = await brevoPost('/contacts', { email: i.email, listIds, updateEnabled: true, attributes: i.attributes });
+  return last.ok ? { ok: true, aid: i.aid } : { ok: false, error: 'brevo' };
 }
 
 export async function upsertProfile(i: ProfileInput):

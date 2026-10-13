@@ -58,6 +58,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   const r = await createLeadContact({ email, aid, attributes });
   if (!r.ok) return fail('server', 502, isForm);
+  // r.aid differs from aid only after an ext_id conflict in Brevo (see createLeadContact)
 
   // CAPI only with marketing consent (see /cookies) and never for no-JS form posts.
   // Not awaited: the visitor's redirect must not wait for Meta (up to the 3 s timeout).
@@ -70,5 +71,5 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     }).catch(() => {}); // sendLeadEvent logs its own errors; never an unhandled rejection
     waitUntil(capi);
   }
-  return success(aid, isForm);
+  return success(r.aid, isForm);
 };

@@ -38,7 +38,7 @@ Výstupy: landing page (Astro 5 + React ostrůvky, TypeScript, SCSS), PDF návod
 - tabulka všech párů originál → dvojče s TER a ISIN,
 - akumulace vs. distribuce a co to znamená pro daně v ČR (časový test).
 
-**Proč právě návod ke koupi:** je to jediná hodnota, kterou stránka zdarma nedává. Co koupit, ukážeme hned; jak to koupit u *vašeho* brokera, pošleme e-mailem.
+**Proč právě návod ke koupi:** je to jediná hodnota, kterou stránka zdarma nedává. Co koupit, ukážeme hned; jak to koupit u *vašeho* brokera, je v návodu – po odeslání e-mailu si ho hned stáhnete na `/dekujeme` a stejný návod pošleme i e-mailem.
 
 **Hlavní moment žádosti:** na první obrazovce, přímo pod kartou odpovědi. K odeslání nevede žádná interakce navíc. Další místa: odkaz „Poslat návod pro tento fond" v kartách dalších fondů, formulář pod výsledkem kalkulačky, formulář u náhledu návodu a sticky lišta.
 
@@ -109,7 +109,7 @@ Personalizovaný výběr fondů („jaký jste investor") se blíží investičn
 
 ### Single opt-in: návod hned po odeslání
 
-Slíbenou hodnotu návštěvník dostane hned: PDF ke stažení na `/dekujeme` a stejný návod e-mailem, nic dalšího nepotvrzuje. Single opt-in jsme zvolili místo double opt-in (DOI), protože DOI není v ČR právně nutný pro zaslání návodu, o který si člověk sám řekl, každý krok navíc by část leadů ztratil a kvalitu leadu ověřuje validace e-mailu (v prohlížeči i na serveru, s honeypotem a rate limitem) a telefonát. Cena: v seznamu skončí víc neplatných nebo cizích adres; hlídáme proto míru tvrdých odrazů e-mailu s návodem v Brevo. Souhlas s obchodními sděleními zůstává jako text pod tlačítkem formuláře. Telefon a broker se ke kontaktu přiřazují přes `aid` (v Brevo `ext_id`), takže fungují bez jakéhokoli potvrzení.
+Slíbenou hodnotu návštěvník dostane hned: PDF ke stažení na `/dekujeme` a stejný návod e-mailem, nic dalšího nepotvrzuje. Single opt-in jsme zvolili místo double opt-in (DOI), protože DOI není v ČR právně nutný pro zaslání návodu, o který si člověk sám řekl, s každým krokem navíc by část leadů odpadla a kvalitu leadu ověřuje validace e-mailu (v prohlížeči i na serveru, s honeypotem a rate limitem) a telefonát. Cena: v seznamu skončí víc neplatných nebo cizích adres; hlídáme proto míru tvrdých odrazů e-mailu s návodem v Brevo. Souhlas s obchodními sděleními zůstává jako text pod tlačítkem formuláře. Telefon a broker se ke kontaktu přiřazují přes `aid` (v Brevo `ext_id`), takže e-mail potvrzovat nemusí. Když Brevo `aid` odmítne kvůli konfliktu identifikátoru (stejné `aid` už má jiný kontakt, např. po opravě překlepu v e-mailu), server zkusí jednou nové `aid` a přesměruje s ním; pokud konflikt trvá (e-mail už má jiné `ext_id`), kontakt se uloží bez `ext_id` – e-mail s návodem přijde, ale broker a telefon z této návštěvy se ke kontaktu nepřiřadí (vznikne kontakt bez e-mailu).
 
 ### Telefon až po e-mailu, dva oddělené souhlasy
 

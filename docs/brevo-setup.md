@@ -43,7 +43,7 @@ grep -ohE "attributes\.[A-Z_]+ =|\['[A-Z_]+',|[{,] [A-Z_]{3,}: |^ +[A-Z_]{3,}: "
 
 ## 5. Šablona e-mailu s návodem
 
-Kontakt vzniká hned po odeslání formuláře (single opt-in): `/api/subscribe` volá jednou `POST /v3/contacts` s `email`, `ext_id` (= `aid`), `listIds: [BREVO_LIST_ID]`, `updateEnabled: true` a atributy z bodu 4. Brevo vrátí 201 (nový kontakt) nebo 204 (existující kontakt aktualizován). Zdroj: https://developers.brevo.com/reference/createcontact
+Kontakt vzniká hned po odeslání formuláře (single opt-in): `/api/subscribe` volá jednou `POST /v3/contacts` s `email`, `ext_id` (= `aid`), `listIds: [BREVO_LIST_ID]`, `updateEnabled: true` a atributy z bodu 4. Tvar požadavku: https://developers.brevo.com/reference/createcontact (dokumentuje 201 pro nový kontakt). Že Brevo existující kontakt aktualizuje s odpovědí 204, je pozorované chování, v dokumentaci API neověřené – ověřit ručním testem v bodě 8. Při konfliktu identifikátoru (400 `duplicate_parameter`, např. `ext_id` už má jiný kontakt) server zkusí jednou nové `aid` a nakonec uloží kontakt bez `ext_id` (`createLeadContact` v `src/server/brevo.ts`).
 
 Marketing → Templates → Create Template → Email. Odesílatel z bodu 1, **předmět „Váš návod: jak koupit S&P 500 u vašeho brokera"**, jedno tlačítko „Stáhnout návod (PDF)" s odkazem na `{SITE_URL}/navod-etf.pdf` (absolutní URL produkce, např. `https://<doména>/navod-etf.pdf`). Bez reklamy a bez personalizace atributy. Šablonu aktivovat.
 
@@ -53,7 +53,7 @@ Marketing → Templates → Create Template → Email. Odesílatel z bodu 1, **p
 >
 > Dobrý den,
 >
-> posíláme návod, o který jste si řekli na stránce ETF Dvojče. Najdete v něm páry amerických ETF a jejich evropských dvojčat s TER a ISIN a postup koupě u brokerů, u kterých jsme dostupnost ověřili.
+> posíláme návod, o který jste si řekli na stránce ETF Dvojče. Najdete v něm páry amerických ETF a jejich evropských dvojčat s TER a ISIN a postup koupě u XTB, Trading 212, Fio a Degiro (co jsme zatím neověřili, návod tak označuje).
 >
 > **[Stáhnout návod (PDF)]** → `{SITE_URL}/navod-etf.pdf`
 >
@@ -82,9 +82,10 @@ Kontrola: `/api/profile` **nesmí** přidávat kontakt do seznamu (automatizace 
 - [ ] E-mail s návodem z automatizace dorazí do 5 min; složka (Primární / Promo akce / Spam) zapsána; předmět „Váš návod: jak koupit S&P 500 u vašeho brokera"; odkaz na PDF i odhlášení fungují.
 - [ ] Brevo: kontakt v seznamu, `ext_id` = `aid` z adresy `/dekujeme`, atributy `AID`, `PLACEMENT`, `UTM_CONTENT`, `CONSENT_TEXT_VERSION`, `CONSENT_AT` vyplněné.
 - [ ] Totéž pro `…@seznam.cz` (složky Hlavní / Hromadné / Spam).
-- [ ] Druhé odeslání stejného e-mailu → úspěch, žádná chyba (duplicita); zapsat, zda přišel druhý e-mail s návodem (závisí na nastavení opakovaného vstupu do automatizace).
+- [ ] Druhé odeslání stejného e-mailu → úspěch, žádná chyba (duplicita); zapsat stavový kód odpovědi Brevo z Vercel → Logs (očekávaný 204 je zatím neověřený) a zda přišel druhý e-mail s návodem (závisí na nastavení opakovaného vstupu do automatizace).
 - [ ] `/dekujeme`: výběr brokera + telefon se souhlasem (a) bez (b) → v Brevu **u téhož kontaktu** (ne v novém kontaktu bez e-mailu) `BROKER`, `SMS`, `CONSENT_CALL=true`, `CONSENT_PARTNERS=false`, `CONSENT_CALL_AT` vyplněné.
-- [ ] Druhé odeslání stejného e-mailu z jiného prohlížeče (nové `aid`) → potom výběr brokera na `/dekujeme`; zapsat, zda se `BROKER` uložil k původnímu kontaktu, nebo vznikl nový kontakt bez e-mailu (chování Brevo při změně `ext_id` u existujícího e-mailu není v dokumentaci API popsané).
+- [ ] Druhé odeslání stejného e-mailu z jiného prohlížeče (nové `aid`) → zapsat odpověď Brevo (204, nebo 400 `duplicate_parameter` a v logu `[brevo] ext_id conflict twice, contact saved without ext_id`) a pak výběr brokera na `/dekujeme`: uložil se `BROKER` k původnímu kontaktu, nebo vznikl nový kontakt bez e-mailu? (Chování Brevo při jiném `ext_id` u existujícího e-mailu není v dokumentaci API popsané.)
+- [ ] Překlep v e-mailu → odeslat → zpět → opravený e-mail odeslat (stejné `aid`) → opravený e-mail je v seznamu a návod na něj dorazí; `/dekujeme` má v adrese nové `aid`.
 - [ ] Odeslání formuláře s vypnutým JavaScriptem (nativní POST) → `/dekujeme?aid=…`, e-mail s návodem dorazí.
 - [ ] Starý odkaz `{SITE_URL}/potvrzeno?aid=…` → 301 na `/dekujeme?aid=…`.
 - [ ] PostHog: události `form_submitted`, `thankyou_viewed`, `pdf_downloaded`; se souhlasem i `aid`.
