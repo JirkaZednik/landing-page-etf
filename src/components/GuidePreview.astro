@@ -9,85 +9,108 @@ const steps = broker.steps.value.slice(0, 3);
 ---
 <section id="navod" data-section="navod" class="section guide">
   <h2>Co je v návodu</h2>
-  <p class="guide__sub">PDF, 3–4 strany. Stáhnete si ho hned po odeslání a pošleme ho i na váš e-mail.</p>
+  <p class="section__lead">PDF, 3–4 strany. Stáhnete si ho hned po odeslání a pošleme ho i na váš e-mail.</p>
 
-  <!-- Stylised pages in HTML (real text, no images); decorative, the list below says the same. -->
-  <div class="guide__pages" aria-hidden="true">
-    <div class="page">
-      <p class="page__title">Jak koupit S&amp;P 500 a další americké indexy u XTB, Trading 212, Fio a Degiro</p>
-      <table class="page__table">
-        <tbody>
-          {twins.map((f) => (
-            <tr>
-              <td class="page__tk">{f.id}</td>
-              <td class="page__num">{formatTer(f.ter.value)}</td>
-              <td class="page__num">{f.isin.value}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div class="page__lines"><span></span><span></span><span></span><span></span></div>
+  <div class="guide__split">
+    <!-- Stylised pages in HTML (real text, no images); decorative, the list below says the same. -->
+    <div class="guide__pages" aria-hidden="true">
+      <div class="page">
+        <p class="page__title">Jak koupit S&amp;P 500 a další americké indexy u XTB, Trading 212, Fio a Degiro</p>
+        <table class="page__table">
+          <tbody>
+            {twins.map((f) => (
+              <tr>
+                <td class:list={['page__tk', f.ter.value === twins[0].ter.value && 'page__tk--low']}>{f.id}</td>
+                <td class="page__num">{formatTer(f.ter.value)}</td>
+                <td class="page__num">{f.isin.value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div class="page__lines"><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="page page--2">
+        <p class="page__title">{broker.name}: postup krok za krokem</p>
+        {steps.length > 0 && (
+          <ol class="page__steps">
+            {steps.map((s) => <li>{s}</li>)}
+          </ol>
+        )}
+      </div>
     </div>
-    <div class="page page--2">
-      <p class="page__title">{broker.name}: postup krok za krokem</p>
-      {steps.length > 0 && (
-        <ol class="page__steps">
-          {steps.map((s) => <li>{s}</li>)}
-        </ol>
-      )}
+
+    <div class="guide__text">
+      <ul class="guide__list check-list">
+        <li>Pro XTB, Trading 212, Fio a Degiro: poplatek za nákup a postup krok za krokem. Která dvojčata broker nabízí, s ISIN a tickerem k vyhledání, uvádíme tam, kde jsme to u brokera ověřili.</li>
+        <li>Tabulka všech párů originál → dvojče s TER a ISIN.</li>
+        <li>Akumulace vs. distribuce a co to znamená pro daně v ČR (časový test).</li>
+        <li>Údaje o brokerech ověřujeme na jejich stránkách; datum ověření je uvedené v návodu.</li>
+      </ul>
+
+      <LeadForm client:visible placement="preview" pair="sp500" />
     </div>
   </div>
-
-  <ul class="guide__list">
-    <li>Pro XTB, Trading 212, Fio a Degiro: poplatek za nákup a postup krok za krokem. Která dvojčata broker nabízí, s ISIN a tickerem k vyhledání, uvádíme tam, kde jsme to u brokera ověřili.</li>
-    <li>Tabulka všech párů originál → dvojče s TER a ISIN.</li>
-    <li>Akumulace vs. distribuce a co to znamená pro daně v ČR (časový test).</li>
-    <li>Údaje o brokerech ověřujeme na jejich stránkách; datum ověření je uvedené v návodu.</li>
-  </ul>
-
-  <LeadForm client:visible placement="preview" pair="sp500" />
 </section>
 
 <style lang="scss">
   @use '../styles/tokens' as *;
 
-  .guide__sub {
-    margin: -$s2 0 $s4;
-    color: var(--muted);
-    font-size: 0.9375rem;
+  // Mobil: náhled → seznam → formulář; desktop: náhled vlevo, text a formulář vpravo.
+  .guide__split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+
+    @media (min-width: 900px) {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 64px;
+    }
   }
 
-  // Two A4 sheets side by side, the second overlapping slightly and set $s3 lower.
+  // Two A4 sheets on a quiet --cloud panel, slightly turned, the second overlapping the first.
   .guide__pages {
     display: flex;
+    justify-content: center;
     align-items: flex-start;
-    margin: 0 0 $s4;
-    padding-bottom: $s3;
+    padding: 32px 18px 40px;
+    border-radius: $radius-card;
+    background: $cloud;
+
+    @media (min-width: 900px) { padding: 56px 40px 64px; }
   }
 
   .page {
     flex: none;
-    width: 44%;
+    width: 46%;
+    max-width: 210px;
     aspect-ratio: 210 / 297;
     overflow: hidden;
     padding: 7% 6%;
-    background: var(--paper);
-    border: 1px solid var(--ink);
+    border: 1px solid $line;
+    border-radius: 8px;
+    background: $white;
+    box-shadow: 0 10px 24px -14px rgba(15, 34, 87, 0.35);
+    color: $ink;
     font-size: 8px;
     line-height: 1.35;
+    transform: rotate(-3deg);
 
     p { margin: 0; }
 
     &--2 {
       position: relative;
-      margin: $s3 0 0 -4%;
+      margin: 24px 0 0 -6%;
+      transform: rotate(3deg);
     }
   }
 
   .page__title {
     margin-bottom: 0.9em !important;
-    font-size: 8px;
-    font-weight: 700;
+    color: $night;
+    font-family: $font-display;
+    font-size: 8.5px;
+    font-weight: 800;
     line-height: 1.2;
     text-wrap: balance;
   }
@@ -99,20 +122,25 @@ const steps = broker.steps.value.slice(0, 3);
 
     td {
       padding: 0.35em 0;
-      border-top: 1px solid var(--rule);
+      border-top: 1px solid $line;
       white-space: nowrap;
     }
 
-    tr:last-child td { border-bottom: 1px solid var(--rule); }
+    tr:last-child td { border-bottom: 1px solid $line; }
   }
 
-  .page__tk,
-  .page__num {
-    font-family: $font-mono;
-    font-variant-numeric: tabular-nums;
+  .page__num { font-variant-numeric: tabular-nums; }
+
+  .page__tk {
+    padding-inline: 0.4em !important;
+    border-radius: 3px;
+    color: $euro-d;
+    font-family: $font-display;
+    font-weight: 800;
   }
 
-  .page__tk { font-weight: 600; }
+  .page__tk--low { color: $night; background: $gold; }
+
   .page__num { text-align: right; padding-left: 0.6em !important; }
 
   // Body-copy placeholder strokes below the table (the text would be too small to read anyway).
@@ -121,7 +149,7 @@ const steps = broker.steps.value.slice(0, 3);
     gap: 0.7em;
     margin-top: 1.2em;
 
-    span { display: block; height: 1px; background: var(--rule); }
+    span { display: block; height: 3px; border-radius: 2px; background: $cloud; }
     span:nth-child(2n) { width: 82%; }
   }
 
@@ -132,18 +160,10 @@ const steps = broker.steps.value.slice(0, 3);
     line-height: 1.4;
 
     li + li { margin-top: 0.5em; }
-    li::marker { font-family: $font-mono; font-weight: 600; }
+    li::marker { color: $euro-d; font-weight: 700; }
   }
 
-  .guide__list {
-    max-width: 62ch;
-    margin: 0 0 $s4;
-    padding-left: 1.1em;
-
-    li { padding-left: $s1; text-wrap: pretty; }
-    li + li { margin-top: $s2; }
-    li::marker { color: var(--signal); }
-  }
+  .guide__list { margin: 0 0 28px; }
 
   .guide :global(.lead-form) { max-width: none; }
 </style>

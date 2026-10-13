@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 
 // Redesign 2026-10-13 ("EU modrá a zlatá"): exact palette from the plan's Global Constraints,
 // and WCAG 2.x contrast for every text/background pair the page uses.
@@ -50,6 +50,18 @@ describe('design tokens', () => {
     expect(src).toMatch(/\$font-text:\s*'Figtree Variable'/);
   });
 
+  it('transitional aliases and mono fonts are gone from all styles', () => {
+    const files = [
+      '../../src/styles/tokens.scss', '../../src/styles/global.scss',
+      ...readdirSync(new URL('../../src/components/', import.meta.url)).map((f) => `../../src/components/${f}`),
+      ...readdirSync(new URL('../../src/pages/', import.meta.url)).filter((f) => f.endsWith('.astro')).map((f) => `../../src/pages/${f}`),
+    ];
+    for (const f of files) {
+      const css = readFileSync(new URL(f, import.meta.url), 'utf8');
+      expect(css, f).not.toMatch(/\$font-mono|--paper|--signal|--rule\b|monospace/);
+    }
+  });
+
   it('sanity: contrast() matches known WCAG values', () => {
     expect(contrast('#FFFFFF', '#000000')).toBeCloseTo(21, 5);
     expect(contrast('#777777', '#FFFFFF')).toBeCloseTo(4.48, 2);
@@ -69,6 +81,9 @@ describe('design tokens', () => {
     ['euro-d', 'white', 4.5],
     ['white', 'euro', 4.5],
     ['muted', 'cloud', 4.5],
+    // Task 2: selected chip ticker (gold on night), body text and code chips on --cloud
+    ['gold', 'night', 4.5],
+    ['ink', 'cloud', 7],
   ];
   for (const [fg, bg, min] of PAIRS) {
     it(`${fg} on ${bg} ≥ ${min}:1`, () => {

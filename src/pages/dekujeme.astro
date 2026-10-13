@@ -5,12 +5,12 @@ import PhoneOffer from '../components/PhoneOffer';
 ---
 <Base title="Návod ke stažení | ETF Dvojče" description="Váš návod ke koupi evropských dvojčat ETF." noindex>
   <main class="thanks">
-    <h1>Hotovo. Návod je váš.</h1>
-    <a href="/navod-etf.pdf" download data-pdf class="thanks__pdf">Stáhnout návod (PDF)</a>
-    <p class="thanks__muted">Stejný návod jsme vám poslali i e-mailem.</p>
-    <hr class="thanks__rule" />
+    <div class="thanks__top">
+      <h1>Hotovo. Návod je váš.</h1>
+      <a href="/navod-etf.pdf" download data-pdf class="thanks__pdf btn-gold">Stáhnout návod (PDF)</a>
+      <p class="thanks__muted">Stejný návod jsme vám poslali i e-mailem.</p>
+    </div>
     <BrokerPicker client:load />
-    <hr class="thanks__rule" />
     <PhoneOffer client:visible page="dekujeme" />
   </main>
 </Base>

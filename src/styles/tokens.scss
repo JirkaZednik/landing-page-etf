@@ -20,13 +20,14 @@ $alert-bg: #FFE7EB;
 
 $font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 $font-text: 'Figtree Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-// Přechodný alias pro sekce, které přestyluje Task 2 (tickery a čísla = display písmo).
-$font-mono: $font-display;
 
 $radius-card: 24px;
 $radius-inner: 12px;
 $radius-pill: 999px;
-$shadow-float: 0 24px 60px -20px rgba(4, 10, 40, 0.55);
+$shadow-float: 0 24px 60px -20px rgba(4, 10, 40, 0.55);       // plovoucí karta na tmavém (hero)
+$shadow-float-light: 0 18px 40px -18px rgba(15, 34, 87, 0.35); // tatáž plovoucí karta na světlém (kalkulačka)
+// Organický mátový tvar (max. 2× na stránce).
+$blob-radius: 46% 54% 52% 48% / 55% 45% 55% 45%;
 
 $s1: 0.25rem;
 $s2: 0.5rem;

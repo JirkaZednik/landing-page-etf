@@ -126,7 +126,7 @@ export default function PhoneOffer({ page }: Props) {
             </label>
           </div>
 
-          <button type="submit" disabled={sending} aria-busy={sending}>{PHONE_COPY.button}</button>
+          <button type="submit" className="btn-euro" disabled={sending} aria-busy={sending}>{PHONE_COPY.button}</button>
           {error?.field === 'form' && message}
         </form>
       )}

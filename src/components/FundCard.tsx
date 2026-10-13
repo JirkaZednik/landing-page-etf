@@ -32,6 +32,7 @@ export default function FundCard({ groupId, onCta }: Props) {
     ? 'Evropská dvojčata (seřazeno podle TER)'
     : twins.length > 1 ? 'Nejbližší alternativy' : 'Nejbližší alternativa';
   const asOf = formatDateCz(getData().asOf);
+  const lowestTer = twins.length ? twins[0].ter.value : null;
   const source = (fund: string) => () => track('source_link_clicked', { fund });
 
   return (
@@ -58,14 +59,17 @@ export default function FundCard({ groupId, onCta }: Props) {
           <ul className="fund-card__twins" role="list">
             {twins.map((f) => (
               <li key={f.id} data-testid="twin-row" data-fund={f.id}>
-                <details className="twin">
+                <details className="twin" data-lowest={f.ter.value === lowestTer ? '' : undefined}>
                   <summary className="fund-card__row">
                     <span className="fund-card__tk">{f.id}</span>
                     <span className="fund-card__index">
                       {f.index.value}
                       {!group.exactTwin && <span className="fund-card__other"> · jiný index</span>}
                     </span>
-                    <span className="fund-card__ter">{formatTer(f.ter.value)}</span>
+                    <span className="fund-card__ter">
+                      {formatTer(f.ter.value)}
+                      {f.ter.value === lowestTer && <span className="sr-only"> (nejnižší poplatek)</span>}
+                    </span>
                   </summary>
                   <div className="fund-card__more">
                     <p className="fund-card__isin">ISIN <span>{f.isin.value}</span></p>
@@ -82,7 +86,7 @@ export default function FundCard({ groupId, onCta }: Props) {
       )}
 
       <div className="fund-card__foot">
-        <button type="button" className="fund-card__cta" onClick={() => onCta(groupId)}>Poslat návod pro tento fond</button>
+        <button type="button" className="fund-card__cta btn-euro" onClick={() => onCta(groupId)}>Poslat návod pro tento fond</button>
         {group.calcEnabled && twins.length > 0 && (
           <a
             href="#kalkulacka"
