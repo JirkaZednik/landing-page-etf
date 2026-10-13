@@ -317,7 +317,7 @@ U Trading 212 a Fio stránka i PDF poctivě píší „U tohoto brokera jsme dos
 - **Lighthouse mobile na produkci:** _ČEKÁ – doplní se po měření (§ 9.5), včetně nesplněných hodnot_
 
 **Postup** (podrobně v [docs/brevo-setup.md](docs/brevo-setup.md) § 9.3):
-1. Vercel → Add New → Project → Import GitHub repa; nasazovaná větev musí obsahovat práci z `feat/landing-page`.
+1. Vercel → Add New → Project → Import GitHub repa; nasazuje se větev `main`.
 2. Framework Astro, Build Command `npm run build` (spustí i `prebuild` = PDF).
 3. Nastavit proměnné prostředí (níže), secrets jako typ Secret.
 4. Deploy; pokud se produkční URL liší od `SITE_URL`, opravit a **Redeploy** (proměnné `PUBLIC_*` a `SITE_URL` se vkládají při buildu).
@@ -334,7 +334,7 @@ U Trading 212 a Fio stránka i PDF poctivě píší „U tohoto brokera jsme dos
 | `PUBLIC_POSTHOG_KEY`, `PUBLIC_POSTHOG_HOST` | projekt v PostHog EU (`https://eu.i.posthog.com`) |
 | `PUBLIC_GA4_ID` | webový datový stream GA4 (`G-…`) |
 | `SITE_URL` | produkční origin bez lomítka na konci; API s ním porovnává `Origin` |
-| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Redis databáze v Upstash (Frankfurt); bez nich se rate limit tiše vypne |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Redis databáze v Upstash (Frankfurt); bez nich se rate limit tiše vypne (pro demo volitelné, pro ostrou kampaň povinné) |
 
 ## Lokální spuštění a testy
 
