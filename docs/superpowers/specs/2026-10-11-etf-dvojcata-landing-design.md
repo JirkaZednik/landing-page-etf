@@ -1,9 +1,17 @@
-# Indexák – „Najdi evropské dvojče" · Návrh řešení (spec)
+# ETF Dvojče – „Najdi evropské dvojče" · Návrh řešení (spec)
 
-- **Datum:** 2026-10-11 (verze 2 – zapracována revize z 5 úhlů: zadání, CRO, compliance, fakta, technika)
+- **Datum:** 2026-10-11, verze 3 z 2026-10-13 (změny v3 viz níže; text pod nimi je verze 2 a platí, pokud ho v3 nemění)
 - **Zadání:** Zadání B – konverzní landing page (srovnání ETF obchodovaných na NYSE pro českého drobného investora)
-- **Pro:** Clientelo (clientelo.cz) – stránka běží pod vlastní fiktivní spotřebitelskou značkou, ne pod značkou Clientelo
-- **Stav:** čeká na revizi této verze
+- **Kontext:** zadání od Clientela (clientelo.cz) pro přijímací pohovor; stránka běží pod vlastní fiktivní spotřebitelskou značkou a Clientelo na ní není uvedeno
+- **Stav:** v2 implementována (PR #1), v3 schválena zadavatelem 2026-10-13
+
+## Změny ve verzi 3 (mají přednost před textem níže)
+
+1. **Značka:** „Indexák" → **„ETF Dvojče"** všude, kde ji vidí návštěvník (stránka, meta/OG, PDF, e-maily, reklamy, README).
+2. **Provozovatel dema:** neutrální **„ETF Dvojče – ukázkový projekt"**, kontakt **etf-dvojce@seznam.cz**. Bez IČO, sídla a telefonu. Clientelo se na stránce, v PDF, v e-mailech ani v reklamách neuvádí; v README jen jako kontext zadání. Pro ostré spuštění se mění jediný soubor `src/lib/operator.ts` (+ seznam partnerů v zásadách). Souhlas Clientela a kontrola právníkem nejsou blokery dema; patří do README sekce „Před ostrým spuštěním u klienta".
+3. **Single opt-in místo double opt-in:** po odeslání formuláře se kontakt v Brevu vytvoří rovnou (`POST /v3/contacts`, seznam, `updateEnabled`), automatizace „kontakt přidán do seznamu" hned pošle e-mail s návodem. `/dekujeme` nabízí **ihned tlačítko „Stáhnout návod (PDF)"**, výběr brokera a nepovinný telefon. Stránka `/potvrzeno` a událost `doi_confirmed` zanikají. Souhlas s obchodními sděleními zůstává ve formuláři (text pod tlačítkem).
+4. **Očekávaná konverze:** řádek „Odeslání → potvrzení DOI" se ruší; přibývá „Lead → stažení PDF na /dekujeme: 60–80 % (odhad)".
+5. **A/B hypotéza 3** (dříve „PDF hned vs. po potvrzení") se nahrazuje: **nabídka telefonu nad tlačítkem PDF vs. pod ním**; metrika míra telefonů z leadů; vzorek spočítat stejným vzorcem jako ostatní (výchozí míra 5 %, detekovat relativní zlepšení o 40 %).
 
 ---
 
