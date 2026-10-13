@@ -1,31 +1,71 @@
 ---
 import AnswerCard from './AnswerCard.astro';
 import LeadForm from './LeadForm';
-import { HERO_COPY } from '../lib/copy';
+import TwinsIllustration from './TwinsIllustration.astro';
+import { HERO_COPY, HERO_TRUST } from '../lib/copy';
 import type { HeroVariant } from '../lib/types';
 
 interface Props { variant: HeroVariant }
 const { variant } = Astro.props;
 ---
 <section data-section="hero" data-default={variant} class="hero">
-  {(['a', 'b'] as const).map((v) => (
-    <div data-hero={v} class="hero__copy">
-      <h1>{HERO_COPY[v].h1}</h1>
-      <p>{HERO_COPY[v].sub}</p>
-    </div>
-  ))}
-  <AnswerCard />
-  <LeadForm client:load placement="hero" pair="sp500" id="form" />
+  <div class="hero__inner">
+    <TwinsIllustration />
+    {(['a', 'b'] as const).map((v) => (
+      <div data-hero={v} class="hero__copy">
+        <h1>{HERO_COPY[v].h1}</h1>
+        <p>{HERO_COPY[v].sub}</p>
+      </div>
+    ))}
+    <AnswerCard />
+    <LeadForm client:load placement="hero" pair="sp500" id="form" />
+    <ul data-trust class="hero__trust" role="list">
+      {HERO_TRUST.map((t) => <li>{t}</li>)}
+    </ul>
+  </div>
 </section>
 
 <style lang="scss">
   @use '../styles/tokens' as *;
 
   .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 6px $s3 36px;
+    background: $night;
+    color: $white;
+    text-align: center;
+
+    // Soft EU-blue glow behind the illustration.
+    &::before {
+      content: '';
+      position: absolute;
+      top: -240px;
+      left: 50%;
+      width: 520px;
+      height: 520px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, rgba(47, 91, 255, 0.55), rgba(47, 91, 255, 0) 65%);
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    @media (min-width: 900px) {
+      padding: 48px $s4 80px;
+
+      &::before { top: -180px; width: 760px; height: 760px; }
+    }
+  }
+
+  .hero__inner {
+    position: relative;
     display: grid;
-    gap: 0.875rem;
-    padding: 0 $s3 $s4;
-    max-width: 34rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    max-width: 1080px;
+    margin: 0 auto;
+
+    @media (min-width: 900px) { gap: 16px; }
   }
 
   // Both variants are in the HTML; the head script sets html[data-variant] before first paint,
@@ -37,24 +77,65 @@ const { variant } = Astro.props;
   :global(html[data-variant='b']) [data-hero='a'] { display: none; }
 
   .hero__copy {
+    margin-top: -4px;
+
     h1 {
-      margin: 0 0 $s2;
-      font-size: 1.625rem;
-      line-height: 1.12;
-      font-weight: 700;
-      letter-spacing: -0.015em;
+      max-width: 20ch;
+      margin: 0 auto;
+      font-family: $font-display;
+      font-weight: 800;
+      font-size: clamp(1.625rem, 7vw, 3.25rem);
+      line-height: 1.04;
+      letter-spacing: -0.025em;
       text-wrap: balance;
+
+      @media (max-width: 899.98px) { max-width: 22ch; }
     }
 
     p {
-      margin: 0;
-      max-width: 44ch;
-      color: var(--muted);
+      max-width: 34em;
+      margin: 8px auto 0;
+      color: $on-night-muted;
       font-size: 0.9375rem;
       line-height: 1.4;
       text-wrap: pretty;
+
+      @media (min-width: 900px) { margin-top: 14px; font-size: 1.125rem; }
     }
   }
 
-  .hero :global(.lead-form) { max-width: none; }
+  .hero__trust {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    color: $on-night-muted;
+    font-size: 0.84375rem;
+    line-height: 1.35;
+
+    li {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+
+      // Mint check disc (decorative; the list text carries the meaning).
+      &::before {
+        content: '';
+        flex: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: $mint url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5 9.4l2.6 2.5L13 6.6' fill='none' stroke='%230F2257' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px no-repeat;
+      }
+    }
+
+    @media (max-width: 599.98px) {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
 </style>

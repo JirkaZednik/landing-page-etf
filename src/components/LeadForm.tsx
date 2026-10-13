@@ -166,21 +166,24 @@ export default function LeadForm({ placement, pair, calc, id }: Props) {
       noValidate={hydrated}
       onSubmit={onSubmit}
     >
-      <label htmlFor={emailId}>Váš e-mail</label>
-      <input
-        id={emailId}
-        type="email"
-        name="email"
-        required
-        autoComplete="email"
-        inputMode="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        onFocus={onFocusEmail}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? errId : undefined}
-      />
-      <button type="submit" disabled={sending} aria-busy={sending}>{FORM_COPY.button}</button>
+      <label htmlFor={emailId} className="lead-form__label">Váš e-mail</label>
+      <div className="lead-form__field">
+        <input
+          id={emailId}
+          type="email"
+          name="email"
+          required
+          autoComplete="email"
+          inputMode="email"
+          placeholder={FORM_COPY.placeholder}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onFocus={onFocusEmail}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errId : undefined}
+        />
+        <button type="submit" disabled={sending} aria-busy={sending}>{FORM_COPY.button}</button>
+      </div>
       {error && <p role="alert" id={errId} className="lead-form__error">{error}</p>}
       <p className="lead-form__micro">
         {FORM_COPY.micro} <a href="/zasady-ochrany-osobnich-udaju">zásady ochrany osobních údajů</a>.

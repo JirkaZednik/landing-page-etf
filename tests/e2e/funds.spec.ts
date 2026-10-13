@@ -63,7 +63,10 @@ test('world card "Spočítat poplatky" preselects the world group in the calcula
 
 test('world card "Spočítat poplatky" preselects "Celý svět" even before the calculator island has hydrated', async ({ page }) => {
   await setup(page);
-  await hydrated(page, '#fondy');
+  // Align #fondy with the viewport bottom (not centred, as scrollIntoViewIfNeeded does): a short
+  // #fondy would otherwise let the calculator below peek into view and hydrate early.
+  await page.locator('#fondy').evaluate((el) => el.scrollIntoView({ block: 'end' }));
+  await expect(page.locator('#fondy astro-island')).not.toHaveAttribute('ssr', /.*/);
   // the calculator (client:visible) has not hydrated yet: the click is what brings it into view
   await expect(page.locator('#kalkulacka astro-island')).toHaveAttribute('ssr', /.*/);
   await page.locator('#fondy').getByRole('link', { name: 'Spočítat poplatky v kalkulačce' }).click();

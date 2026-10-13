@@ -35,7 +35,7 @@ const esc = (s: string) =>
 
 function tokensStyle(): string {
   const css = compileString(
-    '@use "tokens" as t; :root{--paper:#{t.$paper};--ink:#{t.$ink};--signal:#{t.$signal};--muted:#{t.$muted};--rule:#{t.$rule}}',
+    '@use "tokens" as t; :root{--paper:#{t.$white};--ink:#{t.$ink};--signal:#{t.$euro-d};--muted:#{t.$muted};--rule:#{t.$line}}',
     { loadPaths: [fileURLToPath(new URL('src/styles/', ROOT))] },
   ).css;
   return `<style>${css}</style>`;

@@ -1,0 +1,80 @@
+---
+import { originalsOf, twinsSortedByTer } from '../lib/pairs';
+
+/** Hero illustration: two parallel curves (original in EU blue, its European twin in gold), labels
+ *  from data (first original, lowest-TER twin) and an arc of gold dots (the EU stars). Decorative. */
+const original = originalsOf('sp500')[0].id;
+const twin = twinsSortedByTer('sp500')[0].id;
+const pillW = (t: string) => Math.max(64, Math.round(t.length * 11.5 + 30));
+const wO = pillW(original);
+const wT = pillW(twin);
+// Arc of five dots above the top of the curves.
+const stars = [-2, -1, 0, 1, 2].map((i) => {
+  const a = (i * 26 * Math.PI) / 180;
+  return { cx: +(160 + 22 * Math.sin(a)).toFixed(1), cy: +(34 - 22 * Math.cos(a)).toFixed(1) };
+});
+---
+<svg class="twins" data-twins-illustration viewBox="0 0 300 130" width="300" height="130" aria-hidden="true" focusable="false">
+  <path class="twins__curve twins__curve--orig" d="M18 108 C60 108 70 46 108 46 S150 84 176 70 230 26 282 22" />
+  <path class="twins__curve twins__curve--twin" d="M18 118 C60 118 70 56 108 56 S150 94 176 80 230 36 282 32" />
+  <g transform={`translate(${86 - wO / 2} 8)`}>
+    <rect width={wO} height="34" rx="17" class="twins__pill--orig" />
+    <text x={wO / 2} y="23" text-anchor="middle" class="twins__label twins__label--orig">{original}</text>
+  </g>
+  <g transform={`translate(${218 - wT / 2} 92)`}>
+    <rect width={wT} height="34" rx="17" class="twins__pill--twin" />
+    <text x={wT / 2} y="23" text-anchor="middle" class="twins__label twins__label--twin">{twin}</text>
+  </g>
+  <g class="twins__stars">
+    {stars.map((s) => <circle cx={s.cx} cy={s.cy} r="2.4" />)}
+  </g>
+</svg>
+
+<style lang="scss">
+  @use '../styles/tokens' as *;
+
+  .twins {
+    display: block;
+    width: 150px;
+    height: auto;
+    margin: 0 auto;
+    overflow: visible;
+
+    @media (min-width: 900px) { width: 220px; }
+  }
+
+  .twins__curve {
+    fill: none;
+    stroke-width: 6;
+    stroke-linecap: round;
+    // The one load animation on the page: the curves draw in (skipped with reduced motion).
+    stroke-dasharray: 400;
+    stroke-dashoffset: 0;
+    animation: twins-draw 900ms cubic-bezier(0.3, 0.7, 0.3, 1) both;
+  }
+
+  .twins__curve--orig { stroke: $euro; }
+  .twins__curve--twin { stroke: $gold; animation-delay: 120ms; }
+
+  .twins__pill--orig { fill: $white; opacity: 0.14; }
+  .twins__pill--twin { fill: $gold; }
+
+  .twins__label {
+    font-family: $font-display;
+    font-weight: 800;
+    font-size: 17px;
+  }
+
+  .twins__label--orig { fill: $white; }
+  .twins__label--twin { fill: $night; }
+
+  .twins__stars { fill: $gold; }
+
+  @keyframes twins-draw {
+    from { stroke-dashoffset: 400; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .twins__curve { animation: none; }
+  }
+</style>

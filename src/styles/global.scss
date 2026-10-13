@@ -1,11 +1,22 @@
 @use 'tokens' as *;
 
 :root {
-  --paper: #{$paper};
+  --night: #{$night};
+  --euro: #{$euro};
+  --euro-d: #{$euro-d};
+  --gold: #{$gold};
+  --mint: #{$mint};
+  --mint-text: #{$mint-text};
+  --mint-bg: #{$mint-bg};
+  --cloud: #{$cloud};
   --ink: #{$ink};
-  --signal: #{$signal};
   --muted: #{$muted};
-  --rule: #{$rule};
+  --white: #{$white};
+  --line: #{$line};
+  // Přechodné aliasy starých tokenů pro sekce, které přestyluje Task 2.
+  --paper: #{$white};
+  --signal: #{$euro-d};
+  --rule: #{$line};
   color-scheme: light;
 }
 
@@ -13,12 +24,19 @@
 
 body {
   margin: 0;
-  background: var(--paper);
-  color: var(--ink);
+  background: $white;
+  color: $ink;
   font-family: $font-text;
   font-size: 1.0625rem;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
+}
+
+h1, h2, h3 {
+  font-family: $font-display;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 code, kbd, samp {
@@ -27,14 +45,25 @@ code, kbd, samp {
 }
 
 a {
-  color: var(--ink);
-  text-decoration-color: var(--signal);
+  color: $euro-d;
   text-underline-offset: 0.15em;
 }
 
 :focus-visible {
-  outline: 2px solid var(--signal);
+  outline: 2px solid $euro-d;
   outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -130,47 +159,74 @@ a {
   .legal { overflow-x: auto; }
 }
 
-// LeadForm (progresivní vylepšení: funguje i bez JS)
+// LeadForm (progresivní vylepšení: funguje i bez JS). Pole a tlačítko v jedné bílé „pilulce“.
 .lead-form {
   position: relative;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: $s2;
-  max-width: 28rem;
+  max-width: 520px;
 
-  label { font-size: 0.9375rem; }
+  &__label { font-size: 0.9375rem; }
+
+  &__field {
+    display: flex;
+    gap: 6px;
+    padding: 6px;
+    border: 1px solid $line;
+    border-radius: $radius-pill;
+    background: $white;
+  }
 
   input[type='email'] {
+    flex: 1 1 auto;
+    min-width: 0;
     min-height: 48px;
-    padding: 0 $s2;
-    border: 1px solid var(--ink);
-    border-radius: 2px;
-    background: var(--paper);
-    color: var(--ink);
-    font: inherit;
+    padding: 0 6px 0 14px;
+    border: 0;
+    border-radius: $radius-pill;
+    background: $white;
+    color: $ink;
+    font: 500 1rem $font-text;
+
+    &::placeholder { color: $muted; opacity: 1; }
+    &:focus-visible { outline: 2px solid $euro; outline-offset: 0; }
   }
 
   button[type='submit'] {
+    flex: none;
     min-height: 48px;
-    padding: 0 $s3;
+    padding: 0 18px;
     border: 0;
-    border-radius: 2px;
-    background: var(--signal);
-    color: var(--paper);
-    font: inherit;
-    font-weight: 600;
+    border-radius: $radius-pill;
+    background: $gold;
+    color: $night;
+    font: 800 1rem $font-display;
+    white-space: nowrap;
     cursor: pointer;
 
-    &:disabled { opacity: 0.6; cursor: progress; }
+    &:hover { background: color-mix(in srgb, #{$gold} 88%, #{$white}); }
+    &:focus-visible { outline: 3px solid $euro; outline-offset: 0; }
+    &:disabled { opacity: 0.7; cursor: progress; }
   }
 
-  input[aria-invalid='true'] { border-color: var(--ink); border-width: 2px; }
+  input[aria-invalid='true'] { box-shadow: inset 0 0 0 2px $alert; }
 }
 
-.lead-form__error { margin: 0; font-size: 0.9375rem; font-weight: 600; }
+.lead-form__error {
+  justify-self: center;
+  margin: 0;
+  padding: 2px 12px;
+  border-radius: $radius-pill;
+  background: $alert-bg;
+  color: $alert;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
 
 .lead-form__micro {
   margin: 0;
-  color: var(--muted);
+  color: $muted;
   font-size: 0.8125rem;
   line-height: 1.45;
 }
@@ -184,19 +240,57 @@ a {
   overflow: hidden;
 }
 
-// Hlavička: jen značka, 40 px (rozpočet první obrazovky, Task 9).
+// Formulář v hero (tmavé pozadí): popisek jen pro čtečky (pole má placeholder i jméno), vystředěno.
+.hero .lead-form {
+  justify-self: center;
+  width: 100%;
+  margin-top: 0;
+
+  .lead-form__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .lead-form__field { border: 0; }
+
+  .lead-form__micro {
+    max-width: 30rem;
+    margin: 0 auto;
+    color: $on-night-muted;
+    font-size: 0.78125rem;
+
+    a { color: $white; }
+  }
+
+  a:focus-visible { outline-color: $gold; }
+}
+
+// Hlavička: logo na středu, bílý pruh nad hero.
 .masthead {
   display: flex;
   align-items: center;
-  height: 40px;
+  justify-content: center;
+  height: 48px;
   padding: 0 $s3;
+  background: $white;
 
   &__brand {
-    font-size: 1.125rem;
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: $ink;
+    font-family: $font-display;
+    font-size: 1.25rem;
+    font-weight: 800;
     letter-spacing: -0.01em;
-    font-variation-settings: 'opsz' 72;
+    text-decoration: none;
   }
+
+  .logo__mark { display: block; flex: none; }
 }
 
 // Sticky CTA (mobil): jen pod 48rem, ustupuje cookie liště.
@@ -205,8 +299,9 @@ a {
   inset: auto 0 0 0;
   z-index: 40;
   padding: $s2 $s3 calc(#{$s2} + env(safe-area-inset-bottom));
-  background: var(--paper);
-  border-top: 1px solid var(--rule);
+  background: $white;
+  border-top: 1px solid $line;
+  box-shadow: 0 -10px 30px -18px rgba(15, 34, 87, 0.45);
 
   button {
     display: block;
@@ -214,12 +309,13 @@ a {
     min-height: 48px;
     padding: 0 $s3;
     border: 0;
-    border-radius: 2px;
-    background: var(--signal);
-    color: var(--paper);
-    font: inherit;
-    font-weight: 600;
+    border-radius: $radius-pill;
+    background: $gold;
+    color: $night;
+    font: 800 1rem $font-display;
     cursor: pointer;
+
+    &:focus-visible { outline: 3px solid $euro; outline-offset: 2px; }
   }
 
   @media (min-width: 48rem) { display: none; }
@@ -640,8 +736,6 @@ html[data-consent-banner='open'] .sticky-cta { display: none; }
   }
 
   > p { margin: 0 0 $s2; text-wrap: pretty; }
-
-  &__home { color: var(--ink); text-decoration: none; }
 
   &__muted { color: var(--muted); font-size: 0.9375rem; }
 

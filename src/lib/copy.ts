@@ -4,6 +4,7 @@ import { OPERATOR } from './operator';
 export const CONSENT_TEXT_VERSION = '2026-10-13';
 export const FORM_COPY = {
   button: 'Pošlete mi návod',
+  placeholder: 'vas@email.cz',
   micro: 'Pošleme vám návod a občas tipy k investování do ETF. Odhlásíte se jedním klikem. Provozovatel a zpracování údajů:',
   errorInvalid: 'Zkontrolujte prosím e-mail.',
   errorServer: 'Něco se nepovedlo, zkuste to prosím znovu.',
@@ -25,6 +26,13 @@ export const HERO_COPY: Record<HeroVariant, { h1: string; sub: string }> = {
     sub: 'Tři evropské fondy na S&P 500 a jejich poplatky vidíte hned. Postup pro XTB, Trading 212, Fio a Degiro vám pošleme e-mailem.',
   },
 };
+
+/** Trust row under the hero form (redesign 2026-10-13, exact texts). */
+export const HERO_TRUST = [
+  'Data přímo od vydavatelů',
+  'Návod pro XTB, Trading 212, Fio a Degiro',
+  'Bez registrace',
+] as const;
 
 /** Phone offer on /dekujeme. API code `rate_limited` maps to `errors.server` in PhoneOffer. */
 export const PHONE_COPY = {

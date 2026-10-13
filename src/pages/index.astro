@@ -21,7 +21,6 @@ import Footer from '../components/Footer.astro';
       document.documentElement.dataset.variant = c.charAt(0) === 'b' ? 'b' : 'a';
     })();
   </script>
-  <header class="masthead"><span class="masthead__brand">ETF Dvojče</span></header>
   <main>
     <Hero variant="a" />
     <section id="fondy" data-section="fondy" class="section"><h2>Další fondy z NYSE</h2><FundPicker client:visible /></section>

@@ -6,23 +6,26 @@ const originals = originalsOf('sp500');
 const twins = twinsSortedByTer('sp500');
 const exchange = originals[0].exchange.value;
 const asOf = formatDateCz(getData().asOf);
+const lowestTer = twins.length ? twins[0].ter.value : null;
 const DIST = { acc: 'akumulační', dist: 'distribuční' } as const;
+const DOMICILE = { IE: 'Irsko', LU: 'Lucembursko', US: 'USA' } as const;
 ---
 <section data-answer-card aria-label="Evropská dvojčata ETF na S&P 500" class="answer">
-  <p class="answer__orig">
-    Originál ({exchange}):{' '}
-    {originals.map((f, i) => (
-      <>{i > 0 && <span class="answer__sep"> · </span>}<span class="answer__tk">{f.id}</span> <span class="answer__num">{formatTer(f.ter.value)}</span></>
-    ))}
-  </p>
-
-  <div class="pair-rule" aria-hidden="true">⇄</div>
+  <div class="answer__head">
+    <p class="answer__orig">
+      Originál ({exchange}):{' '}
+      {originals.map((f, i) => (
+        <>{i > 0 && <span class="answer__sep"> · </span>}<b class="answer__tk">{f.id}</b>{'\u00a0'}<span class="answer__num">{formatTer(f.ter.value)}</span></>
+      ))}
+    </p>
+    <span data-badge class="answer__badge">u brokerů v EU pro drobné investory nedostupné</span>
+  </div>
 
   <ul class="answer__twins" role="list">
     {twins.map((f) => (
       <li>
         {/* No whitespace before <summary>: the row text must start with the ticker. */}
-        <details data-twin={f.id} class="twin"><summary class="twin__row"><span class="twin__tk">{f.id}</span> <span class="twin__dist">{DIST[f.distribution.value]}</span> <span class="twin__ter">{formatTer(f.ter.value)}</span></summary>
+        <details data-twin={f.id} data-lowest={f.ter.value === lowestTer ? '' : undefined} class="twin"><summary class="twin__row"><span class="twin__tk">{f.id}</span> <span class="twin__name"><span class="twin__fund">{f.name.value}</span> <span class="twin__dist">{DOMICILE[f.domicile.value]}, {DIST[f.distribution.value]}</span></span> <span class="twin__ter">{formatTer(f.ter.value)}{f.ter.value === lowestTer && <span class="sr-only"> (nejnižší poplatek)</span>}</span></summary>
           <div class="twin__more">
             <p class="twin__isin">ISIN <span>{f.isin.value}</span></p>
             <p class="twin__links">
@@ -48,45 +51,50 @@ const DIST = { acc: 'akumulační', dist: 'distribuční' } as const;
   @use '../styles/tokens' as *;
 
   .answer {
-    border-top: 2px solid var(--ink);
-    border-bottom: 1px solid var(--rule);
-    padding: $s2 0 $s1;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 10px 12px 8px;
+    border-radius: $radius-card;
+    background: $white;
+    color: $ink;
+    text-align: left;
+    box-shadow: $shadow-float;
+
+    @media (min-width: 900px) { padding: 16px 18px 12px; }
+  }
+
+  .answer__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px 8px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid $line;
   }
 
   .answer__orig {
     margin: 0;
-    color: var(--muted);
-    font-size: 0.8125rem;
-    line-height: 1.4;
-  }
-
-  .answer__tk,
-  .answer__num {
-    font-family: $font-mono;
-    font-variant-numeric: tabular-nums;
+    color: $muted;
     font-size: 0.75rem;
+    line-height: 1.35;
   }
 
-  .answer__sep { padding: 0 0.2em; }
+  .answer__tk {
+    color: $ink;
+    font-weight: 700;
+  }
 
-  // The motif: originals above, twins below, joined by ⇄ on a hairline.
-  .pair-rule {
-    display: flex;
-    align-items: center;
-    gap: $s2;
-    height: 1.25rem;
-    margin: $s1 0 0;
-    color: var(--signal);
-    font-family: $font-mono;
-    font-size: 1.125rem;
-    line-height: 1;
+  .answer__num { font-variant-numeric: tabular-nums; }
 
-    &::before,
-    &::after {
-      content: '';
-      flex: 1;
-      border-top: 1px solid var(--rule);
-    }
+  .answer__badge {
+    padding: 2px 9px;
+    border-radius: $radius-pill;
+    background: $alert-bg;
+    color: $alert;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.4;
   }
 
   .answer__twins {
@@ -94,15 +102,16 @@ const DIST = { acc: 'akumulační', dist: 'distribuční' } as const;
     padding: 0;
     list-style: none;
 
-    li + li { border-top: 1px solid var(--rule); }
+    li + li { border-top: 1px solid $line; }
   }
 
   .twin__row {
     display: grid;
-    grid-template-columns: 4.5rem 1fr auto 1rem;
-    align-items: baseline;
-    align-content: center;
-    min-height: 40px;
+    grid-template-columns: 58px minmax(0, 1fr) auto 12px;
+    align-items: center;
+    column-gap: 10px;
+    min-height: 44px;
+    padding: 5px 0;
     cursor: pointer;
     list-style: none;
 
@@ -110,38 +119,66 @@ const DIST = { acc: 'akumulační', dist: 'distribuční' } as const;
 
     // Disclosure marker; turns when the row opens.
     &::after {
-      content: '▸';
+      content: '';
       justify-self: end;
-      color: var(--muted);
-      font-size: 0.75rem;
+      width: 7px;
+      height: 7px;
+      border-right: 2px solid $muted;
+      border-bottom: 2px solid $muted;
+      transform: rotate(-45deg);
       transition: transform 120ms ease-out;
     }
   }
 
-  .twin[open] > .twin__row::after { transform: rotate(90deg); }
+  .twin[open] > .twin__row::after { transform: rotate(45deg); }
 
   .twin__tk {
-    font-family: $font-mono;
-    font-weight: 600;
-    font-size: 1rem;
+    display: grid;
+    place-items: center;
+    height: 32px;
+    border-radius: 10px;
+    background: $cloud;
+    color: $euro-d;
+    font-family: $font-display;
+    font-weight: 800;
+    font-size: 0.9375rem;
     letter-spacing: 0.01em;
   }
 
+  .twin__name {
+    display: grid;
+    min-width: 0;
+    line-height: 1.25;
+  }
+
+  .twin__fund {
+    overflow: hidden;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .twin__dist {
-    color: var(--muted);
-    font-size: 0.9375rem;
+    color: $muted;
+    font-size: 0.78125rem;
   }
 
   .twin__ter {
-    font-family: $font-mono;
-    font-variant-numeric: tabular-nums;
+    font-weight: 700;
     font-size: 1rem;
+    font-variant-numeric: tabular-nums;
     text-align: right;
-    padding-right: $s2;
+    white-space: nowrap;
+  }
+
+  .twin[data-lowest] {
+    .twin__tk { background: $gold; color: $night; }
+    .twin__ter { color: $mint-text; }
   }
 
   .twin__more {
-    padding: 0 0 $s2 4.5rem;
+    padding: 0 0 8px 68px;
     font-size: 0.875rem;
     line-height: 1.4;
 
@@ -149,11 +186,10 @@ const DIST = { acc: 'akumulační', dist: 'distribuční' } as const;
   }
 
   .twin__isin {
-    color: var(--muted);
+    color: $muted;
 
     span {
-      color: var(--ink);
-      font-family: $font-mono;
+      color: $ink;
       font-variant-numeric: tabular-nums;
       user-select: all;
     }
@@ -166,14 +202,16 @@ const DIST = { acc: 'akumulační', dist: 'distribuční' } as const;
     a {
       display: inline-block;
       padding: $s1 0;
+      color: $euro-d;
+      font-weight: 600;
     }
   }
 
   .answer__src {
     margin: 0;
-    padding-top: $s1;
-    border-top: 1px solid var(--rule);
-    color: var(--muted);
+    padding-top: 6px;
+    border-top: 1px solid $line;
+    color: $muted;
     font-size: 0.75rem;
     line-height: 1.4;
 

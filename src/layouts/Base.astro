@@ -1,18 +1,25 @@
 ---
-import '@fontsource-variable/newsreader/index.css';
-import '@fontsource/ibm-plex-mono/400.css';
-import '@fontsource/ibm-plex-mono/600.css';
+// Self-hosted fonts, Latin + Latin Extended only (Czech diacritics); no Google Fonts (CSP, consent).
+import '@fontsource/bricolage-grotesque/latin-600.css';
+import '@fontsource/bricolage-grotesque/latin-ext-600.css';
+import '@fontsource/bricolage-grotesque/latin-800.css';
+import '@fontsource/bricolage-grotesque/latin-ext-800.css';
+import '@fontsource-variable/figtree/wght.css';
 import '../styles/global.scss';
 import ConsentBanner from '../components/ConsentBanner';
+import Logo from '../components/Logo.astro';
 
 interface Props {
   title: string;
   description: string;
   noindex?: boolean;
   ogImage?: string;
+  /** Site header with the logo (default on). */
+  header?: boolean;
 }
 
-const { title, description, noindex = false, ogImage } = Astro.props;
+const { title, description, noindex = false, ogImage, header = true } = Astro.props;
+const isHome = Astro.url.pathname === '/';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const og = new URL(ogImage ?? '/og.png', Astro.site);
 ---
@@ -25,7 +32,7 @@ const og = new URL(ogImage ?? '/og.png', Astro.site);
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     {!noindex && <link rel="canonical" href={canonical.href} />}
-    <meta name="theme-color" content="#F6F3EA" />
+    <meta name="theme-color" content="#0F2257" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="cs_CZ" />
@@ -40,6 +47,11 @@ const og = new URL(ogImage ?? '/og.png', Astro.site);
     <slot name="head" />
   </head>
   <body>
+    {header && (
+      <header class="masthead">
+        <Logo href={isHome ? undefined : '/'} />
+      </header>
+    )}
     <slot />
     <ConsentBanner client:only="react" />
     <script>

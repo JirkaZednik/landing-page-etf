@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { heroVariantFromUtm, HERO_COPY, FORM_COPY, CONSENT_TEXT_VERSION, PHONE_COPY } from '../../src/lib/copy';
+import { heroVariantFromUtm, HERO_COPY, HERO_TRUST, FORM_COPY, CONSENT_TEXT_VERSION, PHONE_COPY } from '../../src/lib/copy';
 import { OPERATOR } from '../../src/lib/operator';
 
 describe('copy', () => {
@@ -20,6 +20,10 @@ describe('copy', () => {
       h1: 'S&P 500 u vašeho brokera: který fond vybrat a jak ho najít.',
       sub: 'Tři evropské fondy na S&P 500 a jejich poplatky vidíte hned. Postup pro XTB, Trading 212, Fio a Degiro vám pošleme e-mailem.',
     });
+  });
+  it('HERO_TRUST has the three approved texts (redesign)', () => {
+    expect(HERO_TRUST).toEqual(['Data přímo od vydavatelů', 'Návod pro XTB, Trading 212, Fio a Degiro', 'Bez registrace']);
+    expect(FORM_COPY.placeholder).toBe('vas@email.cz');
   });
   it('keeps Task 8 exports', () => {
     expect(FORM_COPY.button).toBe('Pošlete mi návod');

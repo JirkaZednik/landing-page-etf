@@ -6,7 +6,7 @@ const STYLES_DIR = fileURLToPath(new URL('../styles/', import.meta.url));
 /** Design tokens from the single source of truth, src/styles/tokens.scss. */
 export function loadTokens(): { paper: string; ink: string; signal: string; muted: string; rule: string } {
   const css = compileString(
-    '@use "tokens" as t; :root{--paper:#{t.$paper};--ink:#{t.$ink};--signal:#{t.$signal};--muted:#{t.$muted};--rule:#{t.$rule}}',
+    '@use "tokens" as t; :root{--paper:#{t.$white};--ink:#{t.$ink};--signal:#{t.$euro-d};--muted:#{t.$muted};--rule:#{t.$line}}',
     { loadPaths: [STYLES_DIR] },
   ).css;
   const tok = (n: string) => {

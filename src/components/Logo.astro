@@ -1,0 +1,12 @@
+---
+/** Logo: two overlapping circles (EU blue + gold, the "twins") and the word mark. */
+interface Props { href?: string }
+const { href } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+<Tag href={href} class="masthead__brand logo">
+  <svg class="logo__mark" width="34" height="22" viewBox="0 0 34 22" aria-hidden="true" focusable="false">
+    <circle cx="11" cy="11" r="10" fill="#2F5BFF" />
+    <circle cx="23" cy="11" r="10" fill="#FFC93C" style="mix-blend-mode: multiply" />
+  </svg>ETF Dvojče
+</Tag>
