@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ETF Dvojče – mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap&subset=latin-ext" rel="stylesheet">
+<style>
+:root{
+  --night:#0F2257; --euro:#2F5BFF; --euro-d:#1E44D8; --gold:#FFC93C; --mint:#33D6A6;
+  --cloud:#F3F6FF; --ink:#141A33; --muted:#5A6385; --white:#fff;
+  --f-display:'Bricolage Grotesque',system-ui,sans-serif; --f-text:'Figtree',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+body{font-family:var(--f-text);color:var(--ink);background:var(--white);-webkit-font-smoothing:antialiased}
+.top{display:flex;justify-content:center;align-items:center;gap:10px;padding:14px 16px;background:var(--white)}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-weight:800;font-size:20px;letter-spacing:-.01em}
+.logo svg{display:block}
+.hero{position:relative;overflow:hidden;background:var(--night);color:var(--white);text-align:center;padding:18px 16px 40px}
+.hero::before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(47,91,255,.55),rgba(47,91,255,0) 65%);top:-220px;left:50%;transform:translateX(-50%)}
+.hero>*{position:relative}
+.twins{width:150px;height:auto;margin:0 auto 8px;display:block}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,7.6vw,58px);line-height:1.05;letter-spacing:-.025em;max-width:16ch;margin:0 auto}
+.sub{font-size:15.5px;line-height:1.45;color:#C9D3F5;max-width:34em;margin:10px auto 0}
+.answer{background:var(--white);color:var(--ink);border-radius:24px;max-width:520px;margin:16px auto 0;padding:12px 14px 10px;text-align:left;box-shadow:0 24px 60px -20px rgba(4,10,40,.55)}
+.answer .orig{display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--muted);padding-bottom:8px;border-bottom:1px solid #E6EBFA}
+.answer .orig b{color:var(--ink);font-weight:700}
+.badge-x{font-size:12px;font-weight:700;color:#B4233A;background:#FFE7EB;border-radius:999px;padding:3px 9px}
+.row{display:flex;align-items:center;gap:12px;padding:7px 0}
+.row+.row{border-top:1px solid #EEF1FB}
+.chip{font-family:var(--f-display);font-weight:800;font-size:17px;width:58px;height:32px;border-radius:10px;font-size:15px;display:grid;place-items:center;background:var(--cloud);color:var(--euro-d)}
+.row.best .chip{background:var(--gold);color:var(--night)}
+.row .name{flex:1;font-size:14px;line-height:1.25;font-weight:600}
+.row .name small{display:block;color:var(--muted);font-size:12.5px}
+.ter{font-weight:700;font-variant-numeric:tabular-nums;font-size:16px}
+.row.best .ter{color:#0E8A63}
+.src{font-size:12px;color:var(--muted);margin-top:4px}
+form{display:flex;gap:6px;max-width:520px;margin:12px auto 0;background:var(--white);border-radius:999px;padding:6px}
+input{flex:1;min-width:0;border:0;font:500 16px var(--f-text);padding:0 14px;border-radius:999px;color:var(--ink)}
+input:focus{outline:2px solid var(--euro);outline-offset:2px}
+button{border:0;border-radius:999px;background:var(--gold);color:var(--night);font:800 16px var(--f-display);padding:14px 18px;white-space:nowrap;cursor:pointer}
+.micro{font-size:12.5px;color:#AFBBE6;margin-top:8px}
+.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;margin-top:22px;font-size:13.5px;color:#DCE3FA}
+.trust span{display:inline-flex;align-items:center;gap:6px}
+.trust i{width:18px;height:18px;border-radius:50%;background:var(--mint);display:inline-grid;place-items:center;color:var(--night);font-style:normal;font-size:12px;font-weight:800}
+.sec{padding:56px 20px;text-align:center}
+.sec h2{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,6vw,44px);line-height:1.08;letter-spacing:-.02em;max-width:18ch;margin:0 auto}
+.sec p.lead{color:var(--muted);font-size:17px;line-height:1.55;max-width:36em;margin:12px auto 0}
+.split{display:grid;gap:28px;max-width:1080px;margin:34px auto 0;align-items:center;text-align:left}
+.blob{position:relative;border-radius:46% 54% 52% 48%/55% 45% 55% 45%;background:#DDF8EE;aspect-ratio:1.15;display:grid;place-items:center}
+.calc{background:var(--white);border-radius:20px;box-shadow:0 18px 40px -18px rgba(15,34,87,.35);padding:18px;width:82%}
+.calc .big{font-family:var(--f-display);font-weight:800;font-size:40px;color:var(--night);letter-spacing:-.02em}
+.calc .lbl{font-size:13px;color:var(--muted)}
+.bar{height:10px;border-radius:99px;background:var(--cloud);margin-top:10px;overflow:hidden}
+.bar b{display:block;height:100%;border-radius:99px}
+.list{list-style:none;padding:0;display:grid;gap:10px;margin-top:14px}
+.list li{display:flex;gap:10px;align-items:flex-start;font-size:16px;line-height:1.45}
+.list li::before{content:"✓";flex:none;width:22px;height:22px;border-radius:50%;background:var(--mint);color:var(--night);font-weight:800;font-size:13px;display:grid;place-items:center;margin-top:1px}
+.split h3{font-family:var(--f-display);font-weight:800;font-size:28px;line-height:1.12;letter-spacing:-.015em}
+.cta2{display:inline-block;margin-top:18px;background:var(--euro);color:#fff;border-radius:999px;padding:14px 22px;font:800 16px var(--f-display);text-decoration:none}
+@media (min-width:900px){
+  .hero{padding:72px 24px 88px}
+  .twins{width:220px}
+  .sub{font-size:18px}
+  .answer{padding:16px 18px 12px}
+  .split{grid-template-columns:1fr 1fr;gap:64px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo">
+    <svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="#2F5BFF"/><circle cx="23" cy="11" r="10" fill="#FFC93C" style="mix-blend-mode:multiply"/></svg>
+    ETF Dvojče
+  </div>
+</header>
+
+<section class="hero">
+  <svg class="twins" viewBox="0 0 300 130" aria-hidden="true">
+    <path d="M18 108 C60 108 70 46 108 46 S150 84 176 70 230 26 282 22" fill="none" stroke="#2F5BFF" stroke-width="6" stroke-linecap="round"/>
+    <path d="M18 118 C60 118 70 56 108 56 S150 94 176 80 230 36 282 32" fill="none" stroke="#FFC93C" stroke-width="6" stroke-linecap="round"/>
+    <g transform="translate(46 8)"><rect width="78" height="34" rx="17" fill="#fff" opacity=".12"/><text x="39" y="23" text-anchor="middle" font-family="Bricolage Grotesque" font-weight="800" font-size="17" fill="#fff" opacity=".8">VOO</text></g>
+    <g transform="translate(176 92)"><rect width="84" height="34" rx="17" fill="#FFC93C"/><text x="42" y="23" text-anchor="middle" font-family="Bricolage Grotesque" font-weight="800" font-size="17" fill="#0F2257">SPYL</text></g>
+    <g fill="#FFC93C"><circle cx="160" cy="12" r="2.4"/><circle cx="172" cy="16" r="2.4"/><circle cx="181" cy="25" r="2.4"/><circle cx="148" cy="16" r="2.4"/><circle cx="139" cy="25" r="2.4"/></g>
+  </svg>
+  <h1>VOO u evropského brokera nekoupíte. Jeho evropské dvojče ano.</h1>
+  <p class="sub">Stejný index S&amp;P 500, tři evropské fondy. Návod ke koupi u vašeho brokera vám pošleme zdarma.</p>
+
+  <div class="answer">
+    <div class="orig"><span><b>VOO</b>, SPY, IVV (NYSE)</span><span class="badge-x">drobný investor v EU nekoupí</span></div>
+    <div class="row best"><div class="chip">SPYL</div><div class="name">State Street SPDR<small>Irsko, akumulační</small></div><div class="ter">0,03 %</div></div>
+    <div class="row"><div class="chip">CSPX</div><div class="name">iShares Core<small>Irsko, akumulační</small></div><div class="ter">0,07 %</div></div>
+    <div class="row"><div class="chip">VUAA</div><div class="name">Vanguard<small>Irsko, akumulační</small></div><div class="ter">0,07 %</div></div>
+    <p class="src">Roční poplatek (TER), zdroj: vydavatelé fondů k 30. 9. 2026</p>
+  </div>
+
+  <form onsubmit="return false"><input type="email" placeholder="váš@email.cz" aria-label="E-mail"><button>Pošlete mi návod</button></form>
+  <p class="micro">Zdarma, bez registrace. Odhlásíte se jedním klikem.</p>
+  <div class="trust"><span><i>✓</i>Data přímo od vydavatelů</span><span><i>✓</i>Návod pro XTB, Trading 212, Fio a Degiro</span><span><i>✓</i>Nic neprodáváme</span></div>
+</section>
+
+<section class="sec">
+  <h2>Stejný index, jiný poplatek</h2>
+  <p class="lead">Rozdíl pár setin procenta vypadá jako nic. Na dvaceti letech pravidelného investování už ho poznáte.</p>
+  <div class="split">
+    <div class="blob">
+      <div class="calc">
+        <div class="lbl">3 000 Kč měsíčně · 20 let · ilustrativně</div>
+        <div class="big">6 900 Kč</div>
+        <div class="lbl">rozdíl mezi SPYL a VUAA</div>
+        <div class="bar"><b style="width:12%;background:#33D6A6"></b></div>
+        <div class="bar"><b style="width:28%;background:#2F5BFF"></b></div>
+        <div class="bar"><b style="width:96%;background:#FFC93C"></b></div>
+      </div>
+    </div>
+    <div>
+      <h3>Spočítejte si, kolik vás stojí poplatky</h3>
+      <ul class="list">
+        <li>Zadáte měsíční vklad a horizont</li>
+        <li>Uvidíte poplatky u každého dvojčete v korunách</li>
+        <li>Pro srovnání i běžný fond s poplatkem 1,5 %</li>
+      </ul>
+      <a class="cta2" href="#">Spočítat poplatky</a>
+    </div>
+  </div>
+</section>
+</body>
+</html>
