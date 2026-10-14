@@ -9,7 +9,7 @@ Samostatná spotřebitelská značka je záměr: odpovídá modelu Clientela, kt
 
 Výstupy: landing page (Astro 5 + React ostrůvky, TypeScript, SCSS), PDF návod jako lead magnet, 2 verze reklamy ve formátech 4:5 a 9:16, měření celé cesty a tento README.
 
-**Mohli bychom zítra spustit reklamu?** Po stránce kódu ano: stránka, formuláře, PDF, kreativy, měřicí kód a testy jsou hotové a lokálně otestované. Web ale zatím nikde neběží, takže se na produkci zatím nic neměřilo – Pixel, CAPI, PostHog ani doručení e-mailu s návodem z Brevo nejsou ověřené v ostrém provozu. Ostrý provoz blokují kroky mimo kód – výměna ukázkového provozovatele a souhlas klienta, schválení právníkem, produkční účty a placené tarify, ověření dat brokerů Trading 212 a Fio a ověření měření na produkci. Přesný stav je v [checklistu před spuštěním reklamy](#checklist-před-spuštěním-reklamy).
+**Mohli bychom zítra spustit reklamu?** Po stránce kódu ano: stránka, formuláře, PDF, kreativy, měřicí kód a testy jsou hotové a lokálně otestované. Web ale zatím nikde neběží, takže se na produkci zatím nic neměřilo – Pixel, CAPI, PostHog ani doručení e-mailu s návodem z Brevo nejsou ověřené v ostrém provozu. Ostrý provoz blokují kroky mimo kód – výměna ukázkového provozovatele a souhlas klienta, schválení právníkem, produkční účty a placené tarify, ověření dat brokera Fio a ověření měření na produkci. Přesný stav je v [checklistu před spuštěním reklamy](#checklist-před-spuštěním-reklamy).
 
 ## Cílová skupina
 
@@ -273,10 +273,10 @@ LCP tedy lokálně **splněné není**; rozhodne měření na produkční URL po
 |---|---|---|
 | XTB | SPYL, VUAA, CSPX (SXR8.DE), SPYY, VWCE, FUSD | ověřené na xtb.com |
 | Degiro | CSPX (SXR8), VWCE, FUSD | ověřené na degiro.cz |
-| Trading 212 | **žádné zatím neověřené** (stránky fondů se nepodařilo ověřit) | poplatek a postup z help centra Trading 212 |
+| Trading 212 | SPYL, VUAA, CSPX, SPYY, VWCE, FUSD | ověřené na trading212.com (veřejný seznam nástrojů Invest, 14. 10. 2026); poplatek a postup z help centra Trading 212 |
 | Fio banka | **žádné zatím neověřené** | sazebník a manuál e-Brokera na fio.cz |
 
-U Trading 212 a Fio stránka i PDF poctivě píší „U tohoto brokera jsme dostupnost zatím neověřili." Před spuštěním je nutné dostupnost ručně ověřit a doplnit (viz checklist) – hero B a reklama B slibují postup pro všechny čtyři brokery.
+U Fio stránka i PDF poctivě píší „U tohoto brokera jsme dostupnost zatím neověřili." Fio nemá veřejnou stránku jednotlivých fondů a jeho veřejný výpis ETF žádný z našich fondů neuvádí (ověřeno 14. 10. 2026), takže dostupnost nelze doložit veřejným zdrojem. Před spuštěním ji je nutné ověřit jinak (např. dotazem na Fio) a doplnit (viz checklist) – hero B a reklama B slibují postup pro všechny čtyři brokery.
 
 ## Měsíční aktualizace dat
 
@@ -294,7 +294,7 @@ U Trading 212 a Fio stránka i PDF poctivě píší „U tohoto brokera jsme dos
 
 **Demo: připraveno.** Kód, testy, data fondů, PDF a kreativy jsou hotové. Stránka, PDF i reklamy běží pod značkou ETF Dvojče s ukázkovým provozovatelem „ETF Dvojče – ukázkový projekt" (etf-dvojce@seznam.cz); v demu se údaje žádným partnerům nepředávají.
 
-**Před ostrým spuštěním u klienta:** výměna `src/lib/operator.ts` (skutečný provozovatel a správce) a doplnění seznamu partnerů v zásadách, souhlas klienta s uvedením jako provozovatel, schválení právníkem, skript telefonátu, placené tarify (Vercel Pro/Enterprise, Brevo s vyšším denním limitem a ověřenou doménou), produkční účty k založení (PostHog, Meta, Upstash), ověření dat brokerů Trading 212 a Fio, Lighthouse a E2E na produkci.
+**Před ostrým spuštěním u klienta:** výměna `src/lib/operator.ts` (skutečný provozovatel a správce) a doplnění seznamu partnerů v zásadách, souhlas klienta s uvedením jako provozovatel, schválení právníkem, skript telefonátu, placené tarify (Vercel Pro/Enterprise, Brevo s vyšším denním limitem a ověřenou doménou), produkční účty k založení (PostHog, Meta, Upstash), ověření dat brokera Fio, Lighthouse a E2E na produkci.
 
 Žádný z bodů níže zatím splněný není:
 
@@ -303,7 +303,7 @@ U Trading 212 a Fio stránka i PDF poctivě píší „U tohoto brokera jsme dos
 - [ ] Skript telefonátu bez osobních investičních doporučení.
 - [ ] Vercel: tarif/účet klienta pro komerční provoz (Hobby je jen pro nekomerční použití – [vercel.com/docs/limits/fair-use-guidelines](https://vercel.com/docs/limits/fair-use-guidelines)); ideálně vlastní doména.
 - [ ] Brevo: tarif s dostatečným denním limitem (bezplatný má 300 e-mailů/den), ověřená odesílací doména (SPF/DKIM), atributy, seznam, šablona a automatizace e-mailu s návodem otestované.
-- [ ] Data fondů ověřena u vydavatelů ke dni spuštění; data brokerů ověřena na jejich stránkách – **Trading 212 a Fio zatím nemají žádný ověřený fond**, u Trading 212 ověřit i zdroj poplatku.
+- [ ] Data fondů ověřena u vydavatelů ke dni spuštění; data brokerů ověřena na jejich stránkách – **Fio zatím nemá žádný ověřený fond**; u Trading 212 ověřit i zdroj poplatku (článek help centra je obecný, ne pro CZ).
 - [ ] Meta: Pixel + CAPI ověřené v Events Manageru, kategorie Financial products and services, kontrola Core Setup; `META_TEST_EVENT_CODE` před kampaní smazat.
 - [ ] Lighthouse mobile splňuje LCP < 1,5 s a CLS < 0,1; E2E testy zelené na produkční URL (`BASE_URL=… npm run test:e2e`).
 

@@ -102,13 +102,92 @@
   {
     "id": "trading212",
     "name": "Trading 212",
-    "asOf": "2026-10-12",
+    "asOf": "2026-10-14",
     "buyFee": {
       "value": "Provize za obchod: zdarma. Poplatek za směnu měn: 0,15 %.",
       "sourceUrl": "https://helpcentre.trading212.com/hc/en-us/articles/11471996799517-What-are-the-fees-in-the-Invest-ISAs-and-SIPP",
       "asOf": "2026-10-12"
     },
-    "listings": [],
+    "listings": [
+      {
+        "fundId": "SPYL",
+        "ticker": {
+          "value": "SPYL",
+          "sourceUrl": "https://www.trading212.com/cs/trading-instruments/invest/SPYL.NL",
+          "asOf": "2026-10-14"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.trading212.com/cs/trading-instruments/invest/SPYL.NL",
+          "asOf": "2026-10-14"
+        }
+      },
+      {
+        "fundId": "VUAA",
+        "ticker": {
+          "value": "VUAA",
+          "sourceUrl": "https://www.trading212.com/cs/trading-instruments/invest/VUAA.IT",
+          "asOf": "2026-10-14"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.trading212.com/cs/trading-instruments/invest/VUAA.IT",
+          "asOf": "2026-10-14"
+        }
+      },
+      {
+        "fundId": "CSPX",
+        "ticker": {
+          "value": "CSPX",
+          "sourceUrl": "https://www.trading212.com/cs/trading-instruments/invest/CSPX.GB",
+          "asOf": "2026-10-14"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.trading212.com/cs/trading-instruments/invest/CSPX.GB",
+          "asOf": "2026-10-14"
+        }
+      },
+      {
+        "fundId": "SPYY",
+        "ticker": {
+          "value": "SPYY",
+          "sourceUrl": "https://www.trading212.com/cs/trading-instruments/invest/SPYY.DE",
+          "asOf": "2026-10-14"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.trading212.com/cs/trading-instruments/invest/SPYY.DE",
+          "asOf": "2026-10-14"
+        }
+      },
+      {
+        "fundId": "VWCE",
+        "ticker": {
+          "value": "VWCE",
+          "sourceUrl": "https://www.trading212.com/cs/trading-instruments/invest/VWCE.DE",
+          "asOf": "2026-10-14"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.trading212.com/cs/trading-instruments/invest/VWCE.DE",
+          "asOf": "2026-10-14"
+        }
+      },
+      {
+        "fundId": "FUSD",
+        "ticker": {
+          "value": "FUSD",
+          "sourceUrl": "https://www.trading212.com/cs/trading-instruments/invest/FUSD.DE",
+          "asOf": "2026-10-14"
+        },
+        "available": {
+          "value": true,
+          "sourceUrl": "https://www.trading212.com/cs/trading-instruments/invest/FUSD.DE",
+          "asOf": "2026-10-14"
+        }
+      }
+    ],
     "steps": {
       "value": [
         "Vyberte požadovaný instrument a otevřete ho.",
