@@ -149,7 +149,7 @@ Formát [9:16](ads/a-9x16.png).
 - **Titulek:** VOO u evropského brokera nekoupíte. Tady je náhrada.
 - **Tlačítko:** Více informací
 - **Hero A:** „U evropského brokera VOO jako drobný investor nekoupíte. Jeho evropské dvojče ano." / „Níže vidíte, které fondy sledují stejný index a kolik stojí. Návod, jak je koupit u vašeho brokera, vám pošleme zdarma."
-- **URL:** `{SITE_URL}/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=a-4x5` (resp. `a-9x16`)
+- **URL:** `https://etf-dvojce.vercel.app/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=a-4x5` (resp. `a-9x16`)
 
 ### Verze B – „Praktický návod"
 
@@ -161,7 +161,7 @@ Formát [9:16](ads/b-9x16.png).
 - **Titulek:** S&P 500 u vašeho brokera: přesný ISIN a postup
 - **Tlačítko:** Získat návod
 - **Hero B:** „S&P 500 u vašeho brokera: který fond vybrat a jak ho najít." / „Tři evropské fondy na S&P 500 a jejich poplatky vidíte hned. Postup pro XTB, Trading 212, Fio a Degiro vám pošleme e-mailem."
-- **URL:** `{SITE_URL}/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=b-4x5` (resp. `b-9x16`)
+- **URL:** `https://etf-dvojce.vercel.app/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=b-4x5` (resp. `b-9x16`)
 
 Čísla a ISIN na kreativách generuje `npm run ads` z `src/data/etf-pairs.json` (stejný skript vyrenderuje `public/og.png`). Kreativy mají vizuál hero (tmavě modré pozadí, ilustrace dvou křivek se štítky z dat, bílá karta, zlaté tlačítko s textem tlačítka z `ads/copy.md`); oproti návrhu ve spec §9 berou pořadí dvojčat z dat; u verze B je řádek brokerů označen „Postup pro: …" a zdrojová řádka dodává „Dostupnost fondů se u brokerů liší.", aby kreativa netvrdila, že každý broker nabízí SPYL.
 
