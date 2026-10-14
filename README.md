@@ -324,6 +324,8 @@ U Trading 212 a Fio stránka i PDF poctivě píší „U tohoto brokera jsme dos
 4. Deploy; pokud se produkční URL liší od `SITE_URL`, opravit a **Redeploy** (proměnné `PUBLIC_*` a `SITE_URL` se vkládají při buildu).
 5. Ověřit hlavičky a CSP, spustit E2E proti produkci a ruční test registrace a e-mailu s návodem (§ 9.4, § 8).
 
+CSP záměrně blokuje pomocné endpointy, které volá konfigurace Meta Pixelu (`…/events?cee=…` na proměnlivých hostitelích AWS a Google Cloud). Události Pixelu jdou dál na `www.facebook.com/tr` a Lead navíc přes Conversions API, měření to neovlivní; produkční smoke test tato dvě volání ignoruje. Vestavěná CSRF kontrola Astra (`security.checkOrigin`) je vypnutá, protože na Vercelu odmítala nativní odeslání formuláře bez JavaScriptu (403); původ požadavku ověřuje `src/server/origin.ts` proti `SITE_URL`.
+
 **Proměnné prostředí** (`.env.example`):
 
 | Proměnná | Odkud |
