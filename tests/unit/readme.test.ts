@@ -96,14 +96,14 @@ describe('README', () => {
     for (const t of ['FWRA', 'ZPR3', 'CRSP US Total Market Index']) expect(md).not.toContain(t);
   });
 
-  it('describes Trading 212 and Fio as not yet verified (broker table, prose and checklist)', () => {
-    expect(md).toMatch(/^\| Trading 212 \| \*\*žádné zatím neověřené\*\*/m);
+  it('lists Trading 212 as verified and Fio as not yet verified (broker table, prose and checklist)', () => {
+    expect(md).toMatch(/^\| Trading 212 \| SPYL, VUAA, CSPX, SPYY, VWCE, FUSD \| ověřené na trading212\.com/m);
     expect(md).toMatch(/^\| Fio banka \| \*\*žádné zatím neověřené\*\*/m);
     expect(md).toContain('U tohoto brokera jsme dostupnost zatím neověřili.');
-    expect(md).toMatch(/^- \[ \] .*\*\*Trading 212 a Fio zatím nemají žádný ověřený fond\*\*/m);
-    expect(md).toMatch(/Před ostrým spuštěním u klienta:\*\*.*ověření (dat )?brokerů Trading 212 a Fio/);
-    // never claimed as verified
-    expect(md).not.toMatch(/Trading 212 (a Fio )?(jsou|je) ověřen/);
+    expect(md).toMatch(/^- \[ \] .*\*\*Fio zatím nemá žádný ověřený fond\*\*/m);
+    expect(md).toMatch(/Před ostrým spuštěním u klienta:\*\*.*ověření (dat )?brokera Fio/);
+    // Fio never claimed as verified
+    expect(md).not.toMatch(/Fio (je|jsou) ověřen/);
   });
 
   it('does not overclaim: nothing has been measured in production yet', () => {
