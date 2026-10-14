@@ -4,7 +4,8 @@
 
 Srovnáváme ETF obchodované na NYSE (Arca). Protože je český drobný investor u evropského brokera kvůli nařízení PRIIPs koupit nemůže, ke každému ukazujeme dostupný evropský ekvivalent. Bez toho by srovnání nemělo použitelný výstup. Originály z NYSE jsou na stránce vždy vidět vedle dvojčat (TER, burza, zdroj).
 
-Zadání B od Clientela (clientelo.cz) pro přijímací řízení. Stránka běží pod fiktivní spotřebitelskou značkou ETF Dvojče; jako demo ji provozuje neutrální provozovatel „ETF Dvojče – ukázkový projekt" (kontakt etf-dvojce@seznam.cz, bez IČO a sídla), který údaje nikomu nepředává. Pro ostré spuštění u klienta se mění jediný soubor `src/lib/operator.ts` a seznam partnerů v zásadách – viz checklist.
+Stránka běží pod fiktivní spotřebitelskou značkou ETF Dvojče; jako demo ji provozuje neutrální provozovatel „ETF Dvojče – ukázkový projekt" (kontakt etf-dvojce@seznam.cz, bez IČO a sídla), který údaje nikomu nepředává. Pro ostré spuštění u klienta se mění jediný soubor `src/lib/operator.ts` a seznam partnerů v zásadách – viz checklist.
+Samostatná spotřebitelská značka je záměr: odpovídá modelu Clientela, které provozuje vlastní investiční portály. V ostrém provozu by ETF Dvojče běželo jako další z nich; značka je zaměnitelná.
 
 Výstupy: landing page (Astro 5 + React ostrůvky, TypeScript, SCSS), PDF návod jako lead magnet, 2 verze reklamy ve formátech 4:5 a 9:16, měření celé cesty a tento README.
 
