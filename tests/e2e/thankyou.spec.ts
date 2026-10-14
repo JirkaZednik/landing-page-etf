@@ -90,7 +90,7 @@ test('/dekujeme without aid: PDF download works, no errors', async ({ page }) =>
   expect(errors).toEqual([]);
 });
 
-// Review Focus 3: /potvrzeno is gone (on Vercel: 301 → /dekujeme via vercel.json, see production.spec.ts)
+// /potvrzeno (double opt-in) was removed before launch; no redirect is kept.
 test('/potvrzeno no longer exists in the app', async ({ request }) => {
   const r = await request.get(`/potvrzeno?aid=${AID}`, { maxRedirects: 0 });
   expect(r.status()).toBe(404);

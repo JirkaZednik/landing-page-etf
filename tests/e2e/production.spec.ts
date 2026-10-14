@@ -35,12 +35,6 @@ test.describe('production smoke', () => {
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
   });
 
-  test('old /potvrzeno link → 301 to /dekujeme with the query kept', async ({ request }) => {
-    const aid = '0b7c5a0e-3f7e-4c1a-9a1b-2c3d4e5f6a7b';
-    const r = await request.get(`/potvrzeno?aid=${aid}`, { maxRedirects: 0 });
-    expect(r.status()).toBe(301);
-    expect(r.headers()['location']).toMatch(new RegExp(`/dekujeme\\?aid=${aid}$`));
-  });
 
   test('API rejects invalid e-mail without touching Brevo', async ({ request, baseURL }) => {
     const r = await request.post('/api/subscribe', {

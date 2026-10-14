@@ -87,7 +87,6 @@ Kontrola: `/api/profile` **nesmí** přidávat kontakt do seznamu (automatizace 
 - [ ] Druhé odeslání stejného e-mailu z jiného prohlížeče (nové `aid`) → zapsat odpověď Brevo (204, nebo 400 `duplicate_parameter` a v logu `[brevo] ext_id conflict twice, contact saved without ext_id`) a pak výběr brokera na `/dekujeme`: uložil se `BROKER` k původnímu kontaktu, nebo vznikl nový kontakt bez e-mailu? (Chování Brevo při jiném `ext_id` u existujícího e-mailu není v dokumentaci API popsané.)
 - [ ] Překlep v e-mailu → odeslat → zpět → opravený e-mail odeslat (stejné `aid`) → opravený e-mail je v seznamu a návod na něj dorazí; `/dekujeme` má v adrese nové `aid`.
 - [ ] Odeslání formuláře s vypnutým JavaScriptem (nativní POST) → `/dekujeme?aid=…`, e-mail s návodem dorazí.
-- [ ] Starý odkaz `{SITE_URL}/potvrzeno?aid=…` → 301 na `/dekujeme?aid=…`.
 - [ ] PostHog: události `form_submitted`, `thankyou_viewed`, `pdf_downloaded`; se souhlasem i `aid`.
 - [ ] Meta Events Manager → Test events (s `META_TEST_EVENT_CODE`): `Lead` z Pixelu i ze serveru, deduplikovaný přes `event_id`.
 
@@ -98,7 +97,7 @@ Kontrola: `/api/profile` **nesmí** přidávat kontakt do seznamu (automatizace 
 | Služba | Co udělat | Předá |
 |---|---|---|
 | **Brevo** | vše podle bodů 1–7 | `BREVO_API_KEY`, `BREVO_LIST_ID` |
-| **Upstash** | console.upstash.com → Redis → **+ Create Database**, název `etf-dvojce-ratelimit`, primární region Frankfurt (`eu-central-1`), free plán; v detailu databáze sekce REST API zkopírovat URL a token. Zdroj: https://upstash.com/docs/redis/overall/getstarted | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` |
+| **Upstash** (pro demo volitelné, pro ostrou kampaň povinné) | console.upstash.com → Redis → **+ Create Database**, název `etf-dvojce-ratelimit`, primární region Frankfurt (`eu-central-1`), free plán; v detailu databáze sekce REST API zkopírovat URL a token. Zdroj: https://upstash.com/docs/redis/overall/getstarted | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` |
 | **PostHog** | registrace na **EU cloud** (eu.posthog.com), projekt „ETF Dvojče"; Settings → Project → **zapnout cookieless mode** („Cookieless mode must also be enabled in your PostHog project settings, otherwise cookieless events are ignored" – https://posthog.com/docs/libraries/js/config); podepsat DPA; zkopírovat Project API key | `PUBLIC_POSTHOG_KEY`, `PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com` |
 | **Meta** | Business Manager → Events Manager → Connect data sources → Web → nový Pixel „ETF Dvojče"; v nastavení Pixelu vygenerovat token pro Conversions API; v záložce Test events zkopírovat test code; ověřit doménu (po nasazení) | `META_PIXEL_ID` **a stejnou hodnotu jako `PUBLIC_META_PIXEL_ID`**, `META_CAPI_TOKEN`, `META_TEST_EVENT_CODE` (jen pro test, před spuštěním kampaně smazat) |
 | **GA4** | analytics.google.com → nová služba → webový datový stream na produkční URL | `PUBLIC_GA4_ID` (`G-…`) |
@@ -119,7 +118,7 @@ Kontrola: `/api/profile` **nesmí** přidávat kontakt do seznamu (automatizace 
 | `PUBLIC_POSTHOG_HOST` | text, **build** | klient | výchozí `https://eu.i.posthog.com` |
 | `PUBLIC_GA4_ID` | text, **build** | klient | GA4 se nenačte |
 | `SITE_URL` | text, **build i server** | `astro.config.mjs` (canonical, OG), kontrola `Origin` v API | API odmítne každý požadavek (403 / `?error=server`) |
-| `UPSTASH_REDIS_REST_URL` | text | server (`src/server/ratelimit.ts`) | **rate limit se tiše vypne** (jen `console.warn`) |
+| `UPSTASH_REDIS_REST_URL` | text | server (`src/server/ratelimit.ts`) | **rate limit se tiše vypne** (jen `console.warn`); pro demo přijatelné, honeypot a kontrola `Origin` platí dál |
 | `UPSTASH_REDIS_REST_TOKEN` | Secret | server | **rate limit se tiše vypne** |
 
 Proměnné `PUBLIC_*` a `SITE_URL` se vkládají do HTML/JS při buildu: po jejich změně je nutný **Redeploy** („Any change you make to environment variables are not applied to previous deployments, they only apply to new deployments." – https://vercel.com/docs/environment-variables).
@@ -128,7 +127,7 @@ Proměnné `PUBLIC_*` a `SITE_URL` se vkládají do HTML/JS při buildu: po jeji
 
 ### 9.3 [ČLOVĚK] Vercel – import repa a nasazení
 
-1. vercel.com → přihlásit se přes GitHub → **Add New… → Project** → **Import** `JirkaZednik/landing-page-etf` (pokud repo není vidět: „Adjust GitHub App Permissions" a povolit repo). Nasazovaná větev musí obsahovat práci z `feat/landing-page` (push/merge rozhodne vlastník repa).
+1. vercel.com → přihlásit se přes GitHub → **Add New… → Project** → **Import** `JirkaZednik/landing-page-etf` (pokud repo není vidět: „Adjust GitHub App Permissions" a povolit repo). Nasazuje se větev `main`.
 2. Framework Preset: **Astro** (detekce automatická), Build Command `npm run build` (spustí i `prebuild` = PDF), Output: výchozí (adaptér `@astrojs/vercel`). Zdroj: https://docs.astro.build/en/guides/deploy/vercel/
 3. Environment Variables podle 9.2; secrets (`BREVO_API_KEY`, `META_CAPI_TOKEN`, `UPSTASH_REDIS_REST_TOKEN`) jako typ **Secret**. `SITE_URL` zatím `https://<projekt>.vercel.app`.
 4. **Deploy.** Pokud se produkční URL liší od `SITE_URL`, opravit a **Redeploy**.
