@@ -193,7 +193,7 @@ test.describe('redesign (EU blue and gold)', () => {
     await page.goto('/');
     await expect(page.locator('[data-section="hero"] [data-trust] li')).toHaveText([
       'Data přímo od vydavatelů',
-      'Návod pro XTB, Trading 212, Fio a Degiro',
+      'Návod pro XTB, Trading 212 a Degiro',
       'Bez registrace',
     ]);
   });
