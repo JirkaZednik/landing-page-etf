@@ -21,7 +21,12 @@ test.describe('production smoke', () => {
     await page.waitForLoadState('networkidle');
     await page.reload(); // načtení analytiky se souhlasem
     await page.waitForLoadState('networkidle');
-    expect(await page.evaluate(() => (window as any).__csp)).toEqual([]);
+    // Konfigurace Meta Pixelu (connect.facebook.net/signals/config) volá navíc pomocné endpointy na
+    // proměnlivých hostitelích AWS / Google Cloud (`…/events?cee=…`). CSP je záměrně blokuje – do
+    // allowlistu nepatří; události Pixelu jdou dál na www.facebook.com/tr a Lead i přes CAPI.
+    const isMetaAux = (v: string) => v.startsWith('connect-src ') && /\/events\?cee=/.test(v);
+    const violations = (await page.evaluate(() => (window as any).__csp as string[])).filter((v) => !isMetaAux(v));
+    expect(violations).toEqual([]);
   });
 
   test('guide PDF is served', async ({ request }) => {
