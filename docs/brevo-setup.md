@@ -45,7 +45,7 @@ grep -ohE "attributes\.[A-Z_]+ =|\['[A-Z_]+',|[{,] [A-Z_]{3,}: |^ +[A-Z_]{3,}: "
 
 Kontakt vzniká hned po odeslání formuláře (single opt-in): `/api/subscribe` volá jednou `POST /v3/contacts` s `email`, `ext_id` (= `aid`), `listIds: [BREVO_LIST_ID]`, `updateEnabled: true` a atributy z bodu 4. Tvar požadavku: https://developers.brevo.com/reference/createcontact (dokumentuje 201 pro nový kontakt). Že Brevo existující kontakt aktualizuje s odpovědí 204, je pozorované chování, v dokumentaci API neověřené – ověřit ručním testem v bodě 8. Při konfliktu identifikátoru (400 `duplicate_parameter`, např. `ext_id` už má jiný kontakt) server zkusí jednou nové `aid` a nakonec uloží kontakt bez `ext_id` s novým `aid` v atributu `AID` (`createLeadContact` v `src/server/brevo.ts`).
 
-Marketing → Templates → Create Template → Email. Odesílatel z bodu 1, **předmět „Váš návod: jak koupit S&P 500 u vašeho brokera"**, jedno tlačítko „Stáhnout návod (PDF)" s odkazem na `{SITE_URL}/navod-etf.pdf` (absolutní URL produkce, např. `https://<doména>/navod-etf.pdf`). Bez reklamy a bez personalizace atributy. Šablonu aktivovat.
+Marketing → Templates → Create Template → Email. Odesílatel z bodu 1, **předmět „Váš návod: jak koupit S&P 500 u vašeho brokera"**, jedno tlačítko „Stáhnout návod (PDF)" s odkazem na `https://etf-dvojce.vercel.app/navod-etf.pdf` (absolutní URL produkce, např. `https://<doména>/navod-etf.pdf`). Bez reklamy a bez personalizace atributy. Šablonu aktivovat.
 
 ## 6. Text e-mailu
 
@@ -55,7 +55,7 @@ Marketing → Templates → Create Template → Email. Odesílatel z bodu 1, **p
 >
 > posíláme návod, o který jste si řekli na stránce ETF Dvojče. Najdete v něm páry amerických ETF a jejich evropských dvojčat s TER a ISIN a postup koupě u XTB, Trading 212, Fio a Degiro (co jsme zatím neověřili, návod tak označuje).
 >
-> **[Stáhnout návod (PDF)]** → `{SITE_URL}/navod-etf.pdf`
+> **[Stáhnout návod (PDF)]** → `https://etf-dvojce.vercel.app/navod-etf.pdf`
 >
 > Údaje v návodu platí k datu uvedenému v PDF. Návod není investičním doporučením.
 >
@@ -63,7 +63,7 @@ Marketing → Templates → Create Template → Email. Odesílatel z bodu 1, **p
 >
 > ---
 > Provozovatel: ETF Dvojče – ukázkový projekt, etf-dvojce@seznam.cz. Ukázkový projekt vytvořený jako zadání pro přijímací řízení. Nejde o nabídku investičních služeb.
-> Tento e-mail jste dostali, protože jste si návod vyžádali na `{SITE_URL}`. Odhlásit se můžete zde: `{{ unsubscribe }}`
+> Tento e-mail jste dostali, protože jste si návod vyžádali na `https://etf-dvojce.vercel.app`. Odhlásit se můžete zde: `{{ unsubscribe }}`
 
 Patička přebírá hodnoty z `OPERATOR` (`src/lib/operator.ts`); při výměně provozovatele pro ostrý provoz upravit i ji. Odkaz na odhlášení je v Brevu povinný u marketingových e-mailů; placeholder `{{ unsubscribe }}` (zdroj: https://help.brevo.com/hc/en-us/articles/209553645).
 
@@ -77,7 +77,7 @@ Kontrola: `/api/profile` **nesmí** přidávat kontakt do seznamu (automatizace 
 
 **[ČLOVĚK]** na produkční URL, na reálném iOS Safari a Android Chrome. Ke každému řádku zapsat datum a výsledek.
 
-- [ ] Mobil, `{SITE_URL}/?utm_content=a-4x5`, odeslat e-mail `…@gmail.com` → `/dekujeme?aid=…` do 2 s, nadpis „Hotovo. Návod je váš.".
+- [ ] Mobil, `https://etf-dvojce.vercel.app/?utm_content=a-4x5`, odeslat e-mail `…@gmail.com` → `/dekujeme?aid=…` do 2 s, nadpis „Hotovo. Návod je váš.".
 - [ ] Tlačítko „Stáhnout návod (PDF)" na `/dekujeme` stáhne a otevře PDF.
 - [ ] E-mail s návodem z automatizace dorazí do 5 min; složka (Primární / Promo akce / Spam) zapsána; předmět „Váš návod: jak koupit S&P 500 u vašeho brokera"; odkaz na PDF i odhlášení fungují.
 - [ ] Brevo: kontakt v seznamu, `ext_id` = `aid` z adresy `/dekujeme`, atributy `AID`, `PLACEMENT`, `UTM_CONTENT`, `CONSENT_TEXT_VERSION`, `CONSENT_AT` vyplněné.

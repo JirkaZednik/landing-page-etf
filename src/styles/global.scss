@@ -317,7 +317,10 @@ a {
   gap: $s2;
   max-width: 520px;
 
-  &__label { font-size: 0.9375rem; }
+  &__label {
+    font-size: 0.9375rem; 
+    font-weight: 700;
+  }
 
   &__field {
     display: flex;
