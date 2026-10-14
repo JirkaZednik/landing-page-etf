@@ -152,6 +152,12 @@ export function getBroker(id: BrokerId): Broker {
   return b;
 }
 
+/** Brokers with at least one fund verified as available on their own site. Only these may be
+ *  promised before the e-mail (hero, ads); the others stay in the picker and PDF as "not verified". */
+export function verifiedBrokers(): Broker[] {
+  return BROKERS.filter((b) => b.listings.some((l) => l.available.value === true));
+}
+
 export function twinsAtBroker(b: BrokerId, g: GroupId): { fund: Fund; ticker: string }[] {
   const listings = getBroker(b).listings;
   const out: { fund: Fund; ticker: string }[] = [];

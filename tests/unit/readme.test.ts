@@ -101,7 +101,7 @@ describe('README', () => {
     expect(md).toMatch(/^\| Fio banka \| \*\*žádné zatím neověřené\*\*/m);
     expect(md).toContain('U tohoto brokera jsme dostupnost zatím neověřili.');
     expect(md).toMatch(/^- \[ \] .*\*\*Fio zatím nemá žádný ověřený fond\*\*/m);
-    expect(md).toMatch(/Před ostrým spuštěním u klienta:\*\*.*ověření (dat )?brokera Fio/);
+    expect(md).toContain('**Slibujeme jen ověřené brokery:**');
     // Fio never claimed as verified
     expect(md).not.toMatch(/Fio (je|jsou) ověřen/);
   });

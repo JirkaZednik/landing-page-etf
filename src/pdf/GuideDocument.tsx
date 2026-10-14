@@ -294,7 +294,7 @@ export function GuideDocument() {
         </View>
         <View style={s.cover}>
           <TwinsArt />
-          <Text style={s.h1}>Jak koupit S&P 500 a další americké indexy u XTB, Trading 212, Fio a Degiro</Text>
+          <Text style={s.h1}>Jak koupit S&P 500 a další americké indexy u vašeho brokera</Text>
           <Text style={s.lead}>
             Americké ETF jako VOO evropský broker drobnému investorovi neprodá, protože k nim neexistuje dokument KID. Na stejné indexy ale existují evropské fondy – tento návod ukazuje, jak je u vašeho brokera najít.
           </Text>

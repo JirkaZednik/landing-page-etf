@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getData, getBrokers, getBroker, twinsAtBroker, twinsSortedByTer, validateBrokers } from '../../src/lib/pairs';
+import { getData, getBrokers, getBroker, twinsAtBroker, twinsSortedByTer, validateBrokers, verifiedBrokers } from '../../src/lib/pairs';
 import type { Broker, GroupId } from '../../src/lib/types';
 
 const clone = (): Broker[] => structuredClone(getBrokers());
@@ -11,6 +11,10 @@ describe('brokers.json', () => {
   it('lists the four brokers in order', () => {
     expect(getBrokers().map((b) => b.id)).toEqual(['xtb', 'trading212', 'fio', 'degiro']);
     expect(() => getBroker('revolut' as never)).toThrow('Unknown broker: revolut');
+  });
+  it('verifiedBrokers keeps only brokers with at least one verified fund, in order', () => {
+    expect(verifiedBrokers().map((b) => b.id)).toEqual(['xtb', 'trading212', 'degiro']);
+    expect(verifiedBrokers().map((b) => b.name).join(', ')).toBe('XTB, Trading 212, Degiro');
   });
   it('twinsAtBroker keeps TER order and only available listings', () => {
     const groups: GroupId[] = ['sp500', 'world', 'us-total', 'us-dividend'];

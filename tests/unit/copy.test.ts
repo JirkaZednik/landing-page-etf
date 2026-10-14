@@ -18,11 +18,11 @@ describe('copy', () => {
     });
     expect(HERO_COPY.b).toEqual({
       h1: 'S&P 500 u vašeho brokera: který fond vybrat a jak ho najít.',
-      sub: 'Tři evropské fondy na S&P 500 a jejich poplatky vidíte hned. Postup pro XTB, Trading 212, Fio a Degiro vám pošleme e-mailem.',
+      sub: 'Tři evropské fondy na S&P 500 a jejich poplatky vidíte hned. Postup pro XTB, Trading 212 a Degiro vám pošleme e-mailem.',
     });
   });
   it('HERO_TRUST has the three approved texts (redesign)', () => {
-    expect(HERO_TRUST).toEqual(['Data přímo od vydavatelů', 'Návod pro XTB, Trading 212, Fio a Degiro', 'Bez registrace']);
+    expect(HERO_TRUST).toEqual(['Data přímo od vydavatelů', 'Návod pro XTB, Trading 212 a Degiro', 'Bez registrace']);
     expect(FORM_COPY.placeholder).toBe('vas@email.cz');
   });
   it('keeps Task 8 exports', () => {

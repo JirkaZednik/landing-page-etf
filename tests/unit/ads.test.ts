@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { getBrokers, getFund, originalsOf, twinsSortedByTer } from '../../src/lib/pairs';
+import { getFund, verifiedBrokers, originalsOf, twinsSortedByTer } from '../../src/lib/pairs';
 import { heroVariantFromUtm } from '../../src/lib/copy';
 import { fillTemplate } from '../../scripts/render-ads';
 
@@ -22,7 +22,8 @@ describe('ads templates', () => {
 
   it('template B does not imply SPYL is available at every broker', () => {
     const filled = fillTemplate(tpl('b'));
-    expect(filled).toContain(`Postup pro: ${getBrokers().map((b) => b.name).join(' · ')}`);
+    expect(filled).toContain(`Postup pro: ${verifiedBrokers().map((b) => b.name).join(' · ')}`);
+    expect(filled).not.toContain('Fio'); // neověřený broker se na kreativě neslibuje
     expect(filled).toContain('Dostupnost fondů se u brokerů liší.');
   });
 
@@ -89,7 +90,7 @@ describe('ads templates', () => {
       'Hledali jste u brokera VOO a nenašli ho? Není to chyba. Evropská pravidla brání brokerům prodávat americké ETF drobným investorům. Na stejný index S&P 500 ale existují evropské fondy. Podívejte se, které to jsou a co stojí.',
       'VOO u evropského brokera nekoupíte. Tady je náhrada.',
       'Více informací',
-      'Máte účet u XTB, Trading 212, Fio nebo Degira a chcete investovat do S&P 500? Nemusíte hledat ve stovkách fondů. Pošleme vám přesný ISIN a postup pro vašeho brokera.',
+      'Máte účet u XTB, Trading 212 nebo Degira a chcete investovat do S&P 500? Nemusíte hledat ve stovkách fondů. Pošleme vám přesný ISIN a postup pro vašeho brokera.',
       'S&P 500 u vašeho brokera: přesný ISIN a postup',
       'Získat návod',
     ]) expect(md).toContain(s);

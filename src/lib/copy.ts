@@ -23,14 +23,14 @@ export const HERO_COPY: Record<HeroVariant, { h1: string; sub: string }> = {
   },
   b: {
     h1: 'S&P 500 u vašeho brokera: který fond vybrat a jak ho najít.',
-    sub: 'Tři evropské fondy na S&P 500 a jejich poplatky vidíte hned. Postup pro XTB, Trading 212, Fio a Degiro vám pošleme e-mailem.',
+    sub: 'Tři evropské fondy na S&P 500 a jejich poplatky vidíte hned. Postup pro XTB, Trading 212 a Degiro vám pošleme e-mailem.',
   },
 };
 
 /** Trust row under the hero form (redesign 2026-10-13, exact texts). */
 export const HERO_TRUST = [
   'Data přímo od vydavatelů',
-  'Návod pro XTB, Trading 212, Fio a Degiro',
+  'Návod pro XTB, Trading 212 a Degiro',
   'Bez registrace',
 ] as const;
 

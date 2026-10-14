@@ -7,6 +7,7 @@ import {
   twinsSortedByTer,
   originalsOf,
   getBrokers,
+  verifiedBrokers,
   validateData,
   validateBrokers,
 } from '../src/lib/pairs';
@@ -73,7 +74,8 @@ export function fillTemplate(html: string): string {
     if (key === 'twins') return twinsSvg();
     if (key === 'cta.a' || key === 'cta.b') return ctaFromCopy(key.slice(4) as 'a' | 'b');
     if (key === 'asOf') return formatDateCz(getData().asOf);
-    if (key === 'brokers') return esc(getBrokers().map((b) => b.name).join(' · '));
+    // Jen brokeři s ověřeným fondem – kreativa nesmí slibovat postup, který nemáme doložený.
+    if (key === 'brokers') return esc(verifiedBrokers().map((b) => b.name).join(' · '));
     if (key === 'sp500.twins') return esc(twinsSortedByTer('sp500').map((f) => f.id).join(' · '));
     if (key === 'sp500.originals') return esc(originalsOf('sp500').map((f) => f.id).join(' · '));
     // Řádky „ticker – TER" seřazené podle TER, jako tabulka v hero na webu.
