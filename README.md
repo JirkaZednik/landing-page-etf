@@ -46,6 +46,7 @@ Web je postavený na Astro 5 s React ostrůvky, TypeScriptu a SCSS.
 - Výrazné opravy designu na moderní a svěží pojetí.
 - První návrh hero sekce jasně nevysvětloval, co návštěvník získá sa cesta k formuláři byla dlouhá -> k formuláři vedlo 3–4 interakce -> E-mailový formulář přímo pod kartou
 - Upravil jsem hero sekci pro mobil i desktop tak, aby v prvním viewportu jasně představila nabídku a zobrazila hlavní výzvu k akci.
+- Stylové úpravy pro cookie consent.
 - Rozhodl jsem se zrušit double opt-in a zjednodušit tak cestu uživatele.
 - Změna názvu projektu na vhodnější - "ETF Dvojče".
 - OG description byl příliš dlouhý, proto jsem ho zkrátil.
