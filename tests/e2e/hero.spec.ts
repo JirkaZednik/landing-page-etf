@@ -64,12 +64,15 @@ test.describe('with consent decided', () => {
     await expect(page.locator('html')).toHaveAttribute('data-variant', 'b');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('S&P 500 u vašeho brokera: který fond vybrat a jak ho najít.');
     await expect(page.locator('h1:visible')).toHaveCount(1);
+    await expect(page.locator('[data-twin="SPYL"] .twin__isin-b')).toHaveText('ISIN IE000XZSV718');
+    await expect(page.locator('[data-twin="SPYL"] .twin__isin-b')).toBeVisible();
   });
 
   test('default shows h1 A', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('html')).toHaveAttribute('data-variant', 'a');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('U evropského brokera VOO jako drobný investor nekoupíte. Jeho evropské dvojče ano.');
+    await expect(page.locator('[data-twin="SPYL"] .twin__isin-b')).toBeHidden();
   });
 
   test('answer card: originals, twins sorted by TER, source, ISIN on tap', async ({ page }) => {

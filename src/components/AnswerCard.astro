@@ -1,9 +1,10 @@
 ---
-import { getData, originalsOf, twinsSortedByTer } from '../lib/pairs';
+import { getData, getFund, originalsOf, twinsSortedByTer } from '../lib/pairs';
 import { formatDateCz, formatTer } from '../lib/format';
 
 const originals = originalsOf('sp500');
 const twins = twinsSortedByTer('sp500');
+const spyl = getFund('SPYL');
 const exchange = originals[0].exchange.value;
 const asOf = formatDateCz(getData().asOf);
 const lowestTer = twins.length ? twins[0].ter.value : null;
@@ -25,7 +26,7 @@ const DOMICILE = { IE: 'Irsko', LU: 'Lucembursko', US: 'USA' } as const;
     {twins.map((f) => (
       <li>
         {/* No whitespace before <summary>: the row text must start with the ticker. */}
-        <details data-twin={f.id} data-lowest={f.ter.value === lowestTer ? '' : undefined} class="twin"><summary class="twin__row"><span class="twin__tk">{f.id}</span> <span class="twin__name"><span class="twin__fund">{f.name.value}</span> <span class="twin__dist">{DOMICILE[f.domicile.value]}, {DIST[f.distribution.value]}</span></span> <span class="twin__ter">{formatTer(f.ter.value)}{f.ter.value === lowestTer && <span class="sr-only"> (nejnižší poplatek)</span>}</span></summary>
+        <details data-twin={f.id} data-lowest={f.ter.value === lowestTer ? '' : undefined} class="twin"><summary class="twin__row"><span class="twin__tk">{f.id}</span> <span class="twin__name"><span class="twin__fund">{f.name.value}</span>{f.id === spyl.id && <span class="twin__isin-b">ISIN <b>{spyl.isin.value}</b></span>} <span class="twin__dist">{DOMICILE[f.domicile.value]}, {DIST[f.distribution.value]}</span></span> <span class="twin__ter">{formatTer(f.ter.value)}{f.ter.value === lowestTer && <span class="sr-only"> (nejnižší poplatek)</span>}</span></summary>
           <div class="twin__more">
             <p class="twin__isin">ISIN <span>{f.isin.value}</span></p>
             <p class="twin__links">
@@ -166,6 +167,21 @@ const DOMICILE = { IE: 'Irsko', LU: 'Lucembursko', US: 'USA' } as const;
     color: $muted;
     font-size: 0.78125rem;
   }
+
+  .twin__isin-b {
+    display: none;
+    color: $euro-d;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    b {
+      font-variant-numeric: tabular-nums;
+      user-select: all;
+    }
+  }
+
+  :global(html:not([data-variant])) .hero[data-default='b'] .twin__isin-b,
+  :global(html[data-variant='b']) .twin__isin-b { display: inline; }
 
   .twin__ter {
     font-weight: 700;

@@ -46,10 +46,11 @@ Web je postavený na Astro 5 s React ostrůvky, TypeScriptu a SCSS.
 - Výrazné opravy designu na moderní a svěží pojetí.
 - První návrh hero sekce jasně nevysvětloval, co návštěvník získá sa cesta k formuláři byla dlouhá -> k formuláři vedlo 3–4 interakce -> E-mailový formulář přímo pod kartou
 - Upravil jsem hero sekci pro mobil i desktop tak, aby v prvním viewportu jasně představila nabídku a zobrazila hlavní výzvu k akci.
+- Hero B neukazoval ISIN, přitom je to hlavní motiv reklamy B -> dodatečně přidán ISIN do karty v hero pro variantu B. 
 - Stylové úpravy pro cookie consent.
 - Rozhodl jsem se zrušit double opt-in a zjednodušit tak cestu uživatele.
 - Změna názvu projektu na vhodnější - "ETF Dvojče".
-- OG description byl příliš dlouhý, proto jsem ho zkrátil.
+- OG description byl příliš dlouhý, proto byl zkrácen.
 
 ## Výklad zadání
 
@@ -189,7 +190,7 @@ Písma: **Bricolage Grotesque** (600/800) pro nadpisy, logo, tickery a tlačítk
 
 ## Reklamy A/B
 
-Meta (Instagram + Facebook), kategorie kampaně Financial products and services; počítáme s omezeními Meta pro finanční weby (Core Setup). Obě verze vedou na stejnou URL; podle `utm_content` (první písmeno `a`/`b`) se mění nadpis a podnadpis hero, karta S&P 500 a formulář zůstávají. Bez UTM se zobrazí hero A. Texty i URL s UTM: [ads/copy.md](ads/copy.md).
+Meta (Instagram + Facebook), kategorie kampaně Financial products and services; počítáme s omezeními Meta pro finanční weby (Core Setup). Obě verze vedou na stejnou URL; podle `utm_content` (první písmeno `a`/`b`) se mění nadpis a podnadpis hero a ve variantě B se v kartě S&P 500 navíc zobrazuje ISIN SPYL. Formulář zůstává stejný. Bez UTM se zobrazí hero A. Texty i URL s UTM: [ads/copy.md](ads/copy.md).
 
 ### Verze A – „Problém"
 
@@ -212,7 +213,7 @@ Formát [9:16](ads/b-9x16.png).
 - **Primární text:** Máte účet u XTB, Trading 212 nebo Degira a chcete investovat do S&P 500? Nemusíte hledat ve stovkách fondů. Pošleme vám přesný ISIN a postup pro vašeho brokera.
 - **Titulek:** S&P 500 u vašeho brokera: přesný ISIN a postup
 - **Tlačítko:** Získat návod
-- **Hero B:** „S&P 500 u vašeho brokera: který fond vybrat a jak ho najít." / „Tři evropské fondy na S&P 500 a jejich poplatky vidíte hned. Postup pro XTB, Trading 212 a Degiro vám pošleme e-mailem."
+- **Hero B:** „S&P 500 u vašeho brokera: který fond vybrat a jak ho najít." / „Tři evropské fondy na S&P 500 a jejich poplatky vidíte hned. Postup pro XTB, Trading 212 a Degiro vám pošleme e-mailem." V kartě je navíc hned vidět ISIN SPYL: `IE000XZSV718`.
 - **URL:** `https://etf-dvojce.vercel.app/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=b-4x5` (resp. `b-9x16`)
 
 Čísla a ISIN na kreativách generuje `npm run ads` z `src/data/etf-pairs.json` (stejný skript vyrenderuje `public/og.png`). Kreativy mají vizuál hero (tmavě modré pozadí, ilustrace dvou křivek se štítky z dat, bílá karta, zlaté tlačítko s textem tlačítka z `ads/copy.md`); oproti návrhu ve spec §9 berou pořadí dvojčat z dat; u verze B je řádek brokerů označen „Postup pro: …" a zdrojová řádka dodává „Dostupnost fondů se u brokerů liší.", aby kreativa netvrdila, že každý broker nabízí SPYL.
