@@ -111,7 +111,7 @@ const DOMICILE = { IE: 'Irsko', LU: 'Lucembursko', US: 'USA' } as const;
     align-items: center;
     column-gap: 10px;
     min-height: 44px;
-    padding: 5px 0;
+    padding: 3px 0;
     cursor: pointer;
     list-style: none;
 
@@ -148,15 +148,14 @@ const DOMICILE = { IE: 'Irsko', LU: 'Lucembursko', US: 'USA' } as const;
   .twin__name {
     display: grid;
     min-width: 0;
-    line-height: 1.25;
+    line-height: 1.15;
   }
 
   .twin__fund {
-    overflow: hidden;
+    min-width: 0;
     font-size: 0.875rem;
     font-weight: 600;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
   }
 
   .twin__dist {

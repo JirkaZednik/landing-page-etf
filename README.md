@@ -1,5 +1,22 @@
 # ETF Dvojče – „Najdi evropské dvojče"
 
+## Web
+
+ETF Dvojče pomáhá českým investorům najít evropské ekvivalenty amerických ETF a ukazuje, jak je koupit u jejich brokera.
+
+- [Hlavní stránka](https://etf-dvojce.vercel.app/)
+- [Děkujeme za stažení návodu](https://etf-dvojce.vercel.app/dekujeme)
+- [Zásady ochrany osobních údajů](https://etf-dvojce.vercel.app/zasady-ochrany-osobnich-udaju)
+- [Cookies](https://etf-dvojce.vercel.app/cookies)
+- [Návod ETF (PDF)](https://etf-dvojce.vercel.app/navod-etf.pdf)
+
+### Reklamy (UTM)
+
+- [Varianta A – 4:5](https://etf-dvojce.vercel.app/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=a-4x5)
+- [Varianta A – 9:16](https://etf-dvojce.vercel.app/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=a-9x16)
+- [Varianta B – 4:5](https://etf-dvojce.vercel.app/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=b-4x5)
+- [Varianta B – 9:16](https://etf-dvojce.vercel.app/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=b-9x16)
+
 ## Výklad zadání
 
 Srovnáváme ETF obchodované na NYSE (Arca). Protože je český drobný investor u evropského brokera kvůli nařízení PRIIPs koupit nemůže, ke každému ukazujeme dostupný evropský ekvivalent. Bez toho by srovnání nemělo použitelný výstup. Originály z NYSE jsou na stránce vždy vidět vedle dvojčat (TER, burza, zdroj).
@@ -9,7 +26,7 @@ Samostatná spotřebitelská značka je záměr: odpovídá modelu Clientela, kt
 
 Výstupy: landing page (Astro 5 + React ostrůvky, TypeScript, SCSS), PDF návod jako lead magnet, 2 verze reklamy ve formátech 4:5 a 9:16, měření celé cesty a tento README.
 
-**Mohli bychom zítra spustit reklamu?** Po stránce kódu ano: stránka, formuláře, PDF, kreativy, měřicí kód a testy jsou hotové a lokálně otestované. Web ale zatím nikde neběží, takže se na produkci zatím nic neměřilo – Pixel, CAPI, PostHog ani doručení e-mailu s návodem z Brevo nejsou ověřené v ostrém provozu. Ostrý provoz blokují kroky mimo kód – výměna ukázkového provozovatele a souhlas klienta, schválení právníkem, produkční účty a placené tarify a ověření měření na produkci. Přesný stav je v [checklistu před spuštěním reklamy](#checklist-před-spuštěním-reklamy).
+**Mohli bychom zítra spustit reklamu?** Po stránce kódu ano: stránka, formuláře, PDF, kreativy, měřicí kód a testy jsou hotové a lokálně otestované. Web je nasazený, ale v produkci zatím nebylo ověřeno měření (Pixel, CAPI, PostHog) ani doručení e-mailu s návodem z Brevo. Ostrý provoz blokují kroky mimo kód – výměna ukázkového provozovatele a souhlas klienta, schválení právníkem, produkční účty a placené tarify a ověření měření na produkci. Přesný stav je v [checklistu před spuštěním reklamy](#checklist-před-spuštěním-reklamy).
 
 ## Cílová skupina
 
@@ -230,7 +247,7 @@ Cookie lišta má stejně výrazná tlačítka „Odmítnout" a „Přijmout" a 
 
 Pozor při čtení: `pdf_downloaded` se počítá při každém kliknutí na tlačítko na `/dekujeme` (i opakovaném) a nevidí stažení z odkazu v e-mailu. Bez souhlasu nelze cestu po odeslání propojit na úrovni osoby, porovnávají se agregované počty.
 
-**PostHog dashboard** „ETF Dvojče – konverze": ČEKÁ na vytvoření po nasazení, postup v [docs/brevo-setup.md](docs/brevo-setup.md) § 9.6.
+**PostHog dashboard** „ETF Dvojče – konverze": postup vytvoření v [docs/brevo-setup.md](docs/brevo-setup.md) § 9.6.
 
 **Výkon (cíl LCP < 1,5 s, CLS < 0,1):** [docs/lighthouse-mobile.json](docs/lighthouse-mobile.json) je z **lokálního** produkčního buildu (13. 10. 2026, Lighthouse 13.5.0, mobil, simulované 4G, statický server s hlavičkami z `vercel.json` a brotli; uložen medián z 5 běhů podle LCP), ne z produkce:
 
@@ -311,11 +328,8 @@ U Fio stránka i PDF poctivě píší „U tohoto brokera jsme dostupnost zatím
 
 ## Produkční nasazení
 
-**Nasazení zatím neproběhlo** – je to ruční krok vlastníka účtů. Web je připravený k nasazení na Vercel. Po nasazení doplňte sem a do [docs/brevo-setup.md](docs/brevo-setup.md) § 9.8:
-
-- **Produkční URL:** _ČEKÁ – doplní se po nasazení_
-- **PostHog dashboard „ETF Dvojče – konverze":** _ČEKÁ – doplní se po vytvoření (§ 9.6)_
-- **Lighthouse mobile na produkci:** _ČEKÁ – doplní se po měření (§ 9.5), včetně nesplněných hodnot_
+- **Produkční URL: https://etf-dvojce.vercel.app/
+- **PostHog dashboard „ETF Dvojče – konverze": https://eu.posthog.com/shared/8FIX9sYcc3XTQ_CACGAs7RZFJ6hzQA
 
 **Postup** (podrobně v [docs/brevo-setup.md](docs/brevo-setup.md) § 9.3):
 1. Vercel → Add New → Project → Import GitHub repa; nasazuje se větev `main`.

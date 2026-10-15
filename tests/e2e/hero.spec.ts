@@ -84,6 +84,38 @@ test.describe('with consent decided', () => {
     await expect(card.locator('[data-twin="SPYL"] a', { hasText: 'KID' })).toHaveAttribute('href', /^https:\/\//);
   });
 
+  test('hero fund names wrap fully on narrow mobile screens', async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() => document.fonts.ready);
+    const names = page.locator('[data-answer-card] .twin__fund');
+    await expect(names).toHaveText([
+      'State Street SPDR S&P 500 UCITS ETF (Acc)',
+      'iShares Core S&P 500 UCITS ETF USD (Acc)',
+      'S&P 500 UCITS ETF - (USD) Accumulating',
+    ]);
+
+    for (const width of [320, 360, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      const layout = await names.evaluateAll((elements) => elements.map((element) => {
+        const style = getComputedStyle(element);
+        return {
+          whiteSpace: style.whiteSpace,
+          overflow: style.overflow,
+          scrollWidth: element.scrollWidth,
+          clientWidth: element.clientWidth,
+          scrollHeight: element.scrollHeight,
+          clientHeight: element.clientHeight,
+        };
+      }));
+      expect(layout.every((name) =>
+        name.whiteSpace !== 'nowrap' &&
+        name.overflow !== 'hidden' &&
+        name.scrollWidth <= name.clientWidth &&
+        name.scrollHeight <= name.clientHeight,
+      ), `names should fit without clipping at ${width}px`).toBe(true);
+    }
+  });
+
   test('hero form has placement hero directly under card', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('#form input[name="placement"]')).toHaveValue('hero');
