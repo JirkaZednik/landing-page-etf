@@ -17,6 +17,39 @@ ETF Dvojče pomáhá českým investorům najít evropské ekvivalenty americký
 - [Varianta B – 4:5](https://etf-dvojce.vercel.app/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=b-4x5)
 - [Varianta B – 9:16](https://etf-dvojce.vercel.app/?utm_source=meta&utm_medium=paid_social&utm_campaign=etf_dvojce_launch&utm_content=b-9x16)
 
+## Technologie
+
+Web je postavený na Astro 5 s React ostrůvky, TypeScriptu a SCSS.
+
+## Práce s AI Claude Code
+- Využití "Superpowers" skill
+- Model Opus 5.5
+- Používání subagentů pro lepší kontrolu
+- Claude Code jsem používal při návrhu i implementaci. Postupoval jsem podle Superpowers skills a zapojoval subagenty pro kontrolu návrhů. Důležitá rozhodnutí jsem průběžně ověřoval a schvaloval sám.
+
+**Pokyny agentům:**
+1. Vytvoř návrh řešení ze zadání, postupuj podle superpowers skills.
+2. Vytvoř spec.
+3. Spusť pár subagentů pro kontrolu spec z různých hledisek a zdali je všechno správně a kvalitně vůči zadání. 
+4. Připrav implementační plán pomocí subagentů.
+5. Implementuj schválené řešení.
+6. Proveď review v nové session.
+
+**Kontrola výstupu:**
+- Kontroloval jsem návrhy a důležitá rozhodnutí ještě před implementací; navržený postup jsem potvrzoval, nebo upravoval.
+- Kód jsem kontroloval v PR a ve VS Code.
+- Funkčnost jsem ověřoval v prohlížeči, včetně console, Lighthouse, responzivity a zobrazení na mobilu.
+- Kontrola designu.
+- Kontroloval jsem také konfiguraci a napojení externích služeb, API a proměnných prostředí: Vercel, Brevo, PostHog, Upstash, Meta a GA4. (https://github.com/JirkaZednik/landing-page-etf/blob/main/docs/brevo-setup.md).
+
+**Příklady korekce výstupu:**
+- Výrazné opravy designu na moderní a svěží pojetí.
+- První návrh hero sekce jasně nevysvětloval, co návštěvník získá sa cesta k formuláři byla dlouhá -> k formuláři vedlo 3–4 interakce -> E-mailový formulář přímo pod kartou
+- Upravil jsem hero sekci pro mobil i desktop tak, aby v prvním viewportu jasně představila nabídku a zobrazila hlavní výzvu k akci.
+- Rozhodl jsem se zrušit double opt-in a zjednodušit tak cestu uživatele.
+- Změna názvu projektu na vhodnější - "ETF Dvojče".
+- OG description byl příliš dlouhý, proto jsem ho zkrátil.
+
 ## Výklad zadání
 
 Srovnáváme ETF obchodované na NYSE (Arca). Protože je český drobný investor u evropského brokera kvůli nařízení PRIIPs koupit nemůže, ke každému ukazujeme dostupný evropský ekvivalent. Bez toho by srovnání nemělo použitelný výstup. Originály z NYSE jsou na stránce vždy vidět vedle dvojčat (TER, burza, zdroj).
