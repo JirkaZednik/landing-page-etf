@@ -153,9 +153,13 @@ const DOMICILE = { IE: 'Irsko', LU: 'Lucembursko', US: 'USA' } as const;
 
   .twin__fund {
     min-width: 0;
-    font-size: 0.775rem;
+    font-size: 0.875rem;
     font-weight: 700;
     overflow-wrap: anywhere;
+
+    @media (max-width: 899.98px) {
+      font-size: 0.775rem;
+    }
   }
 
   .twin__dist {
